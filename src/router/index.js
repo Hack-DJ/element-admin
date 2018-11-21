@@ -9,6 +9,9 @@ Vue.use(Router)
 /* Layout */
 import Layout from '../views/layout/Layout'
 
+/* modules */
+
+const POWER = 'admin'
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -51,19 +54,19 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    meta: { title: 'Example', icon: 'example', roles: [POWER] },
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        meta: { title: 'Table', icon: 'table', roles: [POWER] }
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree', roles: ['admin'] }
+        meta: { title: 'Tree', icon: 'tree', roles: [POWER] }
       }
     ]
   },
@@ -76,7 +79,7 @@ export const asyncRouterMap = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: 'Form', icon: 'form', roles: [POWER, 'admin2'] }
       }
     ]
   },
@@ -88,14 +91,15 @@ export const asyncRouterMap = [
     name: 'Nested',
     meta: {
       title: 'Nested',
-      icon: 'nested'
+      icon: 'nested',
+      roles: [POWER]
     },
     children: [
       {
         path: 'menu1',
         component: () => import('@/views/nested/menu1/index'), // Parent router-view
         name: 'Menu1',
-        meta: { title: 'Menu1' },
+        meta: { title: 'Menu1', roles: [POWER] },
         children: [
           {
             path: 'menu1-1',
@@ -134,7 +138,7 @@ export const asyncRouterMap = [
       {
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        meta: { title: 'menu2', roles: [POWER] }
       }
     ]
   },
@@ -142,10 +146,16 @@ export const asyncRouterMap = [
   {
     path: 'external-link',
     component: Layout,
+    name: 'Link',
+    meta: { title: 'Link', icon: 'example', roles: [POWER, 'admin2'] },
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: 'External Link1', icon: 'link', roles: [POWER] }
+      },
+      {
+        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        meta: { title: 'External Link2', icon: 'link', roles: [POWER, 'admin2'] }
       }
     ]
   },
