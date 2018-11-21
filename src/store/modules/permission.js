@@ -27,6 +27,7 @@ function filterAsyncRouter(routes, roles) {
       if (tmp.children) {
         tmp.children = filterAsyncRouter(tmp.children, roles)
       }
+      console.log(tmp)
       res.push(tmp)
     }
   })
@@ -49,12 +50,14 @@ const permission = {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
         const { roles } = data
-        let accessedRouters
-        if (roles.includes('admin')) {
-          accessedRouters = asyncRouterMap
-        } else {
-          accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
-        }
+        const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
+        // let accessedRouters
+        // if (roles.includes('admin')) {
+        //   console.log(asyncRouterMap)
+        //   accessedRouters = asyncRouterMap
+        // } else {
+        //   accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
+        // }
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

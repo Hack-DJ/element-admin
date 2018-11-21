@@ -13,7 +13,7 @@ const createLintingRule = () => ({
   test: /\.(js|vue)$/,
   loader: 'eslint-loader',
   enforce: 'pre',
-  include: [resolve('src'), resolve('test')],
+  include: [ resolve('src'), resolve('test') ],
   options: {
     formatter: require('eslint-friendly-formatter'),
     emitWarning: !config.dev.showEslintErrorsInOverlay
@@ -22,9 +22,7 @@ const createLintingRule = () => ({
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
+  entry: [ 'babel-polyfill', './src/main.js' ],
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -34,14 +32,17 @@ module.exports = {
         : config.dev.assetsPublicPath
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: [ '.js', '.vue', '.json' ],
     alias: {
-      '@': resolve('src')
+      '@': resolve('src'),
+      'api': path.resolve(__dirname, '../src/api'),
+      'store': path.resolve(__dirname, '../src/store'),
+      'components': path.resolve(__dirname, '../src/components'),
     }
   },
   module: {
     rules: [
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
+      ...(config.dev.useEslint ? [ createLintingRule() ] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -59,7 +60,7 @@ module.exports = {
       {
         test: /\.svg$/,
         loader: 'svg-sprite-loader',
-        include: [resolve('src/icons')],
+        include: [ resolve('src/icons') ],
         options: {
           symbolId: 'icon-[name]'
         }
@@ -67,7 +68,7 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
-        exclude: [resolve('src/icons')],
+        exclude: [ resolve('src/icons') ],
         options: {
           limit: 10000,
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
@@ -91,7 +92,7 @@ module.exports = {
       }
     ]
   },
-  plugins: [new VueLoaderPlugin()],
+  plugins: [ new VueLoaderPlugin() ],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
