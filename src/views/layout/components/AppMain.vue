@@ -1,9 +1,10 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <!--<keep-alive :include="cachedViews">-->
-      <router-view :key="key" />
-      <!--</keep-alive>-->
+      <!--<keep-alive :include="cachedViews" :exclude="noKeep">-->
+      <keep-alive :include="cachedViews">
+        <router-view :key="key" />
+      </keep-alive>
     </transition>
   </section>
 </template>
@@ -12,21 +13,15 @@
 export default {
   name: 'AppMain',
   computed: {
+    cachedViews() {
+      return this.$store.state.tagsView.cachedViews
+    },
+    // noKeep() {
+    //   return ['Redirect']
+    // },
     key() {
       return this.$route.fullPath
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    console.log('todo before enter')
-    next()
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log('todo update enter')
-    next()
-  },
-  beforeRouteLeave(to, from, next) {
-    console.log('todo leave enter')
-    next()
   }
 }
 </script>

@@ -19,7 +19,7 @@
       <li @click="refreshSelectedTag(selectedTag)">刷新</li>
       <li @click="closeSelectedTag(selectedTag)">关闭</li>
       <li @click="closeOthersTags">关闭其它</li>
-      <li @click="closeAllTags">关闭所有</li>
+      <!--<li @click="closeAllTags">关闭所有</li>-->
     </ul>
   </div>
 </template>
@@ -100,16 +100,23 @@ export default {
       })
     },
     closeSelectedTag(view) {
-      this.$store.dispatch('delView', view).then(({ visitedViews }) => {
-        if (this.isActive(view)) {
-          const latestView = visitedViews.slice(-1)[0]
-          if (latestView) {
-            this.$router.push(latestView)
-          } else {
-            this.$router.push('/')
+      if (this.visitedViews.length > 1) {
+        this.$store.dispatch('delView', view).then(({ visitedViews }) => {
+          if (this.isActive(view)) {
+            const latestView = visitedViews.slice(-1)[0]
+            if (latestView) {
+              this.$router.push(latestView)
+            } else {
+              this.$router.push('/')
+            }
           }
-        }
-      })
+        })
+      } else {
+        this.$message({
+          message: '这是最后一页，不能再关闭了',
+          type: 'warning'
+        })
+      }
     },
     closeOthersTags() {
       this.$router.push(this.selectedTag)
@@ -140,19 +147,11 @@ export default {
     },
     closeMenu() {
       this.visible = false
+    },
+    checkPage(pages) {
+      const name = pages.name
+      return name && name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    console.log('todo before enter')
-    next()
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log('todo update enter')
-    next()
-  },
-  beforeRouteLeave(to, from, next) {
-    console.log('todo leave enter')
-    next()
   }
 }
 </script>

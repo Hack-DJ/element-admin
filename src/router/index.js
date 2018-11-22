@@ -28,6 +28,7 @@ const POWER = 'admin'
 export const constantRouterMap = [
   {
     path: '/redirect',
+    name: 'Redirect',
     component: Layout,
     hidden: true,
     children: [
@@ -46,13 +47,13 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
+    redirect: 'dashboard',
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/dashboard/index')
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: '仪表盘', icon: 'dashboard', noCache: true }
       }
     ]
   }
@@ -89,7 +90,7 @@ export const asyncRouterMap = [
     meta: {
       title: '表单',
       icon: 'nested',
-      roles: [POWER]
+      roles: [POWER], noCache: true
     },
     children: [
       {
@@ -97,7 +98,7 @@ export const asyncRouterMap = [
         name: 'Form',
         component: () => import('@/views/form/index'),
         meta: {
-          title: 'Form', icon: 'form', roles: [POWER, 'admin2']
+          title: 'Form', icon: 'form', roles: [POWER, 'admin2'], noCache: true
         }
       },
       {

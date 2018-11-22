@@ -64,12 +64,6 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(1)
-  },
-  activated() {
-    console.log(3)
-  },
   methods: {
     onSubmit() {
       this.$message('submit!')

@@ -17,6 +17,9 @@ import store from './store'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// import Mixin from '@/mixins/mixin' // 全局指令
+
+// Vue.mixin(Mixin)
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
