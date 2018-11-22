@@ -27,6 +27,17 @@ const POWER = 'admin'
 // 不需要动态判断权限的路由，如登录页、404、等通用页面。
 export const constantRouterMap = [
   {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path*',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -73,13 +84,31 @@ export const asyncRouterMap = [
 
   {
     path: '/form',
+    redirect: '/form/index',
     component: Layout,
+    meta: {
+      title: '表单',
+      icon: 'nested',
+      roles: [POWER]
+    },
     children: [
       {
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form', roles: [POWER, 'admin2'] }
+        meta: {
+          title: 'Form', icon: 'form', roles: [POWER, 'admin2']
+        }
+      },
+      {
+        path: 'index2',
+        name: 'Form2',
+        component: () => import('@/views/form/index2'),
+        meta: {
+          title: 'Form2',
+          icon: 'form',
+          roles: [POWER, 'admin2']
+        }
       }
     ]
   },
@@ -137,6 +166,7 @@ export const asyncRouterMap = [
       },
       {
         path: 'menu2',
+        name: 'Menu2',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: 'menu2', roles: [POWER] }
       }
@@ -155,7 +185,11 @@ export const asyncRouterMap = [
       },
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link2', icon: 'link', roles: [POWER, 'admin2'] }
+        meta: {
+          title: 'External Link2',
+          icon: 'link',
+          roles: [POWER, 'admin2']
+        }
       }
     ]
   },

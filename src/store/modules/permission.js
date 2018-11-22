@@ -27,7 +27,6 @@ function filterAsyncRouter(routes, roles) {
       if (tmp.children) {
         tmp.children = filterAsyncRouter(tmp.children, roles)
       }
-      console.log(tmp)
       res.push(tmp)
     }
   })
