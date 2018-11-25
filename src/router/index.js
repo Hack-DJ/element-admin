@@ -53,7 +53,7 @@ export const constantRouterMap = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard', noCache: true }
+        meta: { title: process.env.index_name, icon: 'dashboard', noCache: true }
       }
     ]
   }
@@ -65,19 +65,19 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: 'Example', icon: 'example', roles: [POWER] },
+    meta: { title: '案例', icon: 'example', roles: [POWER] },
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table', roles: [POWER] }
+        meta: { title: '表格', icon: 'table', roles: [POWER] }
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree', roles: [POWER] }
+        meta: { title: '树', icon: 'tree', roles: [POWER] }
       }
     ]
   },

@@ -39,7 +39,8 @@ export default {
       })
       const first = matched[0]
       if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
+        console.log(first && first.name.trim())
+        matched = [{ path: '/dashboard', meta: { title: process.env.index_name }}].concat(matched)
       }
       this.levelList = matched
     }
@@ -48,14 +49,14 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .app-breadcrumb.el-breadcrumb {
-    display: inline-block;
-    font-size: 14px;
-    line-height: 50px;
-    margin-left: 10px;
-    .no-redirect {
-      color: #97a8be;
-      cursor: text;
-    }
+.app-breadcrumb.el-breadcrumb {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 50px;
+  margin-left: 10px;
+  .no-redirect {
+    color: #97a8be;
+    cursor: text;
   }
+}
 </style>
