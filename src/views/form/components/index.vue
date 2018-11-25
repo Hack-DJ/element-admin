@@ -50,6 +50,14 @@
 <script>
 export default {
   name: 'FormPage',
+  props: {
+    defaultFrom: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       form: {
@@ -62,6 +70,17 @@ export default {
         resource: '',
         desc: ''
       }
+    }
+  },
+  watch: {
+    defaultFrom: {
+      handler(val) {
+        if (Object.keys(val).length > 0) {
+          this.form = val
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {

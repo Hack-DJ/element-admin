@@ -4,6 +4,16 @@ const tagsView = {
     cachedViews: []
   },
   mutations: {
+    ADD_VIEW_CACHE(state, view) {
+      // 为了解决相组件不同路由缓存
+      for (const [i, v] of state.visitedViews.entries()) {
+        if (v.path === view.view.path) {
+          v.cache = view.form
+          state.visitedViews.splice(i, 1, v)
+          break
+        }
+      }
+    },
     ADD_VISITED_VIEW: (state, view) => {
       if (state.visitedViews.some(v => v.path === view.path)) return
       state.visitedViews.push(
@@ -21,6 +31,8 @@ const tagsView = {
 
     DEL_VISITED_VIEW: (state, view) => {
       for (const [i, v] of state.visitedViews.entries()) {
+        // 验证是否有页面缓存
+        // state.pageViewCache.delete(view.name)
         if (v.path === view.path) {
           state.visitedViews.splice(i, 1)
           break
@@ -73,6 +85,9 @@ const tagsView = {
 
   },
   actions: {
+    addViewCache: ({ commit }, data) => {
+      commit('ADD_VIEW_CACHE', data)
+    },
     addView({ dispatch }, view) {
       dispatch('addVisitedView', view)
       dispatch('addCachedView', view)
@@ -155,6 +170,18 @@ const tagsView = {
 
     updateVisitedView({ commit }, view) {
       commit('UPDATE_VISITED_VIEW', view)
+    },
+    getPageCache({ state }, view) {
+      return new Promise(resolve => {
+        let cache = {}
+        for (const v of state.visitedViews) {
+          if (v.path === view.path) {
+            cache = v.cache
+            break
+          }
+        }
+        resolve(cache)
+      })
     }
   }
 }
