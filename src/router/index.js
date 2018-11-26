@@ -53,13 +53,38 @@ export const constantRouterMap = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: process.env.index_name, icon: 'dashboard', noCache: true }
+        meta: {
+          title: process.env.index_name,
+          icon: 'dashboard',
+          noCache: true
+        }
       }
     ]
   }
 ]
 // 需求动态判断权限并通过 addRouters 动态添加的页面。
 export const asyncRouterMap = [
+  {
+    path: '/power',
+    component: Layout,
+    redirect: '/power/svg-icons',
+    name: 'Power',
+    meta: { title: '权限', icon: 'power' },
+    children: [
+      {
+        path: 'svg-icons',
+        name: 'Icons',
+        component: () => import('@/views/power/svg-icons/index'),
+        meta: { title: '图标', icon: 'icon', roles: [POWER] }
+      },
+      {
+        path: 'permission',
+        name: 'Permission',
+        component: () => import('@/views/power/permission/index'),
+        meta: { title: '规则', icon: 'power', roles: [POWER] }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,
@@ -85,6 +110,7 @@ export const asyncRouterMap = [
   {
     path: '/form',
     redirect: '/form/index',
+    name: 'Form',
     component: Layout,
     meta: {
       title: '表单',
@@ -94,7 +120,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'index',
-        name: 'Form',
+        name: 'Form1',
         component: () => import('@/views/form/index'),
         meta: {
           title: 'Form', icon: 'form', roles: [POWER, 'admin2'], noCache: true

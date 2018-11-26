@@ -26,7 +26,7 @@
         </span>
       </el-form-item>
       <transition name="el-zoom-in-top">
-        <el-form-item v-if="verifiShow" prop="verificationcode" class="verifi">
+        <el-form-item v-if="verifyShow" prop="verificationcode" class="verify">
           <span class="svg-container">
             <svg-icon icon-class="verificationcode" />
           </span>
@@ -65,7 +65,7 @@ export default {
         callback()
       }
     }
-    const validateVerifi = (rule, value, callback) => {
+    const validateVerify = (rule, value, callback) => {
       if (!value || value.length !== 6) {
         callback(new Error('验证码错误'))
       } else {
@@ -81,12 +81,12 @@ export default {
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }],
-        verificationcode: [{ required: false, trigger: 'blur', validator: validateVerifi }]
+        verificationcode: [{ required: false, trigger: 'blur', validator: validateVerify }]
       },
       loading: false,
       pwdType: 'password',
       redirect: undefined,
-      verifiShow: false
+      verifyShow: false
     }
   },
   computed: {
@@ -184,7 +184,7 @@ export default {
       cursor: pointer;
       user-select: none;
     }
-    .verifi {
+    .verify {
       .el-input {
         width: 70%;
       }
