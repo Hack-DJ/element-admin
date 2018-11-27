@@ -1,7 +1,8 @@
 import request from '@/utils/request'
 
+const Model = '/power'
 const linkUrl = function(name) {
-  return `/power/${name}`
+  return `${Model}/${name}`
 }
 
 export function getPermission(username, password) {

@@ -52,10 +52,6 @@ export default {
         {
           text: '资源类型',
           value: 'type'
-        },
-        {
-          text: '操作',
-          value: 'set'
         }
       ],
       set: {
