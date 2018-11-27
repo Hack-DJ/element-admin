@@ -6,8 +6,8 @@ import { getToken } from '@/utils/auth'
 
 let BASEURL = process.env.BASE_API
 if (process.env.NODE_ENV === 'development') {
-  BASEURL = 'http://10.154.55.3:8000/ips/a'
-  // BASEURL = 'http://code2012.cn/rapServer/app/mock/18'
+  // BASEURL = 'http://10.154.55.3:8000/ips/a'
+  BASEURL = 'http://code2012.cn/rapServer/app/mock/18'
 }
 // 取消重复请求
 const pending = []
@@ -79,7 +79,6 @@ service.interceptors.response.use(
      * code为非20000是抛错 可结合自己业务进行修改
      */
     const res = response.data
-    console.log(res)
     if (res.ret !== 0) {
       Message({
         message: res.msg,

@@ -27,7 +27,7 @@ const user = {
     GetPermission({ commit }, data) {
       return new Promise((resolve, reject) => {
         getPermission().then(response => {
-          const data = response.body
+          const data = response.data
           // 设置当前记录修改,删除按钮状态
           data.map(item => {
             return childrenBtnState(item)
