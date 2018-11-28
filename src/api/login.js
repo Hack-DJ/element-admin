@@ -19,8 +19,7 @@ export function login(username, password) {
 export function getInfo(token) {
   return request({
     url: linkUrl('info'),
-    method: 'get',
-    params: { token }
+    method: 'post'
   })
 }
 

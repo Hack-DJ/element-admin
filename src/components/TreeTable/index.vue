@@ -1,6 +1,6 @@
 <template>
   <div class="permission">
-    <div class="plan"/>
+    <div class="plan" />
     <el-table :data="formatData" :row-style="showRow" v-bind="$attrs">
       <el-table-column v-if="columns.length===0" width="150">
         <template slot-scope="scope">
@@ -32,6 +32,9 @@
             </span>
             <template v-if="column.value==='icon'">
               <svg-icon :icon-class="scope.row[column.value]" />
+            </template>
+            <template v-else-if="column.switch">
+              <el-switch v-model="scope.row[column.value]" />
             </template>
             <template v-else>
               {{ scope.row[column.value] }}
@@ -68,8 +71,7 @@ export default {
     set: {
       type: Object,
       default: () => { return { edit: false, delete: false } }
-    }
-    ,
+    },
     evalFunc: Function,
     evalArgs:
     Array,
@@ -93,32 +95,27 @@ export default {
       const args = this.evalArgs ? Array.concat([tmp, this.expandAll], this.evalArgs) : [tmp, this.expandAll]
       return func.apply(null, args)
     }
-  }
-  ,
+  },
   methods: {
     showRow: function(row) {
       const show = (row.row.parent ? (row.row.parent._expanded && row.row.parent._show) : true)
       row.row._show = show
       return show ? 'animation:treeTableShow 1s;-webkit-animation:treeTableShow 1s;' : 'display:none;'
-    }
-    ,
+    },
     // 切换下级是否展开
     toggleExpanded: function(trIndex) {
       const record = this.formatData[trIndex]
       record._expanded = !record._expanded
-    }
-    ,
+    },
     // 图标显示
     iconShow(index, record) {
       return (index === 0 && record.children && record.children.length > 0)
-    }
-    ,
+    },
     // 修改数据
     confirmEdit(row) {
       // 弹出修改窗
       row.coding = 123
-    }
-    ,
+    },
     // 删除数据
     confirmDelete(index, row) {
 

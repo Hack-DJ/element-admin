@@ -2,6 +2,7 @@ import { getPermission } from '@/api/power'
 
 const childrenBtnState = function(item) {
   const tmp = { edit: true, delete: true }
+  item.type = item.type === 0 ? '菜单' : '按钮'
   Object.assign(item, tmp)
   if (item.children && typeof item.children === 'object') {
     item.children.map(children => {

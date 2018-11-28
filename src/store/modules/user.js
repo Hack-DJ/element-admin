@@ -4,8 +4,8 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 const user = {
   state: {
     token: getToken(),
-    name: '',
-    avatar: '',
+    userInfo: {},
+    menuList: [],
     roles: []
   },
 
@@ -13,14 +13,14 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, name) => {
-      state.name = name
-    },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
+    SET_USERINFO: (state, userInfo) => {
+      state.userInfo = userInfo
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_MENULIST: (state, menulist) => {
+      state.menuList = menulist
     }
   },
 
@@ -45,13 +45,13 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo(state.token).then(response => {
           const data = response.data
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
+          // 验证是否有可访问菜单
+          if (data.menuList && data.menuList.length > 0) {
+            commit('SET_MENULIST', data.menuList)
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
+          commit('SET_USERINFO', data.user)
           resolve(response)
         }).catch(error => {
           reject(error)

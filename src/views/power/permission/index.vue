@@ -4,11 +4,11 @@
       <el-button type="primary" icon="el-icon-search" @click="addForm=!addForm">新增规则</el-button>
     </div>
     <tree-table :data="permissionList" :set="set" :columns="columns" border class="permission-tree" />
-
     <el-dialog :visible.sync="addForm" title="新增规则">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="规则名" prop="title">
-          <el-input v-model="ruleForm.title" />
+        <el-form-item label="规则类型" prop="type">
+          <el-radio v-model="ruleForm.type" label="1">菜单</el-radio>
+          <el-radio v-model="ruleForm.type" label="2">按钮</el-radio>
         </el-form-item>
         <el-form-item label="规则名" prop="title">
           <el-input v-model="ruleForm.title" />
@@ -26,20 +26,7 @@
           <el-switch v-model="ruleForm.menu" />
         </el-form-item>
         <el-form-item label="排序" prop="sort">
-          <el-input v-model="ruleForm.sort" />
-        </el-form-item>
-        <el-form-item label="所属权限" prop="parentMenu">
-          <el-select v-model="ruleForm.parentMenu" clearable placeholder="请选择">
-            <el-option
-              v-for="item in parentMenuList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="资源类型" prop="type">
-          <el-radio v-model="ruleForm.type" label="1">菜单</el-radio>
-          <el-radio v-model="ruleForm.type" label="2">按钮</el-radio>
+          <el-input v-model.number="ruleForm.sort" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
@@ -85,8 +72,10 @@ export default {
           value: 'icon'
         },
         {
-          text: '菜单显示',
-          value: 'menu'
+          text: '菜单',
+          switch: true,
+          value: 'menu',
+          width: 60
         },
         {
           text: '排序',
@@ -97,7 +86,7 @@ export default {
           value: 'parentMenu'
         },
         {
-          text: '资源类型',
+          text: '规则类型',
           value: 'type'
         }
       ],
@@ -117,26 +106,20 @@ export default {
       },
       rules: {
         title: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
+          { required: true, message: '请输入规则名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         coding: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
+          { required: true, message: '请输入规则编码', trigger: 'change' }
         ],
         icon: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          { required: false, message: '请选择菜单图标', trigger: 'change' }
         ],
         controller: [
-          { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-        ],
-        menu: [
-          { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+          { required: true, message: '请输入控制器', trigger: 'change' }
         ],
         sort: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
-        parentMenu: [
-          { required: true, message: '请填写活动形式', trigger: 'blur' }
+          { type: 'number', message: '请输入正确排序号,必须为数字', trigger: 'change' }
         ]
       }
     }

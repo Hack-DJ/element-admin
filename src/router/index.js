@@ -11,7 +11,6 @@ import Layout from '../views/layout/Layout'
 
 /* modules */
 
-const POWER = 'admin'
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -75,13 +74,13 @@ export const asyncRouterMap = [
         path: 'svg-icons',
         name: 'Icons',
         component: () => import('@/views/power/svg-icons/index'),
-        meta: { title: '图标', icon: 'icon', roles: [POWER] }
+        meta: { title: '图标', icon: 'icon' }
       },
       {
         path: 'permission',
         name: 'Permission',
         component: () => import('@/views/power/permission/index'),
-        meta: { title: '规则', icon: 'power', roles: [POWER] }
+        meta: { title: '规则', icon: 'power' }
       }
     ]
   },
@@ -91,19 +90,19 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: '案例', icon: 'example', roles: [POWER] },
+    meta: { title: '案例', icon: 'example' },
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
-        meta: { title: '表格', icon: 'table', roles: [POWER] }
+        meta: { title: '表格', icon: 'table' }
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: '树', icon: 'tree', roles: [POWER] }
+        meta: { title: '树', icon: 'tree' }
       }
     ]
   },
@@ -116,7 +115,7 @@ export const asyncRouterMap = [
     meta: {
       title: '表单',
       icon: 'nested',
-      roles: [POWER], noCache: true
+      noCache: true
     },
     children: [
       {
@@ -124,7 +123,7 @@ export const asyncRouterMap = [
         name: 'Form1',
         component: () => import('@/views/form/index'),
         meta: {
-          title: 'Form', icon: 'form', roles: [POWER, 'admin2'], noCache: true
+          title: 'Form', icon: 'form', noCache: true
         }
       },
       {
@@ -133,8 +132,7 @@ export const asyncRouterMap = [
         component: () => import('@/views/form/index2'),
         meta: {
           title: 'Form2',
-          icon: 'form',
-          roles: [POWER, 'admin2']
+          icon: 'form'
         }
       }
     ]
@@ -142,20 +140,22 @@ export const asyncRouterMap = [
 
   {
     path: '/nested',
-    component: Layout,
+    component:
+    Layout,
     redirect: '/nested/menu1',
     name: 'Nested',
     meta: {
       title: 'Nested',
-      icon: 'nested',
-      roles: [POWER]
+      icon:
+        'nested'
+
     },
     children: [
       {
         path: 'menu1',
         component: () => import('@/views/nested/menu1/index'), // Parent router-view
         name: 'Menu1',
-        meta: { title: 'Menu1', roles: [POWER] },
+        meta: { title: 'Menu1' },
         children: [
           {
             path: 'menu1-1',
@@ -195,33 +195,37 @@ export const asyncRouterMap = [
         path: 'menu2',
         name: 'Menu2',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2', roles: [POWER] }
+        meta: { title: 'menu2' }
       }
     ]
   },
 
   {
     path: 'external-link',
-    component: Layout,
+    component:
+    Layout,
     name: 'Link',
-    meta: { title: 'Link', icon: 'example', roles: [POWER, 'admin2'] },
+    meta: {
+      title: 'Link', icon: 'example'
+    },
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link1', icon: 'link', roles: [POWER] }
+        meta: { title: 'External Link1', icon: 'link' }
       },
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: {
           title: 'External Link2',
-          icon: 'link',
-          roles: [POWER, 'admin2']
+          icon: 'link'
         }
       }
     ]
   },
 
-  { path: '*', redirect: '/404', hidden: true }
+  {
+    path: '*', redirect: '/404', hidden: true
+  }
 ]
 
 export default new Router({
