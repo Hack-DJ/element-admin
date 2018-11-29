@@ -49,7 +49,7 @@ const user = {
           if (data.menuList && data.menuList.length > 0) {
             commit('SET_MENULIST', data.menuList)
           } else {
-            reject('getInfo: roles must be a non-null array !')
+            reject('getInfo: 没有菜单列表 !')
           }
           commit('SET_USERINFO', data.user)
           resolve(response)

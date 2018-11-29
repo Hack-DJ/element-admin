@@ -44,7 +44,7 @@ export const constantRouterMap = [
   },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
   {
-    path: '/',
+    path: '',
     component: Layout,
     redirect: 'dashboard',
     children: [
@@ -93,10 +93,10 @@ export const asyncRouterMap = [
     meta: { title: '案例', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
+        path: 'article',
+        name: 'ArticleList',
         component: () => import('@/views/table/index'),
-        meta: { title: '表格', icon: 'table' }
+        meta: { title: '文章列表', icon: 'table' }
       },
       {
         path: 'tree',
@@ -134,6 +134,37 @@ export const asyncRouterMap = [
           title: 'Form2',
           icon: 'form'
         }
+      }
+    ]
+  },
+
+  {
+    path: '/charts',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'Charts',
+    meta: {
+      title: '图表',
+      icon: 'chart'
+    },
+    children: [
+      {
+        path: 'keyboard',
+        component: () => import('@/views/charts/keyboard'),
+        name: 'KeyboardChart',
+        meta: { title: '键盘图', noCache: true }
+      },
+      {
+        path: 'line',
+        component: () => import('@/views/charts/line'),
+        name: 'LineChart',
+        meta: { title: '折线图', noCache: true }
+      },
+      {
+        path: 'mixchart',
+        component: () => import('@/views/charts/mixChart'),
+        name: 'MixChart',
+        meta: { title: '混合图表', noCache: true }
       }
     ]
   },

@@ -6,14 +6,14 @@ import store from '../store'
 
 let BASEURL = process.env.BASE_API
 if (process.env.NODE_ENV === 'development') {
-  BASEURL = 'http://10.154.55.3:8000/ips/a'
+  // BASEURL = 'http://10.154.55.3:8000/ips/a'
+  BASEURL = 'http://teacher.frp.heikuai.net:5555/ips/a'
   // BASEURL = 'http://code2012.cn/rapServer/app/mock/18'
 }
 // 创建axios实例
 axios.defaults.withCredentials = true
 
 const service = axios.create({
-  // baseURL: process.env.BASE_API, // api 的 base_url
   baseURL: BASEURL, // api 的 base_url
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded'
@@ -84,11 +84,6 @@ service.interceptors.response.use(
      */
     const res = response.data
     if (res.ret !== 0) {
-      Message({
-        message: res.msg,
-        type: 'error',
-        duration: 5 * 1000
-      })
       // -1重新登录;
       if (res.ret === -1) {
         MessageBox.confirm(
@@ -103,6 +98,12 @@ service.interceptors.response.use(
           store.dispatch('FedLogOut').then(() => {
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
+        })
+      } else {
+        Message({
+          message: res.msg,
+          type: 'error',
+          duration: 5 * 1000
         })
       }
       return Promise.reject('error')
