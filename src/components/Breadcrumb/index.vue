@@ -39,7 +39,6 @@ export default {
       })
       const first = matched[0]
       if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
-        console.log(first && first.name.trim())
         matched = [{ path: '/dashboard', meta: { title: process.env.index_name }}].concat(matched)
       }
       this.levelList = matched

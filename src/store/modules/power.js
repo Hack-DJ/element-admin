@@ -1,14 +1,9 @@
-import { getPermission } from '@/api/power'
+import { getPermission, savePermission } from '@/api/power'
 
 const childrenBtnState = function(item) {
   const tmp = { edit: true, delete: true }
   item.type = item.type === 0 ? '菜单' : '按钮'
   Object.assign(item, tmp)
-  if (item.children && typeof item.children === 'object') {
-    item.children.map(children => {
-      return childrenBtnState(children)
-    })
-  }
   return item
 }
 
@@ -24,16 +19,45 @@ const user = {
   },
 
   actions: {
-    // 登录
+    // 获取规则列表
     GetPermission({ commit }, data) {
       return new Promise((resolve, reject) => {
         getPermission().then(response => {
-          const data = response.data
-          // 设置当前记录修改,删除按钮状态
+          const data = response.data.list
+          // 格式化当前数据,并设置修改,删除按钮
           data.map(item => {
-            return childrenBtnState(item)
+            return childrenBtnState(item, data)
           })
 
+          commit('SET_PERMISSION', data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    // 保存菜单
+    SavePermission({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        savePermission(data).then(response => {
+
+          // 格式化当前数据,并设置修改,删除按钮
+          const data = childrenBtnState(response.data)
+          /**
+           * 判断当前数据是否顶级菜单
+           * 顶级菜单根据排序查找插入位置
+           */
+
+          /**
+           * 次级菜单,优先记录父级菜单位置,再找同级菜单
+           * ,根据同级菜单排序查找插入位置,
+           * 如果没有同级菜单则插入父级菜单后
+           */
+
+          // 遍历数据插入
+          state.permissionList.forEach(item => {
+
+          })
           commit('SET_PERMISSION', data)
           resolve()
         }).catch(error => {

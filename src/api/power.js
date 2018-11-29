@@ -1,14 +1,22 @@
 import request from '@/utils/request'
 
-const Model = '/power'
+const Model = '/sys/menu'
 const linkUrl = function(name) {
   return `${Model}/${name}`
 }
 
-export function getPermission(username, password) {
+export function getPermission() {
   return request({
-    url: linkUrl('permission'),
+    url: linkUrl('list'),
     method: 'get',
     data: {}
+  })
+}
+
+export function savePermission(form) {
+  return request({
+    url: linkUrl('save'),
+    method: 'post',
+    data: form
   })
 }

@@ -1,7 +1,6 @@
 <template>
   <div class="permission">
-    <div class="plan" />
-    <el-table :data="formatData" :row-style="showRow" v-bind="$attrs">
+    <el-table v-loading="listLoading" :data="formatData" :row-style="showRow" v-bind="$attrs">
       <el-table-column v-if="columns.length===0" width="150">
         <template slot-scope="scope">
           <span v-for="space in scope.row._level" :key="space" class="ms-tree-space" />
@@ -34,7 +33,7 @@
               <svg-icon :icon-class="scope.row[column.value]" />
             </template>
             <template v-else-if="column.switch">
-              <el-switch v-model="scope.row[column.value]" />
+              <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,$event)" />
             </template>
             <template v-else>
               {{ scope.row[column.value] }}
@@ -54,7 +53,7 @@
 </template>
 
 <script>
-import treeToArray from './eval'
+import treeToArray from './dj-eval'
 
 export default {
   name: 'TreeTable',
@@ -68,19 +67,22 @@ export default {
       type: Array,
       default: () => []
     },
+    evalFunc: Function,
+    evalArgs:
+    Array,
+    expandAll: {
+      type: Boolean,
+      default:
+        false
+    },
     set: {
       type: Object,
       default: () => { return { edit: false, delete: false } }
     },
-    evalFunc: Function,
-    evalArgs:
-    Array,
-    expandAll:
-      {
-        type: Boolean,
-        default:
-          false
-      }
+    listLoading: {
+      type: Boolean,
+      default: true
+    }
   },
   computed: {
     // 格式化数据源
@@ -97,8 +99,14 @@ export default {
     }
   },
   methods: {
+    switchShow(val) {
+      return parseInt(val) === 1
+    },
+    switchInput(row, val) {
+      row.isShow = val ? 1 : 0
+    },
     showRow: function(row) {
-      const show = (row.row.parent ? (row.row.parent._expanded && row.row.parent._show) : true)
+      const show = (parseInt(row.row.parentId) !== 1 ? (row.row.parent._expanded && row.row.parent._show) : true)
       row.row._show = show
       return show ? 'animation:treeTableShow 1s;-webkit-animation:treeTableShow 1s;' : 'display:none;'
     },
@@ -114,7 +122,7 @@ export default {
     // 修改数据
     confirmEdit(row) {
       // 弹出修改窗
-      row.coding = 123
+      this.$emit('edit', row)
     },
     // 删除数据
     confirmDelete(index, row) {
