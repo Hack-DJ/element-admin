@@ -62,5 +62,10 @@ div:focus {
 }
 
 .app-container {
-  padding: $marginTopMedium;
+  padding: $basePadding;
+}
+
+// 弹窗底部按钮
+.dialog-foot-button-group {
+  margin-top: $marginTopMedium;
 }

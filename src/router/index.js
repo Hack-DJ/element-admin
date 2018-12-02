@@ -10,6 +10,11 @@ Vue.use(Router)
 import Layout from '../views/layout/Layout'
 
 /* modules */
+import System from './modules/system'
+import DataSource from './modules/dataSource'
+import Stored from './modules/storeData'
+import Reptile from './modules/reptile'
+import Select from './modules/select'
 
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -63,111 +68,94 @@ export const constantRouterMap = [
 ]
 // 需求动态判断权限并通过 addRouters 动态添加的页面。
 export const asyncRouterMap = [
-  {
-    path: '/power',
-    component: Layout,
-    redirect: '/power/svg-icons',
-    name: 'Power',
-    meta: { title: '系统设置', icon: 'power' },
-    children: [
-      {
-        path: 'svg-icons',
-        name: 'Icons',
-        component: () => import('@/views/power/svg-icons/index'),
-        meta: { title: '图标', icon: 'icon' }
-      },
-      {
-        path: 'permission',
-        name: 'Permission',
-        component: () => import('@/views/power/permission/index'),
-        meta: { title: '菜单', icon: 'power' }
-      }
-    ]
-  },
+  System,
+  DataSource,
+  Stored,
+  Reptile,
+  Select,
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: '咨询', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'article',
+  //       name: 'ArticleList',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: '文章列表', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: '树', icon: 'tree' }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: '咨询', icon: 'example' },
-    children: [
-      {
-        path: 'article',
-        name: 'ArticleList',
-        component: () => import('@/views/table/index'),
-        meta: { title: '文章列表', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: '树', icon: 'tree' }
-      }
-    ]
-  },
+  // {
+  //   path: '/form',
+  //   redirect: '/form/index',
+  //   name: 'Form',
+  //   component: Layout,
+  //   meta: {
+  //     title: '表单',
+  //     icon: 'nested',
+  //     noCache: true
+  //   },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Form1',
+  //       component: () => import('@/views/form/index'),
+  //       meta: {
+  //         title: 'Form', icon: 'form', noCache: true
+  //       }
+  //     },
+  //     {
+  //       path: 'index2',
+  //       name: 'Form2',
+  //       component: () => import('@/views/form/index2'),
+  //       meta: {
+  //         title: 'Form2',
+  //         icon: 'form'
+  //       }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/form',
-    redirect: '/form/index',
-    name: 'Form',
-    component: Layout,
-    meta: {
-      title: '表单',
-      icon: 'nested',
-      noCache: true
-    },
-    children: [
-      {
-        path: 'index',
-        name: 'Form1',
-        component: () => import('@/views/form/index'),
-        meta: {
-          title: 'Form', icon: 'form', noCache: true
-        }
-      },
-      {
-        path: 'index2',
-        name: 'Form2',
-        component: () => import('@/views/form/index2'),
-        meta: {
-          title: 'Form2',
-          icon: 'form'
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/charts',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'Charts',
-    meta: {
-      title: '图表',
-      icon: 'chart'
-    },
-    children: [
-      {
-        path: 'keyboard',
-        component: () => import('@/views/charts/keyboard'),
-        name: 'KeyboardChart',
-        meta: { title: '键盘图', noCache: true }
-      },
-      {
-        path: 'line',
-        component: () => import('@/views/charts/line'),
-        name: 'LineChart',
-        meta: { title: '折线图', noCache: true }
-      },
-      {
-        path: 'mixchart',
-        component: () => import('@/views/charts/mixChart'),
-        name: 'MixChart',
-        meta: { title: '混合图表', noCache: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/charts',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: 'Charts',
+  //   meta: {
+  //     title: '图表',
+  //     icon: 'chart'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'keyboard',
+  //       component: () => import('@/views/charts/keyboard'),
+  //       name: 'KeyboardChart',
+  //       meta: { title: '键盘图', noCache: true }
+  //     },
+  //     {
+  //       path: 'line',
+  //       component: () => import('@/views/charts/line'),
+  //       name: 'LineChart',
+  //       meta: { title: '折线图', noCache: true }
+  //     },
+  //     {
+  //       path: 'mixchart',
+  //       component: () => import('@/views/charts/mixChart'),
+  //       name: 'MixChart',
+  //       meta: { title: '混合图表', noCache: true }
+  //     }
+  //   ]
+  // },
 
   // {
   //   path: '/nested',
@@ -230,29 +218,6 @@ export const asyncRouterMap = [
   //     }
   //   ]
   // },
-
-  {
-    path: 'external-link',
-    component:
-    Layout,
-    name: 'Link',
-    meta: {
-      title: '外链', icon: 'example'
-    },
-    children: [
-      {
-        path: 'https://github.com/',
-        meta: { title: 'github', icon: 'link' }
-      },
-      {
-        path: 'https://dev.tencent.com',
-        meta: {
-          title: 'tencent',
-          icon: 'link'
-        }
-      }
-    ]
-  },
 
   {
     path: '*', redirect: '/404', hidden: true

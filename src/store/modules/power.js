@@ -6,7 +6,6 @@ const childrenBtnState = function(item) {
   Object.assign(item, tmp)
   return item
 }
-
 const user = {
   state: {
     permissionList: []
@@ -28,7 +27,6 @@ const user = {
           data.map(item => {
             return childrenBtnState(item, data)
           })
-
           commit('SET_PERMISSION', data)
           resolve()
         }).catch(error => {
@@ -36,11 +34,11 @@ const user = {
         })
       })
     },
+
     // 保存菜单
     SavePermission({ commit, state }, data) {
       return new Promise((resolve, reject) => {
         savePermission(data).then(response => {
-
           // 格式化当前数据,并设置修改,删除按钮
           const data = childrenBtnState(response.data)
           /**
@@ -65,6 +63,7 @@ const user = {
         })
       })
     }
+
   }
 }
 

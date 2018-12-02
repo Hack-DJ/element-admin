@@ -1,15 +1,8 @@
 <template>
   <div class="app-container permission-container">
-    <div class="plan">
-      <el-button type="primary" icon="el-icon-search" @click="addForm">新增规则</el-button>
-      <div class="table-cloumns">
-        <el-checkbox-group v-model="optionSelect">
-          <el-checkbox-button v-for="item in optionList" :label="item" :key="item.value">{{ item.text }}</el-checkbox-button>
-        </el-checkbox-group>
-      </div>
-    </div>
+    <operation-panel :option-list="optionList" add-name="新增菜单" @addForm="addForm" @checkChange="checkChange" />
     <tree-table :data="permissionList" :list-loading="listLoading" :set="set" :columns="cloumnsList" border class="permission-tree" @edit="editForm" />
-    <el-dialog :visible.sync="formShow" :title="formTitle">
+    <el-dialog :visible.sync="formDialog" :title="formTitle">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
         <el-form-item label="类型" prop="type">
           <el-radio v-model="ruleForm.type" label="1">菜单</el-radio>
@@ -56,7 +49,7 @@
     </el-dialog>
     <el-dialog :visible.sync="iconDialog" title="请选择图标">
       <div class="icons-wrapper">
-        <div v-for="item of iconsMap" :key="item" class="icon-item" @click="handleClipboard(item)">
+        <div v-for="item of iconsMap" :key="item" class="icon-item" @click="iconClick(item)">
           <svg-icon :icon-class="item" class-name="disabled" />
           <span>{{ item }}</span>
         </div>
@@ -70,7 +63,7 @@
         class="filter-tree"
         @node-click="parentMenuClick"
       />
-      <div class="button-group">
+      <div class="dialog-foot-button-group">
         <el-button type="primary" @click="parentMenuConfirm">确定</el-button>
         <el-button @click="parentMenuClear">设置为一级菜单</el-button>
       </div>
@@ -80,14 +73,15 @@
 
 <script>
 import treeTable from '@/components/TreeTable'
+import OperationPanel from '@/components/Table/OperationPanel'
 import icons from '../requireIcons'
-import groupBy from 'lodash/groupBy'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'Permission',
   components: {
-    treeTable
+    treeTable,
+    OperationPanel
   },
   data() {
     return {
@@ -102,7 +96,7 @@ export default {
       filterText: '',
       listLoading: true,
       isEdit: false,
-      formShow: false,
+      formDialog: false,
       columns: [
         {
           text: '名称',
@@ -174,7 +168,9 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'permissionList'
+      'permissionList',
+      'permissionIdKey',
+      'generationTree'
     ]),
     cloumnsList() {
       return this.columns.concat(this.optionSelect)
@@ -184,24 +180,6 @@ export default {
     },
     formTitle() {
       return `${this.isEdit ? '修改' : '新增'}菜单`
-    },
-    generationTree() {
-      const children = groupBy(this.permissionList, 'parentId')
-      for (const index in this.permissionIdKey) {
-        const row = this.permissionIdKey[index]
-        if (children[index]) {
-          row.children = children[index]
-        }
-      }
-      return children[1]
-    },
-    permissionIdKey() {
-      const id = {}
-      this.permissionList.map(row => {
-        const index = row.id
-        id[index] = row
-      })
-      return id
     },
     permissionIdToName() {
       const tmp = this.permissionIdKey[this.ruleForm.parentId]
@@ -223,7 +201,7 @@ export default {
     },
     addForm() {
       this.isEdit = false
-      this.formShow = true
+      this.formDialog = true
       this.$nextTick(() => {
         this.resetForm('ruleForm')
       })
@@ -231,7 +209,7 @@ export default {
     editForm(data) {
       this.ruleForm = data
       this.isEdit = true
-      this.formShow = true
+      this.formDialog = true
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -246,7 +224,8 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },
-    handleClipboard(text) {
+
+    iconClick(text) {
       this.iconDialog = false
       this.ruleForm.icon = text
     },
@@ -260,6 +239,9 @@ export default {
     parentMenuClear() {
       this.ruleForm.parentId = null
       this.parentTempData = {}
+    },
+    checkChange(select) {
+      this.optionSelect = select
     }
   }
 }
@@ -268,13 +250,15 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import 'src/styles/var';
 
-.table-cloumns {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.permission-tree {
-  margin-top: $marginTopMedium;
+.plan {
+  margin-bottom: $marginBottomMedium;
+  .table-cloumns {
+    display: inline-block;
+    vertical-align: middle;
+    @media screen and (max-width: 397px) {
+      margin-top: 10px;
+    }
+  }
 }
 
 .icons-wrapper {

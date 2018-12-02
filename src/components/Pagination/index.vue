@@ -4,11 +4,11 @@
       :background="background"
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"
-      :layout="layout"
+      :layout="layoutShow"
       :total="total"
       v-bind="$attrs"
       @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"/>
+      @current-change="handleCurrentChange" />
   </div>
 </template>
 
@@ -53,7 +53,15 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      width: document.documentElement.clientWidth
+    }
+  },
   computed: {
+    layoutShow() {
+      return this.width < 768 ? 'pager' : this.layout
+    },
     currentPage: {
       get() {
         return this.page
@@ -93,6 +101,7 @@ export default {
   background: #fff;
   padding: 32px 16px;
 }
+
 .pagination-container.hidden {
   display: none;
 }

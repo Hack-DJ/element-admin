@@ -20,3 +20,27 @@ export function savePermission(form) {
     data: form
   })
 }
+
+export function getRoleList(params) {
+  return request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/sys/menu/role',
+    method: 'get',
+    params
+  })
+}
+
+export function getUserList(params) {
+  return request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/sys/menu/userlist',
+    method: 'get',
+    params
+  })
+}
+
+export function getDictList(params) {
+  return request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/sys/dict/list',
+    method: 'get',
+    params
+  })
+}

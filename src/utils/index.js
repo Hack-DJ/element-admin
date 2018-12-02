@@ -93,6 +93,7 @@ export function getQueryObject(url) {
 export function getByteLen(val) {
   let len = 0
   for (let i = 0; i < val.length; i++) {
+    /*eslint no-control-regex: 0*/
     if (val[i].match(/[^\x00-\xff]/gi) != null) {
       len += 1
     } else {

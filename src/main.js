@@ -19,6 +19,12 @@ import '@/permission' // permission control
 
 import * as filters from './filters' // global filters
 
+import VueLodash from 'vue-lodash'
+
+// const options = { name: 'lodash' } // customize the way you want to call it
+
+Vue.use(VueLodash) // options is optional
+
 Vue.use(ElementUI)
 
 // register global utility filters.

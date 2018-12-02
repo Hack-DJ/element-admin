@@ -31,6 +31,18 @@ export function validateAlphabets(str) {
   return reg.test(str)
 }
 
-export function validate() {
+/* 手机号*/
+export function validatePhone(val) {
+  return /^[0-9]{11}$/.test(val)
+}
 
+export function validateEmpty(data) {
+  if (!data) return false
+  if (typeof data === 'string') {
+    return data !== '' && data !== null
+  } else if (typeof data === 'object') {
+    return Object.keys(data).length > 0
+  } else {
+    return data.length > 0
+  }
 }
