@@ -1,11 +1,10 @@
 <template>
   <div class="table-list">
-
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column v-for="column in columns" :key="column.value" :label="column.text" :width="column.width">
         <template slot-scope="scope">
           <template v-if="column.switch">
-            <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,$event)" />
+            <el-switch :value="switchShow(scope.row[column.value])" disabled @input="switchInput(scope.row,column.switchKey,$event)" />
           </template>
           <span v-else> {{ scope.row[column.value] }}</span>
         </template>
@@ -47,8 +46,8 @@ export default {
     switchShow(val) {
       return parseInt(val) === 1
     },
-    switchInput(row, val) {
-      row.state = val ? 1 : 0
+    switchInput(row, key, val) {
+      row[key] = val ? 1 : 0
     },
     confirmConfig(index) {
       this.$emit('config', index)

@@ -53,9 +53,7 @@ const user = {
            */
 
           // 遍历数据插入
-          state.permissionList.forEach(item => {
-
-          })
+          state.permissionList.forEach(item => {})
           commit('SET_PERMISSION', data)
           resolve()
         }).catch(error => {

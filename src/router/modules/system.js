@@ -3,9 +3,9 @@ import Layout from '../../views/layout/Layout'
 
 export default {
   path: '/power',
+  name: 'Power',
   component: Layout,
   redirect: '/power/permission',
-  name: 'Power',
   meta: { title: '系统管理', icon: 'system' },
   children: [
     {

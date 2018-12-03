@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="formDialog" :title="formTitle" @close="formDialogHide">
+  <el-dialog :visible="show" :title="formTitle" @close="formDialogHide">
     <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
       <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
         <template v-if="item.type==='radio'">
@@ -66,15 +66,11 @@ export default {
   },
   data() {
     return {
-      formDialog: this.show,
       ruleForm: {}
     }
   },
   computed: {},
   watch: {
-    show(val, oldVal) {
-      if (val !== oldVal) this.formDialog = val
-    },
     formData: {
       handler(val) {
         this.ruleForm = this._.cloneDeep(val)
@@ -85,7 +81,7 @@ export default {
   },
   methods: {
     formDialogHide() {
-      this.$emit('update:show', this.formDialog)
+      this.$emit('update:show', false)
     },
     switchShow(value) {
       return !!parseInt(value)

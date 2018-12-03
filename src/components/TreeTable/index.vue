@@ -33,7 +33,7 @@
               <svg-icon :icon-class="scope.row[column.value]" />
             </template>
             <template v-else-if="column.switch">
-              <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,$event)" />
+              <el-switch :value="switchShow(scope.row[column.value])" disabled @input="switchInput(scope.row,$event)" />
             </template>
             <template v-else>
               {{ scope.row[column.value] }}

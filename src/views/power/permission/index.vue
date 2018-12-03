@@ -1,7 +1,8 @@
 <template>
   <div class="app-container permission-container">
-    <operation-panel :option-list="optionList" add-name="新增菜单" @addForm="addForm" @checkChange="checkChange" />
+    <operation-panel :option-list="optionList" :option-select.sync="optionSelect" add-name="新增菜单" @addForm="addForm" />
     <tree-table :data="permissionList" :list-loading="listLoading" :set="set" :columns="cloumnsList" border class="permission-tree" @edit="editForm" />
+    <dialog-icon :show.sync="iconDialog" :icon.sync="ruleForm.icon" />
     <el-dialog :visible.sync="formDialog" :title="formTitle">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
         <el-form-item label="类型" prop="type">
@@ -10,6 +11,7 @@
         </el-form-item>
         <el-form-item label="上级菜单" prop="parentId">
           <el-input v-model="permissionIdToName" clearable readonly placeholder="空为一级菜单">
+            <!--<el-input :value="ruleForm.parentName " clearable readonly placeholder="空为一级菜单">-->
             <el-button slot="append" icon="el-icon-search" @click="parentDialog=true" />
           </el-input>
         </el-form-item>
@@ -47,14 +49,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog :visible.sync="iconDialog" title="请选择图标">
-      <div class="icons-wrapper">
-        <div v-for="item of iconsMap" :key="item" class="icon-item" @click="iconClick(item)">
-          <svg-icon :icon-class="item" class-name="disabled" />
-          <span>{{ item }}</span>
-        </div>
-      </div>
-    </el-dialog>
     <el-dialog :visible.sync="parentDialog" title="请选中上级菜单">
       <el-tree
         ref="tree2"
@@ -73,30 +67,56 @@
 
 <script>
 import treeTable from '@/components/TreeTable'
+import { DialogIcon } from '@/components/Dialog'
+
 import OperationPanel from '@/components/Table/OperationPanel'
-import icons from '../requireIcons'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'Permission',
   components: {
     treeTable,
-    OperationPanel
+    OperationPanel,
+    DialogIcon
   },
   data() {
     return {
-      iconsMap: icons,
+      // icon弹窗
       iconDialog: false,
+      // 菜单父级树弹窗
       parentDialog: false,
       defaultProps: {
         children: 'children',
         label: 'name'
       },
       parentTempData: {},
-      filterText: '',
-      listLoading: true,
+      // 添加弹窗
       isEdit: false,
       formDialog: false,
+      ruleForm: {
+        id: '',
+        type: '1',
+        parentId: '',
+        parentName: '',
+        name: '',
+        href: '',
+        icon: '',
+        sort: 500,
+        isShow: 1,
+        permission: '',
+        remarks: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: '请输入菜单名称', trigger: 'blur' }
+        ],
+        sort: [
+          { required: false, type: 'number', message: '请输入数字值', trigger: 'blur' }
+        ]
+      },
+
+      // table列表
+      listLoading: true,
       columns: [
         {
           text: '名称',
@@ -123,6 +143,11 @@ export default {
           value: 'type'
         }
       ],
+      set: {
+        edit: true,
+        delete: true
+      },
+      // table 可选择展示栏
       optionList: [
         {
           text: '排序',
@@ -138,32 +163,7 @@ export default {
           value: 'permission'
         }
       ],
-      optionSelect: [],
-      set: {
-        edit: true,
-        delete: true
-      },
-      ruleForm: {
-        type: '1',
-        parentId: '',
-        name: '',
-        href: '',
-        icon: '',
-        sort: null,
-        isShow: 1,
-        permission: '',
-        controller: '',
-        remarks: ''
-      },
-      rules: {
-        name: [
-          { required: true, message: '请输入菜单名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        sort: [
-          { required: false, type: 'number', message: '请输入数字值', trigger: 'blur' }
-        ]
-      }
+      optionSelect: []
     }
   },
   computed: {
@@ -183,25 +183,26 @@ export default {
     },
     permissionIdToName() {
       const tmp = this.permissionIdKey[this.ruleForm.parentId]
-      return tmp ? this.permissionIdKey[this.ruleForm.parentId].name : ''
+      return tmp ? tmp.name : ''
     }
   },
-  mounted() {
-    this.getPermission()
+  created() {
+    this.getList()
   },
   methods: {
-    switchInput(val) {
-      this.ruleForm.isShow = val ? 1 : 0
-    },
-    getPermission() {
+    // 获取列表
+    getList() {
       this.listLoading = true
       this.$store.dispatch('GetPermission').then(() => {
         this.listLoading = false
       })
     },
+
+    // 新增弹窗
     addForm() {
       this.isEdit = false
       this.formDialog = true
+      // 执行一次表单清空操作
       this.$nextTick(() => {
         this.resetForm('ruleForm')
       })
@@ -211,38 +212,40 @@ export default {
       this.isEdit = true
       this.formDialog = true
     },
+    switchInput(val) {
+      this.ruleForm.isShow = val ? 1 : 0
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
+          // 格式化存储数据
+          const parent = {
+            'parent.id': this.ruleForm.parentId,
+            'parent.name': this.ruleForm.parentName
+          }
+          this.$store.dispatch('SavePermission', Object.assign(this.ruleForm, parent)).then(res => {
+            console.log(res)
+          })
         }
       })
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },
-
-    iconClick(text) {
-      this.iconDialog = false
-      this.ruleForm.icon = text
-    },
+    // 父树弹窗
     parentMenuClick(data) {
       this.parentTempData = data
     },
     parentMenuConfirm() {
       this.parentDialog = false
       this.ruleForm.parentId = this.parentTempData.id
+      this.ruleForm.parentName = this.parentTempData.name
     },
     parentMenuClear() {
       this.ruleForm.parentId = null
       this.parentTempData = {}
-    },
-    checkChange(select) {
-      this.optionSelect = select
     }
+
   }
 }
 </script>
@@ -260,31 +263,4 @@ export default {
     }
   }
 }
-
-.icons-wrapper {
-  margin: 0 auto;
-}
-
-.icon-item {
-  display: inline-block;
-  margin: 20px;
-  height: 80px;
-  text-align: center;
-  min-width: 50px;
-  width: 15%;
-  font-size: 30px;
-  color: #24292e;
-  cursor: pointer;
-}
-
-span {
-  display: block;
-  font-size: 24px;
-  margin-top: 10px;
-}
-
-.disabled {
-  pointer-events: none;
-}
-
 </style>

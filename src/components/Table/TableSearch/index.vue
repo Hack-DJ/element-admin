@@ -1,10 +1,10 @@
 <template>
   <div :class="{'search-fold':searchFold}" class="table-search">
     <el-form label-width="100px">
-      <div :class="{'fold':searchFold}" class="search-item">
+      <div :class="{'fold':searchFold || !searchFoldShow}" class="search-item">
         <template v-for="(row, index) in searchList">
           <el-row v-if="index===0 || !searchFold" :key="index">
-            <el-col v-for="(col,key) in row" :xs="24" :sm="6" :key="index+'-'+key">
+            <el-col v-for="col in row" :xs="24" :sm="6" :key="col.key">
               <el-form-item :label="col.label">
                 <el-input v-if="col.type==='input'" v-model="col.value" />
                 <el-select v-if="col.type==='select'" v-model="col.value" clearable placeholder="请选择">
@@ -20,9 +20,9 @@
         </template>
       </div>
       <span class="search-btn">
-        <el-button size="mini" type="primary">查询</el-button>
+        <el-button size="mini" type="primary" @click="searchClick">查询</el-button>
         <el-button size="mini" @click="resetForm">重置</el-button>
-        <el-button type="text" @click="searchFold = !searchFold">{{ searchText }}
+        <el-button v-if="searchFoldShow" type="text" @click="searchFold = !searchFold">{{ searchText }}
         <i :class="[searchFold ? 'el-icon-arrow-down' : 'el-icon-arrow-up']" /></el-button>
       </span>
     </el-form>
@@ -48,6 +48,9 @@ export default {
     }
   },
   computed: {
+    searchFoldShow() {
+      return this.searchList.length > 1
+    },
     searchText() {
       return this.searchFold ? '展开' : '收起'
     }
@@ -63,6 +66,17 @@ export default {
     }
   },
   methods: {
+    searchClick() {
+      const search = {}
+      this.searchList.map(row => {
+        row.map(item => {
+          if (item.value !== null) {
+            search[item.key] = item.value
+          }
+        })
+      })
+      this.$emit('searchList', search)
+    },
     resetForm() {
       this.searchList = this._.cloneDeep(this.searchListTemp)
     }

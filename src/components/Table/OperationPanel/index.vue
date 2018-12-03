@@ -35,7 +35,7 @@ export default {
       this.$emit('addForm')
     },
     checkChange(select) {
-      this.$emit('checkChange', select)
+      this.$emit('update:optionSelect', select)
     }
   }
 }

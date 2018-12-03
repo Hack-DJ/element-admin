@@ -61,17 +61,31 @@ export default {
       columns: [
         {
           text: '角色名称',
-          value: 'title'
+          value: 'oldName'
         },
         {
           text: '英文名称',
-          value: 'eTitle'
+          value: 'oldEnname'
         },
         {
-          text: '是否启用',
-          value: 'state',
+          text: '启用',
+          value: 'useable',
+          switchKey: 'useable',
           width: 60,
           switch: true
+        },
+        {
+          text: '角色类型',
+          value: 'roleType'
+        },
+        {
+          text: '系统数据',
+          value: 'sysData',
+          switchKey: 'sysData'
+        },
+        {
+          text: '备注',
+          value: 'remarks'
         }
       ],
       // 表单弹窗
@@ -81,27 +95,44 @@ export default {
         {
           label: '角色名称',
           type: 'input',
-          prop: 'title',
-          value: null
+          prop: 'oldName'
         },
         {
           label: '英文名',
           type: 'input',
-          prop: 'eTitle',
-          value: null
+          prop: 'oldEnname'
         },
         {
           label: '是否启用',
           type: 'switch',
-          prop: 'state',
-          value: null
+          prop: 'useable'
+        },
+        {
+          label: '角色类型',
+          type: 'select',
+          prop: 'roleType'
+        },
+        {
+          label: '是否系统数据',
+          type: 'switch',
+          prop: 'sysData'
+        },
+        {
+          label: '备注',
+          type: 'input',
+          inputType: 'textarea',
+          prop: 'remarks'
         }
       ],
       formData: {
         id: null,
-        title: null,
-        eTitle: null,
-        state: 1
+        oldName: null,
+        oldEnname: null,
+        useable: 1,
+        roleType: null,
+        sysData: 0,
+        remarks: '',
+        menuIds: ''
       },
       formDataTemp: {},
       rules: {
