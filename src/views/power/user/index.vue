@@ -1,15 +1,16 @@
 <template>
   <div class="app-container">
     <operation-panel add-name="新增用户" @addForm="addForm" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="deleteForm" />
+    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
-      :show.sync="formDialog"
+      :show.sync="addDialog"
       config-name="配置角色"
       show-config
+      @save="submitForm"
       @config="configRole" />
     <el-dialog :visible.sync="configDialog" title="配置角色">
       <el-table
@@ -18,16 +19,16 @@
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="configChange">
-        <el-table-column
-          type="selection"
-          width="55" />
-        <el-table-column
-          label="角色名称">
-          <template slot-scope="scope">{{ scope.row.title }}</template>
+        <el-table-column type="selection" width="55" />
+        <el-table-column label="角色名称">
+          <template slot-scope="scope">{{ scope.row.oldName }}</template>
         </el-table-column>
-        <el-table-column
-          prop="eTitle"
-          label="英文名" />
+        <el-table-column label="英文名">
+          <template slot-scope="scope">{{ scope.row.oldEnname }}</template>
+        </el-table-column>
+        <el-table-column label="角色类型">
+          <template slot-scope="scope">{{ scope.row.roleType }}</template>
+        </el-table-column>
       </el-table>
       <div class="dialog-foot-button-group">
         <el-button @click="configDialog=false">取消</el-button>
@@ -38,6 +39,7 @@
 </template>
 
 <script>
+import { AddFormMixin } from '@/mixins'
 import { validatePhone, validateEmpty } from '@/utils/validate'
 import { getUserList, getRoleList } from '@/api/power'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -47,6 +49,7 @@ import TableList from '@/components/Table/TableList'
 export default {
   name: 'User',
   components: { OperationPanel, AddForm, TableList },
+  mixins: [AddFormMixin],
   data() {
     const valiPhone = (rule, value, callback) => {
       if (!validateEmpty(value)) {
@@ -59,6 +62,7 @@ export default {
       }
     }
     return {
+      pageName: '用户',
       // table 表格
       list: [],
       listLoading: true,
@@ -87,8 +91,6 @@ export default {
         }
       ],
       // 表单弹窗
-      isNew: true,
-      formDialog: false,
       formItemList: [
         {
           label: '登录名',
@@ -126,22 +128,19 @@ export default {
         }
       ],
       formData: {
-        id: null,
-        username: null,
-        name: null,
-        phone: null,
-        email: null,
+        id: '',
+        username: '',
+        name: '',
+        phone: '',
+        email: '',
         state: 1
       },
-      formDataTemp: {},
       rules: {
         username: [
-          { required: true, message: '请输入登录名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入登录名', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
         phone: [
           { required: false, trigger: 'blur', validator: valiPhone }
@@ -159,11 +158,6 @@ export default {
       selectKeysTemp: []
     }
   },
-  computed: {
-    formTitle() {
-      return `${this.isNew ? '新增' : '修改'}用户`
-    }
-  },
   created() {
     this.formDataTemp = this._.cloneDeep(this.formData)
     this.getList()
@@ -174,19 +168,6 @@ export default {
         this.list = res.data.list
         this.listLoading = false
       })
-    },
-    addForm() {
-      this.isNew = true
-      this.formData = this.formDataTemp
-      this.formDialog = !this.formDialog
-    },
-    editForm(index) {
-      this.isNew = false
-      this.formData = this.list[index]
-      this.formDialog = true
-    },
-    deleteForm(index) {
-      this.list.splice(index, 1)
     },
     configRole(row) {
       this.configDialog = true
@@ -224,6 +205,21 @@ export default {
       } else {
         this.$refs.multipleTable.clearSelection()
       }
+    },
+    // 提交表单
+    submitForm(data) {
+      // 格式化存储数据
+      let isNew = true
+      this.list.map(item => {
+        if (item.id === data.id) {
+          isNew = false
+          return Object.assign(item, data)
+        }
+      })
+      if (isNew) {
+        this.list.unshift(data)
+      }
+      this.addDialog = false
     }
   }
 }

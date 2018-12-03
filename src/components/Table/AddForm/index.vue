@@ -1,34 +1,54 @@
 <template>
-  <el-dialog :visible="show" :title="formTitle" @close="formDialogHide">
-    <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
-      <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
-        <template v-if="item.type==='radio'">
-          <el-radio v-model="ruleForm[item.prop]" label="1">菜单</el-radio>
-          <el-radio v-model="ruleForm[item.prop]" label="2">按钮</el-radio>
-        </template>
-        <template v-if="item.type==='parent'">
-          <slot name="parentId" />
-        </template>
-        <template v-if="item.type==='switch'">
-          <el-switch :value="switchShow(ruleForm[item.prop])" @input="switchInput(item.prop,$event)" />
-        </template>
-        <template v-if="item.type==='input'">
-          <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" />
-        </template>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
-        <el-button v-if="showConfig" @click="configClick">{{ configName }}</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
+  <div>
+    <el-dialog :visible="show" :title="formTitle" @close="formDialogHide">
+      <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
+        <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
+          <template v-if="item.type==='radio'">
+            <el-radio v-model="ruleForm[item.prop]" label="1">菜单</el-radio>
+            <el-radio v-model="ruleForm[item.prop]" label="2">按钮</el-radio>
+          </template>
+          <template v-if="item.type==='menu'">
+            <el-input v-model="permissionIdToName" clearable readonly placeholder="空为一级菜单">
+              <el-button slot="append" icon="el-icon-search" @click="parentDialog=true" />
+            </el-input>
+          </template>
+          <template v-if="item.type==='icon'">
+            <el-input v-model="ruleForm[item.prop]" clearable readonly>
+              <svg-icon slot="prepend" :icon-class="ruleForm[item.prop]" />
+              <el-button slot="append" icon="el-icon-search" @click="iconDialog=true" />
+            </el-input>
+          </template>
+          <template v-if="item.type==='switch'">
+            <el-switch :value="switchShow(ruleForm[item.prop])" @input="switchInput(item.prop,$event)" />
+          </template>
+          <template v-if="item.type==='input'">
+            <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" />
+          </template>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm">确定</el-button>
+          <el-button v-if="showConfig" @click="configClick">{{ configName }}</el-button>
+          <el-button @click="resetForm">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <dialog-icon :show.sync="iconDialog" :icon.sync="ruleForm.icon" />
+    <permission-tree :show.sync="parentDialog" @change="parentTree" />
+  </div>
 </template>
 
 <script>
 
+import { DialogIcon, PermissionTree } from '@/components/Dialog'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'AddForm',
+  components: {
+    DialogIcon,
+    PermissionTree
+  },
   filters: {
     placeholder(item) {
       return item.placeholder || '请输入内容'
@@ -66,10 +86,24 @@ export default {
   },
   data() {
     return {
-      ruleForm: {}
+      ruleForm: {},
+      // icon弹窗
+      iconDialog: false,
+      // 菜单父级树弹窗
+      parentDialog: false
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters([
+      'permissionList',
+      'permissionIdKey',
+      'generationTree'
+    ]),
+    permissionIdToName() {
+      const tmp = this.permissionIdKey[this.ruleForm.parentId]
+      return tmp ? tmp.name : ''
+    }
+  },
   watch: {
     formData: {
       handler(val) {
@@ -80,27 +114,48 @@ export default {
     }
   },
   methods: {
+    // 添加框隐藏
     formDialogHide() {
       this.$emit('update:show', false)
     },
+    // switch按钮
     switchShow(value) {
       return !!parseInt(value)
     },
     switchInput(prop, val) {
       this.ruleForm[prop] = val ? 1 : 0
     },
+    // 配置按钮
     configClick() {
       this.$emit('config')
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+    // 提交重置表单
+    submitForm() {
+      this.$refs.ruleForm.validate(valid => {
         if (valid) {
           this.$emit('save', this.ruleForm)
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    resetForm() {
+      this.$refs.ruleForm.resetFields()
+    },
+    // 父树弹窗
+    parentTree(data) {
+      const tmp = {
+        parentId: '',
+        parentName: ''
+      }
+      if (Object.keys(data).length > 0) {
+        const { id, name } = data
+        tmp.parentId = id
+        tmp.parentName = name
+      }
+      Object.assign(this.ruleForm, tmp)
+    },
+    // 通过控件控制表单隐藏
+    formItemShow(item) {
+      return item.isShow ? parseInt(this.ruleForm[item.isShow]) === 1 : true
     }
   }
 }

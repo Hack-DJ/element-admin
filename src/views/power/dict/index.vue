@@ -22,7 +22,7 @@ import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
 
 export default {
   name: 'Dict',

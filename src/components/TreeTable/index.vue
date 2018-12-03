@@ -42,7 +42,7 @@
         </el-table-column>
         <el-table-column v-if="set.edit||set.delete" label="操作" width="192px">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.edit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.row)">修改</el-button>
+            <el-button v-if="scope.row.edit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
             <el-button v-if="scope.row.delete" type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -120,21 +120,20 @@ export default {
       return (index === 0 && record.children && record.children.length > 0)
     },
     // 修改数据
-    confirmEdit(row) {
+    confirmEdit(index, row) {
       // 弹出修改窗
-      this.$emit('edit', row)
+      this.$emit('edit', { index: index, row: row })
     },
     // 删除数据
     confirmDelete(index, row) {
 
       // 判断是否有子菜单,有则禁止删除
-      if (this.formatData.some(item => { return item.parentMenu === row.title })) {
+      if (this.formatData.some(item => { return item.parentId === row.id })) {
         return this.$message({
           type: 'info',
           message: '该记录下有子记录,禁止删除'
         })
       }
-
       // 提示是否删除
       this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -146,13 +145,12 @@ export default {
           type: 'success',
           message: '删除成功!'
         })
-      }).
-        catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
+      })
     }
   }
 }
