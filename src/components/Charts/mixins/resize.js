@@ -13,7 +13,6 @@ export default {
       }
     }, 100)
     window.addEventListener('resize', this.__resizeHandler)
-
     this.sidebarElm = document.getElementsByClassName('sidebar-container')[0]
     this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler)
   },

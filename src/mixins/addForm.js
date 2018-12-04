@@ -25,6 +25,24 @@ const tableSearch = {
       this.formData = this.list[index]
       this.addDialogShow()
     },
+    addDialogShow() {
+      this.addDialog = true
+    },
+    // 提交表单
+    submitForm(data) {
+      // 格式化存储数据
+      let isNew = true
+      this.list.map(item => {
+        if (item.id === data.id) {
+          isNew = false
+          return Object.assign(item, data)
+        }
+      })
+      if (isNew) {
+        this.list.unshift(data)
+      }
+      this.addDialog = false
+    },
     // 删除数据
     confirmDelete(index) {
       this.list.splice(index, 1)
@@ -32,9 +50,6 @@ const tableSearch = {
         type: 'success',
         message: '删除成功!'
       })
-    },
-    addDialogShow() {
-      this.addDialog = true
     }
   }
 }

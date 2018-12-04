@@ -35,7 +35,11 @@ export default {
         {
           label: '类型',
           type: 'radio',
-          prop: 'type'
+          prop: 'type',
+          optionList: [
+            { label: '菜单', value: '1' },
+            { label: '按钮', value: '0' }
+          ]
         },
         {
           label: '上级菜单',

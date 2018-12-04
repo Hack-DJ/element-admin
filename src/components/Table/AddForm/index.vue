@@ -4,8 +4,7 @@
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
         <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
           <template v-if="item.type==='radio'">
-            <el-radio v-model="ruleForm[item.prop]" label="1">菜单</el-radio>
-            <el-radio v-model="ruleForm[item.prop]" label="2">按钮</el-radio>
+            <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
           </template>
           <template v-if="item.type==='menu'">
             <el-input v-model="permissionIdToName" clearable readonly placeholder="空为一级菜单">
@@ -23,6 +22,15 @@
           </template>
           <template v-if="item.type==='input'">
             <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" />
+          </template>
+          <template v-if="item.type==='select'">
+            <el-select v-model="ruleForm[item.prop]" :placeholder="item | placeholder" clearable>
+              <el-option
+                v-for="option in item.optionList"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value" />
+            </el-select>
           </template>
         </el-form-item>
         <el-form-item>
@@ -51,7 +59,7 @@ export default {
   },
   filters: {
     placeholder(item) {
-      return item.placeholder || '请输入内容'
+      return item.placeholder || item.type === 'select' ? '请选择' : '请输入内容'
     },
     inputType(item) {
       return item.inputType || 'text'

@@ -1,15 +1,16 @@
 <template>
   <div class="app-container">
     <operation-panel add-name="新增角色" @addForm="addForm" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="deleteForm" />
+    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
-      :show.sync="formDialog"
+      :show.sync="addDialog"
       config-name="配置菜单"
       show-config
+      @save="submitForm"
       @config="configRole" />
     <el-dialog :visible.sync="configDialog" title="配置菜单">
       <el-tree
@@ -34,6 +35,7 @@
 </template>
 
 <script>
+import { AddFormMixin } from '@/mixins'
 import { mapGetters } from 'vuex'
 import { getRoleList } from '@/api/power'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -43,18 +45,10 @@ import TableList from '@/components/Table/TableList'
 export default {
   name: 'Role',
   components: { OperationPanel, AddForm, TableList },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+  mixins: [AddFormMixin],
   data() {
     return {
+      pageName: '角色',
       // table 表格
       list: [],
       listLoading: true,
@@ -89,8 +83,6 @@ export default {
         }
       ],
       // 表单弹窗
-      isNew: true,
-      formDialog: false,
       formItemList: [
         {
           label: '角色名称',
@@ -110,7 +102,12 @@ export default {
         {
           label: '角色类型',
           type: 'select',
-          prop: 'roleType'
+          prop: 'roleType',
+          optionList: [
+            { label: '任务分配', value: 'assignment' },
+            { label: '管理角色', value: 'security-role' },
+            { label: '普通角色', value: 'user' }
+          ]
         },
         {
           label: '是否系统数据',
@@ -134,7 +131,6 @@ export default {
         remarks: '',
         menuIds: ''
       },
-      formDataTemp: {},
       rules: {
         title: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -154,10 +150,7 @@ export default {
   computed: {
     ...mapGetters([
       'generationTree'
-    ]),
-    formTitle() {
-      return `${this.isNew ? '新增' : '修改'}角色`
-    }
+    ])
   },
   created() {
     this.formDataTemp = this._.cloneDeep(this.formData)
@@ -169,19 +162,6 @@ export default {
         this.list = res.data.list
         this.listLoading = false
       })
-    },
-    addForm() {
-      this.isNew = true
-      this.formData = this.formDataTemp
-      this.formDialog = !this.formDialog
-    },
-    editForm(index) {
-      this.isNew = false
-      this.formData = this.list[index]
-      this.formDialog = true
-    },
-    deleteForm(index) {
-      this.list.splice(index, 1)
     },
     configRole(row) {
       this.configDialog = true

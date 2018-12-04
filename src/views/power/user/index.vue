@@ -184,9 +184,7 @@ export default {
         this.selectKeysTemp.push(item.id)
       })
     },
-    configSubmit() {
-
-    },
+    configSubmit() {},
     setCheckedKeys(row) {
       // 判断新增还是修改
       if (row || row === 0) {
