@@ -40,12 +40,18 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column v-if="set.edit||set.delete" label="操作" width="192px">
+        <el-table-column label="操作" width="192px">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.edit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
-            <el-button v-if="scope.row.delete" type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>
+            <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
+            <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>
           </template>
         </el-table-column>
+        <!--<el-table-column v-if="set.edit||set.delete" label="操作" width="192px">-->
+        <!--<template slot-scope="scope">-->
+        <!--<el-button v-if="scope.row.edit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>-->
+        <!--<el-button v-if="scope.row.delete" type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
+        <!--</template>-->
+        <!--</el-table-column>-->
       </template>
       <slot />
     </el-table>

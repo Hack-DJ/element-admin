@@ -13,7 +13,10 @@ const tableSearch = {
       return validateEmpty(this.formData.id)
     },
     formTitle() {
-      return !this.formIsEdit ? `新增 ${this.pageName}` : `修改${this.pageName}`
+      return !this.formIsEdit ? `新增${this.pageName}` : `修改${this.pageName}`
+    },
+    addName() {
+      return `新增${this.pageName}`
     }
   },
   methods: {
@@ -42,6 +45,10 @@ const tableSearch = {
         this.list.unshift(data)
       }
       this.addDialog = false
+      this.$message({
+        type: 'success',
+        message: '删除成功!'
+      })
     },
     // 删除数据
     confirmDelete(index) {

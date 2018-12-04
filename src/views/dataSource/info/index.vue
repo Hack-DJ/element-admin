@@ -9,6 +9,8 @@
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
+      :tree-list="dataSourceTypeTree"
+      :tree-id-key="dataSourceTypeIdKey"
       :show.sync="addDialog"
       @save="submitForm" />
 
@@ -16,28 +18,35 @@
 </template>
 
 <script>
-import { getDictList } from '@/api/power'
+import { getInfo } from '@/api/dataSource'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
+import { mapGetters } from 'vuex'
 
 export default {
-  name: 'Dict',
+  name: 'DataSourceInfo',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
-      pageName: '字典',
+      pageName: '信息',
       // search 查询面板
       searchList: [
         [
-          { label: '键值', type: 'input', key: 'value', value: null },
-          { label: '标签', type: 'input', key: 'label', value: null },
-          { label: '类型', type: 'select', key: 'type', value: null, optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }] },
-          { label: '描述', type: 'input', key: 'description', value: null }
+          { label: '网站名', type: 'input', key: 'name', value: null },
+          { label: '网站url', type: 'input', key: 'url', value: null },
+          {
+            label: '类型',
+            type: 'select',
+            key: 'typeId',
+            value: null,
+            optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }]
+          },
+          { label: '添加顺序', type: 'select', key: 'sort', value: null, optionList: [{ label: '时间由近到远', value: 1 }, { label: '时间由远到近', value: 2 }] }
         ]
       ],
       // table 表格
@@ -45,82 +54,45 @@ export default {
       listLoading: true,
       columns: [
         {
-          text: '键值',
-          value: 'value'
+          text: '网站名',
+          value: 'name'
         },
         {
-          text: '标签',
-          value: 'label'
+          text: '网站url',
+          value: 'url'
         },
         {
-          text: '类型',
-          value: 'type'
+          text: '网站类型',
+          value: 'typeId'
         }
       ],
-      optionList: [
-        {
-          text: '描述',
-          value: 'description'
-        },
-        {
-          text: '排序',
-          value: 'sort'
-        },
-        {
-          text: '备注',
-          value: 'remarks'
-        }
-      ],
-
       // 表单弹窗
       formDialog: false,
       formItemList: [
         {
-          label: '键值',
+          label: '网站名',
           type: 'input',
-          placeholder: '请输入键值',
-          prop: 'value'
+          placeholder: '请输入网站名',
+          prop: 'name'
         },
         {
-          label: '标签',
+          label: '网站url',
           type: 'input',
-          placeholder: '请输入标签',
-          prop: 'label'
+          placeholder: '请输入网站url',
+          prop: 'url'
         },
         {
-          label: '类型',
-          type: 'input',
-          placeholder: '请输入类型',
-          prop: 'type'
-        },
-        {
-          label: '描述',
-          type: 'input',
-          placeholder: '请输入描述',
-          prop: 'description'
-        },
-        {
-          label: '排序',
-          type: 'input',
-          placeholder: '排序由小到大顺序排列',
-          prop: 'sort'
-        },
-        {
-          label: '备注',
-          type: 'input',
-          inputType: 'textarea',
-          placeholder: '请输入备注',
-          prop: 'remarks'
+          label: '网站类型',
+          type: 'parent',
+          placeholder: '请输入网站类型',
+          prop: 'typeId'
         }
       ],
       formData: {
         id: '',
-        value: '',
-        label: '',
-        type: '',
-        remarks: '',
-        description: '',
-        sort: 500
+        name: '',
+        url: '',
+        typeId: ''
       },
       rules: {
         value: [
@@ -135,9 +107,17 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'dataSourceTypeList',
+      'dataSourceTypeIdKey',
+      'dataSourceTypeTree'
+    ])
+  },
   created() {
     this.formDataTemp = this._.cloneDeep(this.formData)
     this.getList()
+    this.getParentType()
   },
   methods: {
     searchChang(data) {
@@ -145,13 +125,16 @@ export default {
       this.getList()
     },
     getList() {
-      getDictList(Object.assign(this.listQuery, this.search)).then(res => {
+      getInfo(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
         this.count = res.data.count
         this.listQuery.pageNo = res.data.pageNo
         this.listQuery.pageSize = res.data.pageSize
         this.listLoading = false
       })
+    },
+    getParentType() {
+      this.$store.dispatch('GetDataSourceType')
     }
   }
 }

@@ -19,7 +19,7 @@ const user = {
 
   actions: {
     // 获取规则列表
-    GetPermission({ commit }, data) {
+    GetPermission({ commit }) {
       return new Promise((resolve, reject) => {
         getPermission().then(response => {
           const data = response.data.list
@@ -34,7 +34,6 @@ const user = {
         })
       })
     },
-
     // 保存菜单
     SavePermission({ commit, state, getters }, data) {
       return new Promise((resolve, reject) => {
@@ -65,7 +64,6 @@ const user = {
         })
       })
     }
-
   }
 }
 

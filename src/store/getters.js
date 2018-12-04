@@ -33,6 +33,13 @@ const getters = {
   generationTree: (state, getters) => {
     return generationTree(getters.permissionList, getters.permissionIdKey)
   },
+  dataSourceTypeList: state => state.dataSource.typeList,
+  dataSourceTypeIdKey: (state, getters) => {
+    return permissionIdKey(getters.dataSourceTypeList)
+  },
+  dataSourceTypeTree: (state, getters) => {
+    return generationTree(getters.dataSourceTypeList, getters.dataSourceTypeIdKey)
+  },
   roles: state => state.user.roles,
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters

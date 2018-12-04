@@ -1,8 +1,8 @@
 <template>
-  <el-dialog :visible="show" title="请选中上级菜单" @close="dialogClose">
+  <el-dialog :visible="show" title="请选择" @close="dialogClose">
     <el-tree
       ref="tree"
-      :data="generationTree"
+      :data="treeList"
       :props="defaultProps"
       class="filter-tree"
       @node-click="parentMenuClick"
@@ -15,10 +15,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DialogPermissionTree',
+  name: 'DialogParentTree',
   props: {
     show: {
       type: Boolean,
@@ -37,17 +36,16 @@ export default {
     icon: {
       type: String,
       default: ''
+    },
+    treeList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       parentTempData: {}
     }
-  },
-  computed: {
-    ...mapGetters([
-      'generationTree'
-    ])
   },
   methods: {
     // 父树弹窗
@@ -62,6 +60,7 @@ export default {
     parentMenuClear() {
       // 清空菜单选项
       this.parentTempData = {}
+      this.parentMenuConfirm()
     },
     dialogClose() {
       this.$emit('update:show', false)

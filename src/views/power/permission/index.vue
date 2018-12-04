@@ -1,12 +1,14 @@
 <template>
   <div class="app-container permission-container">
-    <operation-panel :option-list="optionList" :option-select.sync="optionSelect" add-name="新增菜单" @addForm="addForm" />
+    <operation-panel :option-list="optionList" :option-select.sync="optionSelect" :add-name="addName" @addForm="addForm" />
     <tree-table :data="permissionList" :list-loading="listLoading" :set="set" :columns="cloumnsList" border class="permission-tree" @edit="editForm" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
+      :tree-list="generationTree"
+      :tree-id-key="permissionIdKey"
       :show.sync="addDialog"
       @save="submitForm" />
   </div>
@@ -43,7 +45,7 @@ export default {
         },
         {
           label: '上级菜单',
-          type: 'menu',
+          type: 'parent',
           prop: 'parentId',
           placeholder: '空为一级菜单'
         },
@@ -162,7 +164,9 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'permissionList'
+      'permissionList',
+      'permissionIdKey',
+      'generationTree'
     ]),
     cloumnsList() {
       return this.columns.concat(this.optionSelect)

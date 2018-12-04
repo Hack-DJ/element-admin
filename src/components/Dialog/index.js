@@ -1,4 +1,5 @@
 import DialogIcon from './Icon/index'
-import PermissionTree from './permissionTree/index'
+import DialogPermissionTree from './permissionTree/index'
+import DialogParentTree from './parentTree/index'
 
-export { DialogIcon, PermissionTree }
+export { DialogIcon, DialogPermissionTree, DialogParentTree }

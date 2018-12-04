@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-dialog :visible="show" :title="formTitle" @close="formDialogHide">
+    <el-dialog v-if="show" :visible="show" :title="formTitle" @close="formDialogHide">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
         <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
           <template v-if="item.type==='radio'">
             <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
           </template>
-          <template v-if="item.type==='menu'">
-            <el-input v-model="permissionIdToName" clearable readonly placeholder="空为一级菜单">
-              <el-button slot="append" icon="el-icon-search" @click="parentDialog=true" />
+          <template v-if="item.type==='parent'">
+            <el-input :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
+              <el-button slot="append" icon="el-icon-search" @click="parentTreeShow(item.prop)" />
             </el-input>
           </template>
           <template v-if="item.type==='icon'">
@@ -40,22 +40,21 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-
     <dialog-icon :show.sync="iconDialog" :icon.sync="ruleForm.icon" />
-    <permission-tree :show.sync="parentDialog" @change="parentTree" />
+    <dialog-parent-tree :tree-list="treeList" :show.sync="parentDialog" @change="parentTree" />
   </div>
 </template>
 
 <script>
 
-import { DialogIcon, PermissionTree } from '@/components/Dialog'
-import { mapGetters } from 'vuex'
+import { DialogIcon, DialogPermissionTree, DialogParentTree } from '@/components/Dialog'
 
 export default {
   name: 'AddForm',
   components: {
     DialogIcon,
-    PermissionTree
+    DialogParentTree,
+    DialogPermissionTree
   },
   filters: {
     placeholder(item) {
@@ -90,7 +89,15 @@ export default {
       type: Object,
       default: () => {}
     },
-    itemList: { type: Array, default: () => [] }
+    itemList: { type: Array, default: () => [] },
+    treeList: {
+      type: Array,
+      default: () => []
+    },
+    treeIdKey: {
+      type: Object,
+      default: () => { return {} }
+    }
   },
   data() {
     return {
@@ -98,20 +105,12 @@ export default {
       // icon弹窗
       iconDialog: false,
       // 菜单父级树弹窗
-      parentDialog: false
+      parentDialog: false,
+      // 当前修改树id存储值
+      parentTreeProp: ''
     }
   },
-  computed: {
-    ...mapGetters([
-      'permissionList',
-      'permissionIdKey',
-      'generationTree'
-    ]),
-    permissionIdToName() {
-      const tmp = this.permissionIdKey[this.ruleForm.parentId]
-      return tmp ? tmp.name : ''
-    }
-  },
+  computed: {},
   watch: {
     formData: {
       handler(val) {
@@ -148,7 +147,16 @@ export default {
     resetForm() {
       this.$refs.ruleForm.resetFields()
     },
+    // 上级id转上级名
+    treeIdToName(val) {
+      const tmp = this.treeIdKey[val]
+      return tmp ? tmp.name : ''
+    },
     // 父树弹窗
+    parentTreeShow(prop) {
+      this.parentTreeProp = prop
+      this.parentDialog = true
+    },
     parentTree(data) {
       const tmp = {
         parentId: '',
@@ -158,6 +166,7 @@ export default {
         const { id, name } = data
         tmp.parentId = id
         tmp.parentName = name
+        tmp[this.parentTreeProp] = id
       }
       Object.assign(this.ruleForm, tmp)
     },

@@ -1,6 +1,7 @@
 const operation = {
   data() {
     return {
+      optionList: [],
       optionSelect: []
     }
   },
