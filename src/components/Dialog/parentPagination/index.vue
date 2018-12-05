@@ -2,7 +2,7 @@
   <el-dialog :visible="show" title="请选择" @close="dialogClose">
     <table-search :search="searchCriteria" @searchList="searchChang" />
     <table-list :is-dialog="true" :list="list" :columns="cloumnsList" :list-loading="listLoading" @current-change="handleCurrentChange" />
-    <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
+    <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <div class="dialog-foot-button-group">
       <el-button type="primary" @click="parentMenuConfirm">确定</el-button>
       <el-button @click="dialogClose">取消</el-button>

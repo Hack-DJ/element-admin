@@ -201,7 +201,9 @@ export default {
           prop: 'ftpFolder'
         }
       ],
-      formData: {},
+      formData: {
+        id: ''
+      },
       rules: {
         infoId: [
           { required: true, message: '请选择网站信息', trigger: 'blur' }
@@ -220,9 +222,7 @@ export default {
     ])
   },
   created() {
-    const tmp = {
-      id: ''
-    }
+    const tmp = {}
     this.formItemList.forEach(item => {
       tmp[item.prop] = item.value || ''
     })

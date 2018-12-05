@@ -21,7 +21,7 @@ const tableSearch = {
   },
   methods: {
     addForm() {
-      this.formData = this.formDataTemp
+      this.formData = this._.cloneDeep(this.formDataTemp)
       this.addDialogShow()
     },
     editForm(index) {
@@ -42,9 +42,11 @@ const tableSearch = {
         }
       })
       if (isNew) {
+        data.id = this._.uniqueId()
         this.list.unshift(data)
       }
       this.addDialog = false
+
       this.$message({
         type: 'success',
         message: '保存成功!'

@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
-const Model = '/sys/menu'
-const linkUrl = function(name) {
-  return `${Model}/${name}`
-}
+// const Model = '/sys/menu'
+// const linkUrl = function(name) {
+//   return `${Model}/${name}`
+// }
 
 export function getType(params) {
   return request({

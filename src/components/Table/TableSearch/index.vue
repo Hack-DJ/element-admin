@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'search-fold':searchFold || !searchFoldShow}" class="table-search">
+  <div v-if="searchShow" :class="{'search-fold':searchFold || !searchFoldShow}" class="table-search">
     <el-form label-width="100px">
       <div :class="{'fold':searchFold || !searchFoldShow}" class="search-item">
         <template v-for="(row, index) in searchList">
@@ -48,6 +48,9 @@ export default {
     }
   },
   computed: {
+    searchShow() {
+      return this.searchList.length > 0
+    },
     searchFoldShow() {
       return this.searchList.length > 1
     },
