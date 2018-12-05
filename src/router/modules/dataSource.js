@@ -26,7 +26,9 @@ export default {
       meta: { title: '采集策略', icon: 'power' }
     },
     {
-      path: 'https://github.com/',
+      path: 'dataSourceList',
+      name: 'DataSourceList',
+      component: () => import('@/views/dataSource/list/index'),
       meta: { title: '采集数据', icon: 'power' }
     }
   ]

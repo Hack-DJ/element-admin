@@ -33,10 +33,6 @@ export default {
         }
       }
     },
-    icon: {
-      type: String,
-      default: ''
-    },
     treeList: {
       type: Array,
       default: () => []

@@ -13,7 +13,6 @@
       :tree-id-key="dataSourceTypeIdKey"
       :show.sync="addDialog"
       @save="submitForm" />
-
   </div>
 </template>
 
@@ -49,6 +48,7 @@ export default {
           { label: '添加顺序', type: 'select', key: 'sort', value: null, optionList: [{ label: '时间由近到远', value: 1 }, { label: '时间由远到近', value: 2 }] }
         ]
       ],
+      search: {},
       // table 表格
       list: [],
       listLoading: true,
@@ -63,7 +63,7 @@ export default {
         },
         {
           text: '网站类型',
-          value: 'typeId'
+          value: 'typeName'
         }
       ],
       // 表单弹窗
@@ -127,6 +127,9 @@ export default {
     getList() {
       getInfo(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
+        this.list.map(item => {
+          item.typeName = this.dataSourceTypeIdKey[item.typeId].name
+        })
         this.count = res.data.count
         this.listQuery.pageNo = res.data.pageNo
         this.listQuery.pageSize = res.data.pageSize

@@ -7,8 +7,9 @@
             <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
           </template>
           <template v-if="item.type==='parent'">
-            <el-input :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
-              <el-button slot="append" icon="el-icon-search" @click="parentTreeShow(item.prop)" />
+            <el-input :value="ruleForm[item.prop]" :placeholder="item | placeholder" clearable readonly>
+              <el-button v-if="item.inputType==='list'" slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
+              <el-button v-else slot="append" icon="el-icon-search" @click="parentShow(item.prop,'menu')" />
             </el-input>
           </template>
           <template v-if="item.type==='icon'">
@@ -41,20 +42,22 @@
       </el-form>
     </el-dialog>
     <dialog-icon :show.sync="iconDialog" :icon.sync="ruleForm.icon" />
-    <dialog-parent-tree :tree-list="treeList" :show.sync="parentDialog" @change="parentTree" />
+    <dialog-parent-tree v-if="parentTreeDialog" :tree-list="treeList" :show.sync="parentTreeDialog" @change="parentChange" />
+    <dialog-parent-pagination v-if="parentListDialog" :show.sync="parentListDialog" :form-data="parentFormData" @change="parentChange" />
   </div>
 </template>
 
 <script>
 
-import { DialogIcon, DialogPermissionTree, DialogParentTree } from '@/components/Dialog'
+import { DialogIcon, DialogPermissionTree, DialogParentTree, DialogParentPagination } from '@/components/Dialog'
 
 export default {
   name: 'AddForm',
   components: {
     DialogIcon,
     DialogParentTree,
-    DialogPermissionTree
+    DialogPermissionTree,
+    DialogParentPagination
   },
   filters: {
     placeholder(item) {
@@ -105,12 +108,19 @@ export default {
       // icon弹窗
       iconDialog: false,
       // 菜单父级树弹窗
-      parentDialog: false,
-      // 当前修改树id存储值
-      parentTreeProp: ''
+      parentTreeDialog: false,
+      parentListDialog: false,
+      // 当前修改参数Item
+      parentItem: {}
     }
   },
-  computed: {},
+  computed: {
+    parentFormData() {
+      const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName'])
+      console.log(tmp)
+      return tmp
+    }
+  },
   watch: {
     formData: {
       handler(val) {
@@ -152,12 +162,16 @@ export default {
       const tmp = this.treeIdKey[val]
       return tmp ? tmp.name : ''
     },
-    // 父树弹窗
-    parentTreeShow(prop) {
-      this.parentTreeProp = prop
-      this.parentDialog = true
+    // TODO 父树弹窗 和 list后期会合并
+    parentShow(item, type) {
+      this.parentItem = item
+      if (type === 'list') {
+        this.parentListDialog = true
+      } else {
+        this.parentTreeDialog = true
+      }
     },
-    parentTree(data) {
+    parentChange(data) {
       const tmp = {
         parentId: '',
         parentName: ''
@@ -166,13 +180,9 @@ export default {
         const { id, name } = data
         tmp.parentId = id
         tmp.parentName = name
-        tmp[this.parentTreeProp] = id
+        tmp[this.parentItem.prop] = id
       }
       Object.assign(this.ruleForm, tmp)
-    },
-    // 通过控件控制表单隐藏
-    formItemShow(item) {
-      return item.isShow ? parseInt(this.ruleForm[item.isShow]) === 1 : true
     }
   }
 }

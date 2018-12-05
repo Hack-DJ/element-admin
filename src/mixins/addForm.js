@@ -47,7 +47,7 @@ const tableSearch = {
       this.addDialog = false
       this.$message({
         type: 'success',
-        message: '删除成功!'
+        message: '保存成功!'
       })
     },
     // 删除数据

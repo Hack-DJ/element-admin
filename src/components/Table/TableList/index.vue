@@ -1,6 +1,6 @@
 <template>
   <div class="table-list">
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange">
       <el-table-column v-for="column in columns" :key="column.value" :label="column.text" :width="column.width">
         <template slot-scope="scope">
           <template v-if="column.switch">
@@ -9,7 +9,7 @@
           <span v-else> {{ scope.row[column.value] }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="设置" width="300px">
+      <el-table-column v-if="!isDialog" align="center" label="设置" width="300px">
         <template slot-scope="scope">
           <el-button v-if="powerConfig" type="primary" size="small" icon="el-icon-setting" @click="confirmConfig(scope.$index)">配置</el-button>
           <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index)">修改</el-button>
@@ -40,6 +40,10 @@ export default {
     listLoading: {
       type: Boolean,
       default: true
+    },
+    isDialog: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -66,6 +70,9 @@ export default {
         // 调用删除
         this.$emit('delete', index)
       })
+    },
+    handleCurrentChange(val) {
+      this.$emit('current-change', val)
     }
   }
 }

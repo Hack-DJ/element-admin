@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { getStrategy } from '@/api/dataSource'
+import { getList } from '@/api/dataSource'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
@@ -27,59 +27,15 @@ import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DataSourceStrategy',
+  name: 'DataSourceList',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
-      pageName: '策略',
+      pageName: '采集信息',
       // search 查询面板
       searchList: [
         [
-          {
-            label: '限制id',
-            type: 'select',
-            key: 'ipLimit',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          },
-          {
-            label: '用户代理',
-            type: 'select',
-            key: 'agent',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          },
-          {
-            label: 'Cookies',
-            type: 'select',
-            key: 'cookies',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          },
-          {
-            label: '验证码',
-            type: 'select',
-            key: 'verification',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          }
-        ],
-        [
-          {
-            label: 'js渲染',
-            type: 'select',
-            key: 'jsRender',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          },
-          {
-            label: 'ajax异步',
-            type: 'select',
-            key: 'requestAjax',
-            value: null,
-            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-          },
           {
             label: '网站信息',
             type: 'select',
@@ -87,7 +43,20 @@ export default {
             value: null,
             optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }]
           },
-          { label: '添加顺序', type: 'select', key: 'sort', value: null, optionList: [{ label: '时间由近到远', value: 1 }, { label: '时间由远到近', value: 2 }] }
+          {
+            label: '数据格式化',
+            type: 'select',
+            key: 'format',
+            value: null,
+            optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
+          },
+          {
+            label: '数据库表',
+            type: 'select',
+            key: 'tableId',
+            value: null,
+            optionList: [{ label: 'a表', value: '1' }, { label: 'b表', value: '0' }]
+          }
         ]
       ],
       // table 表格
@@ -99,52 +68,33 @@ export default {
           value: 'infoId'
         },
         {
-          text: '单位时间内请求次数',
-          value: 'requestNumber'
+          text: '数据格式化',
+          switch: true,
+          width: 60,
+          value: 'format'
         },
         {
-          text: '总请求次数',
-          value: 'requestCount'
+          text: '数据库表',
+          value: 'tableId'
+        },
+        {
+          text: 'ftp地址',
+          value: 'ftp'
+        },
+        {
+          text: 'ftp用户名',
+          value: 'ftpUsername'
+        },
+        {
+          text: 'ftp密码',
+          value: 'ftpPassword'
+        },
+        {
+          text: 'ftp文件地址',
+          value: 'ftpFolder'
         }
       ],
-      optionList: [
-        {
-          text: '限制id',
-          switch: true,
-          width: 60,
-          value: 'ipLimit'
-        },
-        {
-          text: '用户代理',
-          switch: true,
-          width: 60,
-          value: 'agent'
-        },
-        {
-          text: '支持cookies',
-          switch: true,
-          width: 60,
-          value: 'cookies'
-        },
-        {
-          text: '验证码',
-          switch: true,
-          width: 60,
-          value: 'verification'
-        },
-        {
-          text: 'js渲染',
-          switch: true,
-          width: 60,
-          value: 'jsRender'
-        },
-        {
-          text: 'ajax异步请求',
-          switch: true,
-          width: 60,
-          value: 'requestAjax'
-        }
-      ],
+      optionList: [],
 
       // 表单弹窗
       formDialog: false,
@@ -186,58 +136,78 @@ export default {
           ]
         },
         {
-          label: '限制id',
+          label: '数据格式化',
           type: 'switch',
           value: 1,
-          prop: 'ipLimit'
+          prop: 'format'
         },
         {
-          label: '请求次数',
+          label: '数据库表',
+          type: 'parent',
+          inputType: 'list',
+          placeholder: '请选择数据库表',
+          prop: 'tableId',
+          listUrl: 'http://code2012.cn/rapServer/app/mock/18/database/table',
+          pageName: '选择网站信息',
+          parentCloumnsList: [
+            {
+              text: '数据库',
+              value: 'databaseId'
+            },
+            {
+              text: '表名',
+              value: 'name'
+            },
+            {
+              text: '表类型',
+              value: 'type'
+            },
+            {
+              text: '表描述',
+              value: 'descriptions'
+            }
+          ],
+          parentSearchCriteria: [
+            [
+              { label: '数据库', type: 'input', key: 'databaseId', value: null },
+              { label: '表名', type: 'input', key: 'name', value: null },
+              { label: '表类型', type: 'input', key: 'type', value: null },
+              { label: '表描述', type: 'input', key: 'descriptions', value: null }
+            ]
+          ]
+        },
+        {
+          label: 'ftp地址',
           type: 'input',
-          placeholder: '请输入单位时间内请求次数',
-          prop: 'requestNumber'
+          placeholder: '请输入ftp地址',
+          prop: 'ftp'
         },
         {
-          label: '总请求次数',
+          label: 'ftp用户名',
           type: 'input',
-          placeholder: '请输入总请求次数',
-          prop: 'requestCount'
+          placeholder: '请输入ftp用户名',
+          prop: 'ftpUsername'
         },
         {
-          label: '用户代理',
-          type: 'switch',
-          value: 0,
-          prop: 'agent'
+          label: 'ftp密码',
+          type: 'input',
+          placeholder: '请输入ftp密码',
+          prop: 'ftpPassword'
         },
         {
-          label: '支持cookies',
-          type: 'switch',
-          value: 1,
-          prop: 'cookies'
-        },
-        {
-          label: '验证码',
-          type: 'switch',
-          value: 1,
-          prop: 'verification'
-        },
-        {
-          label: 'js渲染',
-          type: 'switch',
-          value: 1,
-          prop: 'jsRender'
-        },
-        {
-          label: 'ajax异步请求',
-          type: 'switch',
-          value: 1,
-          prop: 'requestAjax'
+          label: 'ftp文件地址',
+          type: 'input',
+          placeholder: '请输入ftp文件地址',
+          prop: 'ftpFolder'
         }
       ],
       formData: {},
       rules: {
         infoId: [
           { required: true, message: '请选择网站信息', trigger: 'blur' }
+        ],
+        databaseId: [
+          { required: true, message: '请选择数据库表', trigger: 'blur' }
         ]
       }
     }
@@ -267,7 +237,7 @@ export default {
       this.getList()
     },
     getList() {
-      getStrategy(Object.assign(this.listQuery, this.search)).then(res => {
+      getList(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
         this.count = res.data.count
         this.listQuery.pageNo = res.data.pageNo

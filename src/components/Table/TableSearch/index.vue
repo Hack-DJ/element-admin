@@ -4,7 +4,7 @@
       <div :class="{'fold':searchFold || !searchFoldShow}" class="search-item">
         <template v-for="(row, index) in searchList">
           <el-row v-if="index===0 || !searchFold" :key="index">
-            <el-col v-for="col in row" :xs="24" :sm="6" :key="col.key">
+            <el-col v-for="col in row" :xs="24" :sm="colSmNum(row)" :key="col.key">
               <el-form-item :label="col.label">
                 <el-input v-if="col.type==='input'" v-model="col.value" />
                 <el-select v-if="col.type==='select'" v-model="col.value" clearable placeholder="请选择">
@@ -66,6 +66,9 @@ export default {
     }
   },
   methods: {
+    colSmNum(row) {
+      return parseInt(24 / row.length)
+    },
     searchClick() {
       const search = {}
       this.searchList.map(row => {
