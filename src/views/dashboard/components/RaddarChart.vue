@@ -52,7 +52,7 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.chart.setOption({
         tooltip: {
-          trigger: 'axis',
+          // trigger: 'axis',
           axisPointer: { // 坐标轴指示器，坐标轴触发有效
             type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
           }
@@ -72,18 +72,15 @@ export default {
             }
           },
           indicator: [
-            { name: 'Sales', max: 10000 },
-            { name: 'Administration', max: 20000 },
-            { name: 'Information Techology', max: 20000 },
-            { name: 'Customer Support', max: 20000 },
-            { name: 'Development', max: 20000 },
-            { name: 'Marketing', max: 20000 }
+            { name: '宾馆', max: 10000 },
+            { name: '餐饮', max: 20000 },
+            { name: '生活娱乐', max: 20000 }
           ]
         },
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Allocated Budget', 'Expected Spending', 'Actual Spending']
+          data: ['百度地图POI', '高德地图POI']
         },
         series: [
           {
@@ -100,16 +97,12 @@ export default {
             },
             data: [
               {
-                value: [5000, 7000, 12000, 11000, 15000, 14000],
-                name: 'Allocated Budget'
+                value: [7000, 15000, 3500],
+                name: '百度地图POI'
               },
               {
-                value: [4000, 9000, 15000, 15000, 13000, 11000],
-                name: 'Expected Spending'
-              },
-              {
-                value: [5500, 11000, 12000, 15000, 12000, 12000],
-                name: 'Actual Spending'
+                value: [5500, 7200, 11500],
+                name: '高德地图POI'
               }
             ],
             animationDuration: animationDuration

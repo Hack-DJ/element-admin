@@ -1,12 +1,20 @@
 <template>
   <el-card class="box-card-component" style="margin-left:8px;">
-    <div slot="header" class="box-card-header">
-      <img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png">
-    </div>
+    <!--<div slot="header" class="box-card-header">-->
+      <!--<img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png">-->
+    <!--</div>-->
     <div style="position:relative;">
-      <mallki class-name="mallki-text" text="数据整理度"/>
+      <mallki class-name="mallki-text" text="爬虫任务完成度"/>
       <div style="padding-top:35px;" class="progress-item">
         <span>大众点评</span>
+        <el-progress :percentage="70"/>
+      </div>
+      <div class="progress-item">
+        <span>百度IOP</span>
+        <el-progress :percentage="45"/>
+      </div>
+      <div class="progress-item">
+        <span>高德IOP</span>
         <el-progress :percentage="70"/>
       </div>
       <div class="progress-item">
@@ -14,8 +22,12 @@
         <el-progress :percentage="18"/>
       </div>
       <div class="progress-item">
+        <span>链家</span>
+        <el-progress :percentage="98"/>
+      </div>
+      <div class="progress-item">
         <span>糯米</span>
-        <el-progress :percentage="12"/>
+        <el-progress :percentage="22"/>
       </div>
       <div class="progress-item">
         <span>豆瓣网</span>

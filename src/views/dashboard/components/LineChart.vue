@@ -79,10 +79,10 @@ export default {
         this.__resizeHandler()
       }
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ POIData, houseData, restaurantData, tourismData } = {}) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月'],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -108,30 +108,27 @@ export default {
           }
         },
         legend: {
-          data: ['同期数据', '最新数据']
+          data: ['POI', '房屋类', '餐饮类', '旅游类']
         },
         series: [
           {
-            name: '同期数据', itemStyle: {
+            name: 'POI', itemStyle: {
               normal: {
                 color: '#FF005A',
                 lineStyle: {
                   color: '#FF005A',
                   width: 2
-                },
-                label: {
-                  format: '同期数据'
                 }
               }
             },
             smooth: true,
             type: 'line',
-            data: expectedData,
+            data: POIData,
             animationDuration: 2800,
             animationEasing: 'cubicInOut'
           },
           {
-            name: '最新数据',
+            name: '房屋类',
             smooth: true,
             type: 'line',
             itemStyle: {
@@ -140,13 +137,44 @@ export default {
                 lineStyle: {
                   color: '#3888fa',
                   width: 2
-                },
-                areaStyle: {
-                  color: '#f3f8ff'
                 }
               }
             },
-            data: actualData,
+            data: houseData,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut'
+          },
+          {
+            name: '餐饮类',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#fac349',
+                lineStyle: {
+                  color: '#fac349',
+                  width: 2
+                }
+              }
+            },
+            data: restaurantData,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut'
+          },
+          {
+            name: '旅游类',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#36fadc',
+                lineStyle: {
+                  color: '#36fadc',
+                  width: 2
+                }
+              }
+            },
+            data: tourismData,
             animationDuration: 2800,
             animationEasing: 'quadraticOut'
           }

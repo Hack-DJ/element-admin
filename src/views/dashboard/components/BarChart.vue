@@ -1,9 +1,10 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}"/>
+  <div :class="className" :style="{height:height,width:width}" />
 </template>
 
 <script>
 import echarts from 'echarts'
+
 require('echarts/theme/macarons') // echarts theme
 import { debounce } from '@/utils'
 
@@ -65,7 +66,7 @@ export default {
         },
         xAxis: [{
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['安居客', '房天下', '链家', '搜房网'],
           axisTick: {
             alignWithLabel: true
           }
@@ -77,25 +78,53 @@ export default {
           }
         }],
         series: [{
-          name: 'pageA',
+          name: '总价',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
-          data: [79, 52, 200, 334, 390, 330, 220],
+          data: [179, 252, 400, 534],
           animationDuration
         }, {
-          name: 'pageB',
+          name: '均价',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
-          data: [80, 52, 200, 334, 390, 330, 220],
+          data: [380, 652, 400, 734],
           animationDuration
         }, {
-          name: 'pageC',
+          name: '房型',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
-          data: [30, 52, 200, 334, 390, 330, 220],
+          data: [350, 522, 522, 453],
+          animationDuration
+        }, {
+          name: '楼层',
+          type: 'bar',
+          stack: 'vistors',
+          barWidth: '60%',
+          data: [674, 623, 421, 742],
+          animationDuration
+        }, {
+          name: '朝向',
+          type: 'bar',
+          stack: 'vistors',
+          barWidth: '60%',
+          data: [320, 352, 400, 523],
+          animationDuration
+        }, {
+          name: '装修',
+          type: 'bar',
+          stack: 'vistors',
+          barWidth: '60%',
+          data: [320, 552, 420, 334],
+          animationDuration
+        }, {
+          name: '面积',
+          type: 'bar',
+          stack: 'vistors',
+          barWidth: '60%',
+          data: [300, 452, 290, 534],
           animationDuration
         }]
       })

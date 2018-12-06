@@ -2,7 +2,7 @@
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
     <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
+    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -82,7 +82,17 @@ export default {
           value: 'primaryKey'
         }
       ],
-
+      columnsReplace: {
+        tableId: {
+          '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '房天下',
+          '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '安居客',
+          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家',
+          '14B26EfC-08C4-15F3-dDFE-aBagfC911B11': '饿了么',
+          '14B26EfC-08C4-15F3-dDFE-aBawfC911B12': '百度',
+          '14B26EfC-08C4-15F3-dD2E-aBdefC911B11': '豆瓣',
+          '14B26EfC-08C4-15F3-dcFE-aBbefC911B12': '搜狗'
+        }
+      },
       // 表单弹窗
       formDialog: false,
       formItemList: [
@@ -128,7 +138,15 @@ export default {
                 value: null
               }
             ]
-          ]
+          ],
+          parentReplace: {
+            libraryId: {
+              '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': 'POI类',
+              '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '房屋信息类',
+              '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '团购外卖类',
+              '14B26EfC-08C4-15F3-dDFE-aBaefC911ccd': '旅游类'
+            }
+          }
         },
         {
           label: '内容名',

@@ -128,8 +128,7 @@ export default {
   },
   computed: {
     parentFormData() {
-      const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName'])
-      console.log(tmp)
+      const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace'])
       return tmp
     }
   },

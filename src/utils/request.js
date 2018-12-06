@@ -7,8 +7,8 @@ import store from '../store'
 let BASEURL = process.env.BASE_API
 if (process.env.NODE_ENV === 'development') {
   // BASEURL = 'http://10.154.55.3:8000/ips/a'
-  BASEURL = 'http://teacher.frp.heikuai.net:5555/ips/a'
-  // BASEURL = 'http://code2012.cn/rapServer/app/mock/18'
+  // BASEURL = 'http://teacher.frp.heikuai.net:5555/ips/a'
+  BASEURL = 'http://code2012.cn/rapServer/app/mock/18'
 }
 // 创建axios实例
 axios.defaults.withCredentials = true

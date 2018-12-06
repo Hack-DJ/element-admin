@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" @checkChange="checkChange" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
+    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
+    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -103,6 +103,26 @@ export default {
           value: 'start'
         }
       ],
+      columnsReplace: {
+        listId: {
+          '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '百度地图',
+          '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '高德地图',
+          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家网',
+          'Bb48934A-20BA-bfBb-9Dd4-bda5ebdDBbc8': '房天下网',
+          'CDFA8a2b-e7A9-3Ec9-710A-eEB6c4DFCF8a': '315house网',
+          'f62c973b-3E5f-8a7F-7b78-D69eeEE0d87E': '大众点评网',
+          '9dEd388d-a1aa-EfeA-24CD-CFc99AD346eF': '美团网'
+        },
+        state: {
+          0: '开始',
+          1: '暂停',
+          2: '停止'
+        },
+        start: {
+          0: '自动',
+          1: '手动'
+        }
+      },
       // 表单弹窗
       formDialog: false,
       formItemList: [
@@ -170,7 +190,27 @@ export default {
                 optionList: [{ label: 'a表', value: '1' }, { label: 'b表', value: '0' }]
               }
             ]
-          ]
+          ],
+          parentReplace: {
+            infoId: {
+              '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '百度地图',
+              '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '高德地图',
+              '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家网',
+              'Bb48934A-20BA-bfBb-9Dd4-bda5ebdDBbc8': '房天下网',
+              'CDFA8a2b-e7A9-3Ec9-710A-eEB6c4DFCF8a': '315house网',
+              'f62c973b-3E5f-8a7F-7b78-D69eeEE0d87E': '大众点评网',
+              '9dEd388d-a1aa-EfeA-24CD-CFc99AD346eF': '美团网'
+            },
+            tableId: {
+              '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': 'IPO类数据库表',
+              '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': 'IPO类数据库表',
+              '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '房产类数据库表',
+              'Bb48934A-20BA-bfBb-9Dd4-bda5ebdDBbc8': '房产类数据库表',
+              'CDFA8a2b-e7A9-3Ec9-710A-eEB6c4DFCF8a': '房产类数据库表',
+              'f62c973b-3E5f-8a7F-7b78-D69eeEE0d87E': '餐饮类数据库表',
+              '9dEd388d-a1aa-EfeA-24CD-CFc99AD346eF': '餐饮类数据库表'
+            }
+          }
         },
         {
           label: '任务名称',
@@ -213,7 +253,9 @@ export default {
         },
         {
           label: '启动方式',
-          type: 'input',
+          type: 'select',
+          placeholder: '请选择启动方式',
+          optionList: [{ label: '自动', value: 0 }, { label: '手动', value: 1 }],
           prop: 'start'
         }
       ],

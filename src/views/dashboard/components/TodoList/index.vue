@@ -2,7 +2,7 @@
   <section class="todoapp">
     <!-- header -->
     <header class="header">
-      <input class="new-todo" autocomplete="off" placeholder="待办事项" @keyup.enter="addTodo">
+      <input class="new-todo" autocomplete="off" placeholder="最近执行任务" @keyup.enter="addTodo">
     </header>
     <!-- main section -->
     <section v-show="todos.length" class="main">
@@ -42,14 +42,13 @@ const filters = {
   completed: todos => todos.filter(todo => todo.done)
 }
 const defalutList = [
-  { text: '库存清理', done: false },
-  { text: '数据搜索', done: false },
-  { text: '2018-12-21 开会', done: false },
-  { text: '2018-12-15 出差', done: true },
-  { text: '项目总结', done: true },
-  { text: '项目开发', done: true },
-  { text: '项目资料', done: true },
-  { text: '项目调研', done: true }
+  { text: '新建外卖类数据表', done: false },
+  { text: '开始爬取房屋类信息', done: false },
+  { text: '开始爬取餐饮类信息', done: false },
+  { text: '启动定时爬取任务', done: true },
+  { text: '新建爬虫脚本', done: true },
+  { text: '百度地图爬取任务完成', done: true },
+  { text: '高德地图爬取任务完成', done: true }
 ]
 export default {
   components: { Todo },

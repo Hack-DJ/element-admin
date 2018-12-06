@@ -80,7 +80,8 @@ export default {
         libraryId: {
           '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': 'POI类',
           '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '房屋信息类',
-          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '团购外卖类'
+          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '团购外卖类',
+          '14B26EfC-08C4-15F3-dDFE-aBaefC911ccd': '旅游类'
         }
       },
 

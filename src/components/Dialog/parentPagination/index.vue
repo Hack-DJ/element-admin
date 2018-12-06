@@ -1,7 +1,7 @@
 <template>
-  <el-dialog :visible="show" title="请选择" @close="dialogClose">
+  <el-dialog :visible="show" :title="pageName" @close="dialogClose">
     <table-search :search="searchCriteria" @searchList="searchChang" />
-    <table-list :is-dialog="true" :list="list" :columns="cloumnsList" :list-loading="listLoading" @current-change="handleCurrentChange" />
+    <table-list :is-dialog="true" :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @current-change="handleCurrentChange" />
     <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <div class="dialog-foot-button-group">
       <el-button type="primary" @click="parentMenuConfirm">确定</el-button>
@@ -37,24 +37,24 @@ export default {
       // table 表格
       list: [],
       listLoading: true,
-      search: {},
-
-      pageName: '',
-      listUrl: '',
-      searchCriteria: [],
-      cloumnsList: []
+      search: {}
     }
   },
-  watch: {
-    formData: {
-      handler(val) {
-        this.pageName = val.pageName
-        this.listUrl = val.listUrl
-        this.searchCriteria = val.parentSearchCriteria
-        this.cloumnsList = val.parentCloumnsList
-      },
-      deep: true,
-      immediate: true
+  computed: {
+    pageName() {
+      return this.formData.pageName || '请选择'
+    },
+    listUrl() {
+      return this.formData.listUrl || ''
+    },
+    searchCriteria() {
+      return this.formData.parentSearchCriteria || []
+    },
+    cloumnsList() {
+      return this.formData.parentCloumnsList || []
+    },
+    columnsReplace() {
+      return this.formData.parentReplace || {}
     }
   },
   created() {
