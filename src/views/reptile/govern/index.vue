@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
+    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" @checkChange="checkChange" />
     <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { getData } from '@/api/storeData'
+import { getGovern } from '@/api/reptile'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
@@ -24,38 +24,26 @@ import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
 
 export default {
-  name: 'StoreDataData',
+  name: 'ReptileGovern',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
-      pageName: '采集内容',
+      pageName: '服务治理',
       // search 查询面板
       searchList: [
         [
           {
-            label: '数据库表',
-            type: 'select',
-            key: 'tableId',
+            label: '服务任务id',
+            type: 'input',
             value: null,
-            optionList: [{ label: '数据库表1', value: 1 }, { label: '数据库表2', value: 2 }, { label: '数据库表3', value: 3 }]
+            key: 'serviceTaskId'
           },
           {
-            label: '内容名',
+            label: '信息分类',
             type: 'input',
             key: 'name',
             value: null
-          },
-          {
-            label: '字段名',
-            type: 'input',
-            key: 'fieldName'
-          },
-          {
-            label: '联合主键',
-            type: 'select',
-            optionList: [{ label: '是', value: 0 }, { label: '否', value: 1 }],
-            key: 'primaryKey'
           }
         ]
       ],
@@ -64,100 +52,80 @@ export default {
       listLoading: true,
       columns: [
         {
-          text: '数据库表',
-          value: 'tableId'
+          text: '服务任务id',
+          value: 'serviceTaskId'
         },
         {
-          text: '内容名',
+          text: '信息分类',
           value: 'name'
         },
         {
-          text: '字段名',
-          value: 'fieldName'
-        },
-        {
-          text: '联合主键',
-          width: 60,
-          switch: true,
-          value: 'primaryKey'
+          text: '详情',
+          value: 'details'
         }
       ],
-
+      optionList: [],
       // 表单弹窗
       formDialog: false,
       formItemList: [
         {
-          label: '数据库表',
+          label: '服务任务',
           type: 'parent',
           inputType: 'list',
-          placeholder: '请选择数据库表',
-          prop: 'tableId',
-          listUrl: 'http://code2012.cn/rapServer/app/mock/18/storedata/table',
-          pageName: '数据库表',
+          placeholder: '请选择爬虫服务任务',
+          prop: 'serviceTaskId',
+          listUrl: 'http://code2012.cn/rapServer/app/mock/18/reptile/servicetask',
+          pageName: '服务任务',
           parentCloumnsList: [
             {
-              text: '数据库',
-              value: 'libraryId'
+              text: '服务治理id',
+              value: 'governId'
             },
             {
-              text: '表名',
-              value: 'name'
-            },
-            {
-              text: '类型',
-              value: 'type'
-            },
-            {
-              text: '描述',
-              value: 'descriptions'
+              text: '任务id',
+              value: 'taskId'
             }
           ],
           parentSearchCriteria: [
             [
               {
-                label: '数据库',
-                type: 'select',
-                key: 'libraryId',
+                label: '服务治理id',
+                type: 'input',
                 value: null,
-                optionList: [{ label: '数据库1', value: 1 }, { label: '数据库2', value: 2 }, { label: '数据库3', value: 3 }]
+                key: 'governId'
               },
               {
-                label: '表名',
+                label: '任务id',
                 type: 'input',
-                key: 'name',
+                key: 'taskId',
                 value: null
               }
             ]
           ]
         },
         {
-          label: '内容名',
+          label: '信息分类',
           type: 'input',
+          placeholder: '请输入分类名',
           prop: 'name'
         },
         {
-          label: '字段名',
+          label: '详情',
           type: 'input',
-          placeholder: '请输入字段名',
-          prop: 'fieldName'
-        },
-        {
-          label: '联合主键',
-          type: 'select',
-          placeholder: '请选择联合主键',
-          optionList: [{ label: '是', value: '0' }, { label: '否', value: '1' }],
-          prop: 'primaryKey'
+          intpuType: '',
+          placeholder: '请输入详情',
+          prop: 'details'
         }
       ],
       formData: {
         id: ''
       },
       rules: {
-        tableId: [
-          { required: true, message: '请选择数据库表', trigger: 'blur' }
+        serviceTaskId: [
+          { required: true, message: '请选择服务任务', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入内容名', trigger: 'blur' }
+          { required: true, message: '请输入分类名', trigger: 'blur' }
         ]
       }
     }
@@ -177,7 +145,7 @@ export default {
       this.getList()
     },
     getList() {
-      getData(Object.assign(this.listQuery, this.search)).then(res => {
+      getGovern(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
         this.count = res.data.count
         this.listQuery.pageNo = res.data.pageNo

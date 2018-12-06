@@ -6,7 +6,7 @@
           <template v-if="column.switch">
             <el-switch :value="switchShow(scope.row[column.value])" disabled @input="switchInput(scope.row,column.switchKey,$event)" />
           </template>
-          <span v-else> {{ scope.row[column.value] }}</span>
+          <span v-else> {{ replace(scope,column) }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="!isDialog" align="center" label="设置" width="300px">
@@ -25,6 +25,10 @@ export default {
   name: 'TableList',
   props: {
     /* eslint-disable */
+    columnsReplace: {
+      type: Object,
+      default: () => {return {}}
+    },
     powerConfig: {
       type: Boolean,
       default: false
@@ -52,6 +56,13 @@ export default {
     },
     switchInput(row, key, val) {
       row[key] = val ? 1 : 0
+    },
+    replace(scope, column) {
+      let str = scope.row[column.value]
+      if (this.columnsReplace[column.value]) {
+        str = this.columnsReplace[column.value][scope.row[column.value]]
+      }
+      return str
     },
     confirmConfig(index) {
       this.$emit('config', index)

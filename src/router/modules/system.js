@@ -32,18 +32,18 @@ export default {
       component: () => import('@/views/power/dict/index'),
       meta: { title: '系统字典', icon: 'dict' }
     },
-    {
-      path: 'permission3',
-      name: 'Permission3',
-      component: () => import('@/views/power/permission/index'),
-      meta: { title: '系统业务参数', icon: 'power' }
-    },
-    {
-      path: 'permission4',
-      name: 'Permission4',
-      component: () => import('@/views/power/permission/index'),
-      meta: { title: '设置', icon: 'power' }
-    },
+    // {
+    //   path: 'permission3',
+    //   name: 'Permission3',
+    //   component: () => import('@/views/power/permission/index'),
+    //   meta: { title: '系统业务参数', icon: 'power' }
+    // },
+    // {
+    //   path: 'permission4',
+    //   name: 'Permission4',
+    //   component: () => import('@/views/power/permission/index'),
+    //   meta: { title: '设置', icon: 'power' }
+    // },
     {
       path: 'svg-icons',
       name: 'Icons',

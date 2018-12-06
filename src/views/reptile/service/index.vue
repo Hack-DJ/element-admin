@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" @addForm="addForm" />
+    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" @checkChange="checkChange" />
     <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
@@ -9,115 +9,117 @@
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
-      :tree-list="dataSourceTypeTree"
-      :tree-id-key="dataSourceTypeIdKey"
       :show.sync="addDialog"
       @save="submitForm" />
   </div>
 </template>
 
 <script>
-import { getInfo } from '@/api/dataSource'
+import { getService } from '@/api/reptile'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
-import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DataSourceInfo',
+  name: 'ReptileService',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
-      pageName: '信息',
+      pageName: '爬虫服务',
       // search 查询面板
       searchList: [
         [
-          { label: '网站名', type: 'input', key: 'name', value: null },
-          { label: '网站url', type: 'input', key: 'url', value: null },
           {
-            label: '类型',
-            type: 'select',
-            key: 'typeId',
+            label: '爬虫名',
+            type: 'input',
             value: null,
-            optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }]
+            key: 'name'
           },
-          { label: '添加顺序', type: 'select', key: 'sort', value: null, optionList: [{ label: '时间由近到远', value: 1 }, { label: '时间由远到近', value: 2 }] }
+          {
+            label: '版本号',
+            type: 'input',
+            key: 'version',
+            value: null
+          },
+          {
+            label: '服务器ip',
+            type: 'input',
+            key: 'ip',
+            value: null
+          }
         ]
       ],
-      search: {},
       // table 表格
       list: [],
       listLoading: true,
       columns: [
         {
-          text: '网站名',
+          text: '名称',
           value: 'name'
         },
         {
-          text: '网站url',
-          value: 'url'
+          text: '端口',
+          value: 'port'
         },
         {
-          text: '网站类型',
-          value: 'typeName'
+          text: '版本号',
+          value: 'version'
+        },
+        {
+          text: '代理服务器',
+          value: 'ip'
         }
       ],
       // 表单弹窗
       formDialog: false,
       formItemList: [
         {
-          label: '网站名',
+          label: '名称',
           type: 'input',
-          placeholder: '请输入网站名',
+          placeholder: '请输入爬虫服务名称',
           prop: 'name'
         },
         {
-          label: '网站url',
+          label: '代理服务器',
           type: 'input',
-          placeholder: '请输入网站url',
-          prop: 'url'
+          placeholder: '请输入爬虫代理服务器IP',
+          prop: 'ip'
         },
         {
-          label: '网站类型',
-          type: 'parent',
-          placeholder: '请输入网站类型',
-          prop: 'typeId'
+          label: '端口',
+          type: 'input',
+          placeholder: '请输入爬虫代理服务器端口',
+          prop: 'port'
+        },
+        {
+          label: '版本号',
+          type: 'input',
+          placeholder: '请输入爬虫服务版本号',
+          prop: 'version'
         }
       ],
       formData: {
-        id: '',
-        name: '',
-        url: '',
-        typeId: ''
+        id: ''
       },
       rules: {
-        value: [
-          { required: true, message: '请输入键值', trigger: 'blur' }
-        ],
-        label: [
-          { required: true, message: '请输入标签', trigger: 'blur' }
-        ],
-        type: [
-          { required: true, message: '请输入类型', trigger: 'blur' }
+        name: [
+          { required: true, message: '请输入爬虫服务名称', trigger: 'blur' }
         ]
       }
     }
   },
-  computed: {
-    ...mapGetters([
-      'dataSourceTypeList',
-      'dataSourceTypeIdKey',
-      'dataSourceTypeTree'
-    ])
-  },
   created() {
+    const tmp = {}
+    this.formItemList.forEach(item => {
+      tmp[item.prop] = item.value || ''
+    })
+    Object.assign(this.formData, tmp)
     this.formDataTemp = this._.cloneDeep(this.formData)
     this.getList()
-    this.getParentType()
   },
   methods: {
     searchChang(data) {
@@ -125,19 +127,13 @@ export default {
       this.getList()
     },
     getList() {
-      getInfo(Object.assign(this.listQuery, this.search)).then(res => {
+      getService(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
-        this.list.map(item => {
-          item.typeName = this.dataSourceTypeIdKey[item.typeId] ? this.dataSourceTypeIdKey[item.typeId].name : item.typeId
-        })
         this.count = res.data.count
         this.listQuery.pageNo = res.data.pageNo
         this.listQuery.pageSize = res.data.pageSize
         this.listLoading = false
       })
-    },
-    getParentType() {
-      this.$store.dispatch('GetDataSourceType')
     }
   }
 }

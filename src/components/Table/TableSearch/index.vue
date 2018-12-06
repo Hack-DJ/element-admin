@@ -14,6 +14,11 @@
                     :label="item.label"
                     :value="item.value" />
                 </el-select>
+                <el-date-picker
+                  v-if="col.type === 'datetime'"
+                  v-model="col.value"
+                  type="datetime"
+                  placeholder="选择日期时间"/>
               </el-form-item>
             </el-col>
           </el-row>

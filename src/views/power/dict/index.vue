@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" @addForm="addForm" @checkChange="checkChange" />
+    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
     <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
@@ -11,7 +11,6 @@
       :form-title="formTitle"
       :show.sync="addDialog"
       @save="submitForm" />
-
   </div>
 </template>
 
@@ -152,11 +151,12 @@ export default {
         this.listQuery.pageSize = res.data.pageSize
         this.listLoading = false
       })
+    },
+    checkChange(select) {
+      console.log(select)
+      this.optionSelect = select
+      console.log(this.optionSelect)
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'src/styles/var';
-</style>

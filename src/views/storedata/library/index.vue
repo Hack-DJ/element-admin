@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <operation-panel :option-list="optionList" :add-name="addName" @addForm="addForm" @checkChange="checkChange" />
+    <operation-panel :option-list="optionList" :add-name="addName" @addForm="addForm" />
     <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"

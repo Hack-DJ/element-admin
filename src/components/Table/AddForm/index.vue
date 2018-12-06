@@ -33,6 +33,14 @@
                 :value="option.value" />
             </el-select>
           </template>
+          <template v-if="item.type==='datetime'">
+            <el-date-picker
+              v-model="ruleForm[item.prop]"
+              :placeholder="item | placeholder"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime" />
+          </template>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm">确定</el-button>
@@ -61,7 +69,11 @@ export default {
   },
   filters: {
     placeholder(item) {
-      return item.placeholder || item.type === 'select' ? '请选择' : '请输入内容'
+      let placeholder = item.placeholder
+      if (!placeholder) {
+        placeholder = item.type === 'select' ? '请选择' : '请输入内容'
+      }
+      return placeholder
     },
     inputType(item) {
       return item.inputType || 'text'
@@ -190,6 +202,10 @@ export default {
 
 <style lang="scss" scoped>
 @import 'src/styles/var';
+
+.el-select, .el-date-editor {
+  width: 100%;
+}
 
 .plan {
   margin-bottom: $marginBottomMedium;

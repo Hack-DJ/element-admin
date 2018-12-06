@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <operation-panel add-name="新增角色" @addForm="addForm" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
+    <table-list :list="list" :columns="columns" :list-loading="listLoading" :columns-replace="columnsReplace" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -75,13 +75,22 @@ export default {
         {
           text: '系统数据',
           value: 'sysData',
-          switchKey: 'sysData'
+          switchKey: 'sysData',
+          width: 60,
+          switch: true
         },
         {
           text: '备注',
           value: 'remarks'
         }
       ],
+      columnsReplace: {
+        roleType: {
+          assignment: '任务分配',
+          'security-role': '管理角色',
+          user: '普通角色'
+        }
+      },
       // 表单弹窗
       formItemList: [
         {
