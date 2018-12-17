@@ -1,37 +1,34 @@
 <template>
   <el-card class="box-card-component" style="margin-left:8px;">
-    <!--<div slot="header" class="box-card-header">-->
-      <!--<img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png">-->
-    <!--</div>-->
     <div style="position:relative;">
-      <mallki class-name="mallki-text" text="爬虫任务完成度"/>
+      <mallki class-name="mallki-text" text="爬虫任务完成度" />
       <div style="padding-top:35px;" class="progress-item">
         <span>大众点评</span>
-        <el-progress :percentage="70"/>
+        <el-progress :percentage="70" />
       </div>
       <div class="progress-item">
         <span>百度IOP</span>
-        <el-progress :percentage="45"/>
+        <el-progress :percentage="45" />
       </div>
       <div class="progress-item">
         <span>高德IOP</span>
-        <el-progress :percentage="70"/>
+        <el-progress :percentage="70" />
       </div>
       <div class="progress-item">
         <span>美团</span>
-        <el-progress :percentage="18"/>
+        <el-progress :percentage="18" />
       </div>
       <div class="progress-item">
         <span>链家</span>
-        <el-progress :percentage="98"/>
+        <el-progress :percentage="98" />
       </div>
       <div class="progress-item">
         <span>糯米</span>
-        <el-progress :percentage="22"/>
+        <el-progress :percentage="22" />
       </div>
       <div class="progress-item">
         <span>豆瓣网</span>
-        <el-progress :percentage="100" status="success"/>
+        <el-progress :percentage="100" status="success" />
       </div>
     </div>
   </el-card>
@@ -70,10 +67,10 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" >
-.box-card-component{
+<style rel="stylesheet/scss" lang="scss">
+.box-card-component {
   .el-card__header {
-    padding: 0px!important;
+    padding: 0px !important;
   }
 }
 </style>
@@ -101,25 +98,25 @@ export default {
   }
   .panThumb {
     z-index: 100;
-    height: 70px!important;
-    width: 70px!important;
-    position: absolute!important;
+    height: 70px !important;
+    width: 70px !important;
+    position: absolute !important;
     top: -45px;
     left: 0px;
     border: 5px solid #ffffff;
     background-color: #fff;
     margin: auto;
-    box-shadow: none!important;
+    box-shadow: none !important;
     /deep/ .pan-info {
-      box-shadow: none!important;
+      box-shadow: none !important;
     }
   }
   .progress-item {
     margin-bottom: 10px;
     font-size: 14px;
   }
-  @media only screen and (max-width: 1510px){
-    .mallki-text{
+  @media only screen and (max-width: 1510px) {
+    .mallki-text {
       display: none;
     }
   }

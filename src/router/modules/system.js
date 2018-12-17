@@ -31,7 +31,7 @@ export default {
       name: 'Dict',
       component: () => import('@/views/power/dict/index'),
       meta: { title: '系统字典', icon: 'dict' }
-    },
+    }
     // {
     //   path: 'permission3',
     //   name: 'Permission3',
@@ -44,11 +44,11 @@ export default {
     //   component: () => import('@/views/power/permission/index'),
     //   meta: { title: '设置', icon: 'power' }
     // },
-    {
-      path: 'svg-icons',
-      name: 'Icons',
-      component: () => import('@/views/power/svg-icons/index'),
-      meta: { title: '图标管理', icon: 'icon' }
-    }
+    // {
+    //   path: 'svg-icons',
+    //   name: 'Icons',
+    //   component: () => import('@/views/power/svg-icons/index'),
+    //   meta: { title: '图标管理', icon: 'icon' }
+    // }
   ]
 }

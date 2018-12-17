@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="list" style="width: 100%;padding-top: 15px;">
+  <el-table :data="list" style="width: 100%;">
     <el-table-column label="爬虫任务" min-width="180">
       <template slot-scope="scope">
         {{ scope.row.order_no | orderNoFilter }}

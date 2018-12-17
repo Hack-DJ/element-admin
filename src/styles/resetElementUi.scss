@@ -33,3 +33,12 @@
     width: 100%;
   }
 }
+
+.main-container {
+  .el-table {
+    font-size: 12px;
+    th {
+      padding: 8px 0;
+    }
+  }
+}
