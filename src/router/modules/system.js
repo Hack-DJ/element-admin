@@ -12,7 +12,7 @@ export default {
       path: 'permission',
       name: 'Permission',
       component: () => import('@/views/power/permission/index'),
-      meta: { title: '菜单管理', icon: 'power' }
+      meta: { title: '菜单管理', icon: 'menu' }
     },
     {
       path: 'role',
@@ -31,6 +31,12 @@ export default {
       name: 'Dict',
       component: () => import('@/views/power/dict/index'),
       meta: { title: '系统字典', icon: 'dict' }
+    },
+    {
+      path: 'svg-icons',
+      name: 'Icons',
+      component: () => import('@/views/power/svg-icons/index'),
+      meta: { title: '图标管理', icon: 'icon' }
     }
     // {
     //   path: 'permission3',

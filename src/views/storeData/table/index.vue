@@ -36,22 +36,27 @@ export default {
           {
             label: '数据库',
             type: 'select',
-            key: 'libraryId',
+            key: 'database_id',
             value: null,
             optionList: [{ label: '数据库1', value: 1 }, { label: '数据库2', value: 2 }, { label: '数据库3', value: 3 }]
           },
           {
             label: '表名',
             type: 'input',
-            key: 'name',
+            key: 'table_name',
             value: null
           },
           {
             label: '表类型',
-            type: 'select',
-            key: 'type',
-            value: null,
-            optionList: [{ label: 'int', value: '0' }, { label: 'float', value: '1' }, { label: 'double', value: '2' }]
+            type: 'input',
+            key: 'table_type',
+            value: null
+          },
+          {
+            label: '表code',
+            type: 'input',
+            key: 'table_code',
+            value: null
           }
         ]
       ],
@@ -61,19 +66,23 @@ export default {
       columns: [
         {
           text: '数据库',
-          value: 'libraryId'
+          value: 'database_id'
         },
         {
           text: '表名',
-          value: 'name'
+          value: 'table_name'
         },
         {
           text: '类型',
-          value: 'type'
+          value: 'table_type'
         },
         {
-          text: '描述',
-          value: 'descriptions'
+          text: '表code',
+          value: 'table_code'
+        },
+        {
+          text: '备注',
+          value: 'remarks'
         }
       ],
       columnsReplace: {
@@ -93,29 +102,33 @@ export default {
           type: 'parent',
           inputType: 'list',
           placeholder: '请选择数据库',
-          prop: 'libraryId',
+          prop: 'database_id',
           listUrl: 'http://code2012.cn/rapServer/app/mock/18/storedata/library',
           pageName: '选择网站数据库',
           parentCloumnsList: [
             {
               text: '名称',
-              value: 'name'
+              value: 'database_name'
             },
             {
               text: '地址',
-              value: 'host'
+              value: 'database_url'
             },
             {
               text: '端口',
-              value: 'port'
+              value: 'database_port'
             },
             {
               text: '用户名',
-              value: 'login'
+              value: 'login_user'
             },
             {
               text: '密码',
-              value: 'password'
+              value: 'login_psw'
+            },
+            {
+              text: '备注',
+              value: 'remarks'
             }
           ],
           parentSearchCriteria: []
@@ -123,19 +136,26 @@ export default {
         {
           label: '表名',
           type: 'input',
-          prop: 'name'
+          placeholder: '请输入表名',
+          prop: 'table_name'
         },
         {
           label: '表类型',
-          type: 'select',
-          placeholder: '请选中表类型',
-          optionList: [{ label: 'int', value: '0' }, { label: 'float', value: '1' }, { label: 'double', value: '2' }],
-          prop: 'type'
+          type: 'input',
+          placeholder: '请输入表类型',
+          prop: 'table_type'
         },
         {
-          label: '描述',
+          label: '表code',
           type: 'input',
-          placeholder: '请输入描述',
+          placeholder: '请输入表code',
+          prop: 'table_code'
+        },
+        {
+          label: '备注',
+          type: 'input',
+          inputType: 'textarea',
+          placeholder: '请输入备注',
           prop: 'descriptions'
         }
       ],
@@ -143,11 +163,17 @@ export default {
         id: ''
       },
       rules: {
-        libraryId: [
+        database_id: [
           { required: true, message: '请选择数据库', trigger: 'blur' }
         ],
-        name: [
+        table_name: [
           { required: true, message: '请输入表名', trigger: 'blur' }
+        ],
+        table_type: [
+          { required: true, message: '请输入表类型', trigger: 'blur' }
+        ],
+        table_code: [
+          { required: true, message: '请输入表code', trigger: 'blur' }
         ]
       }
     }

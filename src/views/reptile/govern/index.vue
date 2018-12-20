@@ -143,7 +143,7 @@ export default {
         {
           label: '详情',
           type: 'input',
-          intpuType: '',
+          inputType: 'textarea',
           placeholder: '请输入详情',
           prop: 'details'
         }

@@ -8,27 +8,27 @@ export default {
   children: [
     {
       path: '/showData',
-      component: () => import('@/views/401'),
+      component: () => import('@/views/error/401'),
       meta: { title: '查看数据', icon: 'power' }
     },
     {
       path: '/showRizi',
-      component: () => import('@/views/401'),
+      component: () => import('@/views/error/401'),
       meta: { title: '操作日志', icon: 'power' }
     },
     {
       path: '/showHtml',
-      component: () => import('@/views/401'),
+      component: () => import('@/views/error/401'),
       meta: { title: '查看HTML文件', icon: 'power' }
     },
     {
       path: '/showCount',
-      component: () => import('@/views/401'),
+      component: () => import('@/views/error/401'),
       meta: { title: '任务数据统计', icon: 'power' }
     },
     {
       path: '/showConfig',
-      component: () => import('@/views/401'),
+      component: () => import('@/views/error/401'),
       meta: { title: '配置管理', icon: 'power' }
     }
   ]

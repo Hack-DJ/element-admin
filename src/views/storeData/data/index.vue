@@ -36,26 +36,23 @@ export default {
           {
             label: '数据库表',
             type: 'select',
-            key: 'tableId',
-            value: null,
+            key: 'collect_table_id',
             optionList: [{ label: '数据库表1', value: 1 }, { label: '数据库表2', value: 2 }, { label: '数据库表3', value: 3 }]
           },
           {
-            label: '内容名',
+            label: '字段代码',
             type: 'input',
-            key: 'name',
-            value: null
+            key: 'field_code'
           },
           {
             label: '字段名',
             type: 'input',
-            key: 'fieldName'
+            key: 'field_name'
           },
           {
-            label: '联合主键',
-            type: 'select',
-            optionList: [{ label: '是', value: 0 }, { label: '否', value: 1 }],
-            key: 'primaryKey'
+            label: '字段长度',
+            type: 'input',
+            key: 'field_length'
           }
         ]
       ],
@@ -65,25 +62,42 @@ export default {
       columns: [
         {
           text: '数据库表',
-          value: 'tableId'
+          value: 'collect_table_id'
         },
         {
-          text: '内容名',
-          value: 'name'
+          text: '字段代码',
+          value: 'field_code'
         },
         {
           text: '字段名',
-          value: 'fieldName'
+          value: 'field_name'
         },
         {
-          text: '联合主键',
+          text: '字段长度',
+          value: 'field_length'
+        },
+        {
+          text: '采集子表主键',
+          value: 'slave_collect_table_id'
+        },
+        {
+          text: '修改数据字段',
           width: 60,
           switch: true,
-          value: 'primaryKey'
+          value: 'is_update'
         }
       ],
       columnsReplace: {
-        tableId: {
+        collect_table_id: {
+          '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '房天下',
+          '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '安居客',
+          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家',
+          '14B26EfC-08C4-15F3-dDFE-aBagfC911B11': '饿了么',
+          '14B26EfC-08C4-15F3-dDFE-aBawfC911B12': '百度',
+          '14B26EfC-08C4-15F3-dD2E-aBdefC911B11': '豆瓣',
+          '14B26EfC-08C4-15F3-dcFE-aBbefC911B12': '搜狗'
+        },
+        slave_collect_table_id: {
           '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '房天下',
           '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '安居客',
           '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家',
@@ -101,25 +115,29 @@ export default {
           type: 'parent',
           inputType: 'list',
           placeholder: '请选择数据库表',
-          prop: 'tableId',
+          prop: 'collect_table_id',
           listUrl: 'http://code2012.cn/rapServer/app/mock/18/storedata/table',
           pageName: '数据库表',
           parentCloumnsList: [
             {
               text: '数据库',
-              value: 'libraryId'
+              value: 'database_id'
             },
             {
               text: '表名',
-              value: 'name'
+              value: 'table_name'
             },
             {
               text: '类型',
-              value: 'type'
+              value: 'table_type'
             },
             {
-              text: '描述',
-              value: 'descriptions'
+              text: '表code',
+              value: 'table_code'
+            },
+            {
+              text: '备注',
+              value: 'remarks'
             }
           ],
           parentSearchCriteria: [
@@ -127,20 +145,32 @@ export default {
               {
                 label: '数据库',
                 type: 'select',
-                key: 'libraryId',
+                key: 'database_id',
                 value: null,
                 optionList: [{ label: '数据库1', value: 1 }, { label: '数据库2', value: 2 }, { label: '数据库3', value: 3 }]
               },
               {
                 label: '表名',
                 type: 'input',
-                key: 'name',
+                key: 'table_name',
+                value: null
+              },
+              {
+                label: '表类型',
+                type: 'input',
+                key: 'table_type',
+                value: null
+              },
+              {
+                label: '表code',
+                type: 'input',
+                key: 'table_code',
                 value: null
               }
             ]
           ],
           parentReplace: {
-            libraryId: {
+            database_id: {
               '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': 'POI类',
               '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '房屋信息类',
               '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '团购外卖类',
@@ -149,22 +179,36 @@ export default {
           }
         },
         {
-          label: '内容名',
+          label: '字段代码',
           type: 'input',
-          prop: 'name'
+          placeholder: '请输入字段代码',
+          prop: 'field_code'
         },
         {
           label: '字段名',
           type: 'input',
           placeholder: '请输入字段名',
-          prop: 'fieldName'
+          prop: 'field_name'
         },
         {
-          label: '联合主键',
+          label: '字段长度',
+          type: 'input',
+          placeholder: '请输入字段长度',
+          prop: 'field_length'
+        },
+        {
+          label: '是否修改数据字段',
           type: 'select',
-          placeholder: '请选择联合主键',
+          placeholder: '是否修改数据字段',
           optionList: [{ label: '是', value: '0' }, { label: '否', value: '1' }],
-          prop: 'primaryKey'
+          prop: 'is_update'
+        },
+        {
+          label: '采集子表主键',
+          type: 'select',
+          placeholder: '采集子表主键',
+          optionList: [{ label: '表1', value: '0' }, { label: '表2', value: '1' }],
+          prop: 'slave_collect_table_id'
         }
       ],
       formData: {
