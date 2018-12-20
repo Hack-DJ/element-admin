@@ -29,7 +29,7 @@ export default {
       path: 'storeDataData',
       name: 'StoreDataData',
       component: () => import('@/views/storeData/data/index'),
-      meta: { title: '采集内容', icon: 'databaseData' }
+      meta: { title: '采集内容', icon: 'databaseField' }
     }
   ]
 }

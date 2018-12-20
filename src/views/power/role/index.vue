@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
     <operation-panel add-name="新增角色" @addForm="addForm" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" :columns-replace="columnsReplace" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
+    <table-list
+      :list="list"
+      :columns="columns"
+      :list-loading="listLoading"
+      :columns-replace="columnsReplace"
+      power-config
+      @config="configRole"
+      @edit="editForm"
+      @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -192,10 +200,12 @@ export default {
       } else {
         this.selectKeys = []
       }
-      for (var i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-        this.$refs.tree.store._getAllNodes()[i].expanded = this.selectKeys.includes(this.$refs.tree.store._getAllNodes()[i].data.id)
-      }
-      this.$refs.tree.setCheckedKeys(this.selectKeys)
+      this.$nextTick(() => {
+        for (var i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
+          this.$refs.tree.store._getAllNodes()[i].expanded = this.selectKeys.includes(parseInt(this.$refs.tree.store._getAllNodes()[i].data.id))
+        }
+        this.$refs.tree.setCheckedKeys(this.selectKeys)
+      })
     }
   }
 }

@@ -39,10 +39,12 @@ export function validatePhone(val) {
 export function validateEmpty(data) {
   if (!data) return false
   if (typeof data === 'string') {
-    return data !== '' && data !== null
+    return data.length > 0 && data !== '' && data !== null
   } else if (typeof data === 'object') {
     return Object.keys(data).length > 0
+  } else if (typeof data === 'number') {
+    return data > 0
   } else {
-    return data.length > 0
+    return !!data
   }
 }
