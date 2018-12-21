@@ -33,6 +33,7 @@ const tableSearch = {
     },
     // 提交表单
     submitForm(data) {
+      console.log(data)
       // 格式化存储数据
       let isNew = true
       this.list.map(item => {

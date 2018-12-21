@@ -2,7 +2,7 @@
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
     <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @edit="editForm" @delete="confirmDelete" />
+    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -96,7 +96,7 @@ export default {
       columns: [
         {
           text: '网站信息',
-          value: 'infoId'
+          value: 'infoId_des'
         },
         {
           text: '单位时间内请求次数',
@@ -107,17 +107,6 @@ export default {
           value: 'requestCount'
         }
       ],
-      columnsReplace: {
-        infoId: {
-          '9dfbCf66-6fd3-8db9-dB23-5C23e13fb73d': '百度地图',
-          '5dcfCFb4-5B56-3CB3-C7aB-Cbb44A5Ff2BD': '高德地图',
-          '14B26EfC-08C4-15F3-dDFE-aBaefC911B16': '链家网',
-          'Bb48934A-20BA-bfBb-9Dd4-bda5ebdDBbc8': '房天下网',
-          'CDFA8a2b-e7A9-3Ec9-710A-eEB6c4DFCF8a': '315house网',
-          'f62c973b-3E5f-8a7F-7b78-D69eeEE0d87E': '大众点评网',
-          '9dEd388d-a1aa-EfeA-24CD-CFc99AD346eF': '美团网'
-        }
-      },
       optionList: [
         {
           text: '限制id',
@@ -245,7 +234,9 @@ export default {
           prop: 'requestAjax'
         }
       ],
-      formData: {},
+      formData: {
+        id: ''
+      },
       rules: {
         infoId: [
           { required: true, message: '请选择网站信息', trigger: 'blur' }
@@ -261,9 +252,7 @@ export default {
     ])
   },
   created() {
-    const tmp = {
-      id: ''
-    }
+    const tmp = {}
     this.formItemList.forEach(item => {
       tmp[item.prop] = item.value || ''
     })
@@ -292,7 +281,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'src/styles/var';
-</style>

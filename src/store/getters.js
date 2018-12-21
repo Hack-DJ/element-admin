@@ -26,6 +26,7 @@ const getters = {
   cachedViews: state => state.tagsView.cachedViews,
   token: state => state.user.token,
   userInfo: state => state.user.userInfo,
+
   permissionList: state => state.power.permissionList,
   permissionIdKey: (state, getters) => {
     return permissionIdKey(getters.permissionList)
@@ -40,6 +41,7 @@ const getters = {
   dataSourceTypeTree: (state, getters) => {
     return generationTree(getters.dataSourceTypeList, getters.dataSourceTypeIdKey)
   },
+
   roles: state => state.user.roles,
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters

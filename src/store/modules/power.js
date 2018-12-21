@@ -39,7 +39,7 @@ const user = {
       return new Promise((resolve, reject) => {
         savePermission(data).then(response => {
           if (data.id !== '') {
-            // 次数据为修改数据
+            // 修改数据
             getters.permissionIdKey[data.id] = Object.assign(getters.permissionIdKey[data.id], data)
           }
           // 格式化当前数据,并设置修改,删除按钮

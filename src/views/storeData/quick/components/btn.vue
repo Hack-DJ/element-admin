@@ -1,8 +1,8 @@
 <template>
   <div class="quick-btn">
-    <el-button type="primary" @click="save">保存</el-button>
-    <el-button @click="reset">重置</el-button>
+    <el-button type="primary" @click="save">下一步</el-button>
     <el-button v-if="!start" @click="up">上一步</el-button>
+    <el-button @click="reset">重置</el-button>
     <el-button v-if="!end" @click="next">跳过</el-button>
   </div>
 </template>
@@ -19,11 +19,6 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  data() {
-    return {}
-  },
-  created() {
   },
   methods: {
     up() {

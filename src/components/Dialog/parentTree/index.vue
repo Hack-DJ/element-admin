@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible="show" title="请选择" @close="dialogClose">
+  <el-dialog :visible="show" title="请选择" append-to-body @close="dialogClose">
     <el-tree
       ref="tree"
       :data="treeList"

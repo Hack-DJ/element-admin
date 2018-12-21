@@ -15,6 +15,7 @@
 </template>
 
 <script>
+// import { getPermission } from '@/api/power'
 import { AddFormMixin } from '@/mixins'
 import treeTable from '@/components/TreeTable'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -179,10 +180,21 @@ export default {
   methods: {
     // 获取列表
     getList() {
-      this.listLoading = true
+      // this.listLoading = true
       this.$store.dispatch('GetPermission').then(() => {
         this.listLoading = false
       })
+      // getPermission().then(res => {
+      //   const list = res.data.list
+      //   const data = {
+      //     route: this.$route,
+      //     formData: this.formData,
+      //     rules: this.rules,
+      //     itemList: this.formItemList,
+      //     treeList: list
+      //   }
+      //   this.$store.dispatch('addViewForm', data)
+      // })
     },
     editForm({ index, row }) {
       const key = Object.keys(this.formData)
@@ -191,12 +203,15 @@ export default {
     },
     // 提交表单
     submitForm(data) {
+      console.log(data)
       // // 格式化存储数据
       const parent = {
         'parent.id': data.parentId,
         'parent.name': data.parentName
       }
-      this.$store.dispatch('SavePermission', Object.assign(this.formData, data, parent)).then(res => {
+      Object.assign(this.formData, data, parent)
+      console.log(this.formData)
+      this.$store.dispatch('SavePermission', this.formData).then(res => {
         this.addDialog = false
       })
     }

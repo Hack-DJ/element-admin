@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible="show" :title="pageName" @close="dialogClose">
+  <el-dialog :visible="show" :title="pageName" append-to-body @close="dialogClose">
     <table-search :search="searchCriteria" @searchList="searchChang" />
     <table-list :is-dialog="true" :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @current-change="handleCurrentChange" />
     <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />

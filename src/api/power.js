@@ -103,11 +103,20 @@ export function getPermission() {
 }
 
 export function savePermission(form) {
-  return request({
-    url: linkUrl('save'),
-    method: 'post',
-    data: form
+  return new Promise(resolve => {
+    const res = {
+      'ret': 0,
+      'msg': '',
+      'data': {}
+    }
+    resolve(res)
   })
+
+  // return request({
+  //   url: linkUrl('save'),
+  //   method: 'post',
+  //   data: form
+  // })
 }
 
 export function getRoleList(params) {

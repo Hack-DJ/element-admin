@@ -1,14 +1,16 @@
 <template>
-  <div>
+  <div style="position: relative;">
     <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
       <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
         <template v-if="item.type==='radio'">
           <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
         </template>
         <template v-if="item.type==='parent'">
-          <el-input :value="ruleForm[item.prop]" :placeholder="item | placeholder" clearable readonly>
-            <el-button v-if="item.inputType==='list'" slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
-            <el-button v-else slot="append" icon="el-icon-search" @click="parentShow(item.prop,'menu')" />
+          <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
+            <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
+          </el-input>
+          <el-input v-else :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
+            <el-button slot="append" icon="el-icon-search" @click="parentShow(item.prop,'menu')" />
           </el-input>
         </template>
         <template v-if="item.type==='icon'">
@@ -74,6 +76,10 @@ export default {
     }
   },
   props: {
+    isSync: {
+      type: Boolean,
+      default: false
+    },
     formData: {
       type: Object,
       default: () => {}
@@ -111,13 +117,15 @@ export default {
     }
   },
   watch: {
-    formData: {
+    ruleForm: {
       handler(val) {
-        this.ruleForm = this._.cloneDeep(val)
+        this.isSync && this.$emit('update:formData', val)
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
+  },
+  created() {
+    this.ruleForm = this._.cloneDeep(this.formData)
   },
   methods: {
     // switch按钮
@@ -133,6 +141,7 @@ export default {
       const tmp = this.treeIdKey[val]
       return tmp ? tmp.name : ''
     },
+
     // 选择上级
     parentShow(item, type) {
       this.parentItem = item
@@ -143,28 +152,35 @@ export default {
       }
     },
     parentChange(data) {
-      const tmp = {
-        parentId: '',
-        parentName: ''
-      }
+      let tmp = {}
       if (Object.keys(data).length > 0) {
         const { id, name } = data
-        tmp.parentId = id
-        tmp.parentName = name
-        tmp[this.parentItem.prop] = id
+        tmp = {
+          [this.parentItem.prop + '_des']: name,
+          [this.parentItem.prop]: id
+        }
       }
       Object.assign(this.ruleForm, tmp)
     },
-
-    // 提交表单
+    // 保存
     submitForm() {
-      this.$refs.ruleForm.validate(valid => {
-        return valid
+      return new Promise((resolve, reject) => {
+        this.$refs.ruleForm.validate(valid => {
+          if (valid) {
+            resolve(this.ruleForm)
+          } else {
+            reject()
+          }
+        })
       })
     },
-    // 重置表单
-    resetForm() {
-      this.$refs.ruleForm.resetFields()
+    // 重置
+    resetForm(data) {
+      if (data) {
+        this.ruleForm = data
+      } else {
+        this.$refs.ruleForm.resetFields()
+      }
     }
   }
 }
