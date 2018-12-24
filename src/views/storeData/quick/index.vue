@@ -19,6 +19,7 @@
 
 <script>
 
+import { databaseForm, tableForm, fieldForm } from '@/api/storedata'
 import FormPlan from '@/components/Table/FormPlan'
 import quickBtn from './components/btn'
 
@@ -32,216 +33,21 @@ export default {
     return {
       stepActive: 0,
       stepList: [
-        {
+        databaseForm({
           title: '新建数据库',
           icon: 'database',
-          id: 'database',
-          itemList: [
-            {
-              label: '数据库名',
-              type: 'input',
-              placeholder: '请输入数据库名',
-              prop: 'database_name'
-            },
-            {
-              label: '数据库地址',
-              type: 'input',
-              placeholder: '请输入数据库URL或IP地址',
-              prop: 'database_url'
-            },
-            {
-              label: '端口',
-              type: 'input',
-              placeholder: '请输入数据库端口',
-              prop: 'database_port'
-            },
-            {
-              label: '用户名',
-              type: 'input',
-              placeholder: '请输入数据库登录用户名',
-              prop: 'login_user'
-            },
-            {
-              label: '密码',
-              type: 'input',
-              placeholder: '请输入数据库登录密码',
-              prop: 'login_psw'
-            },
-            {
-              label: '备注',
-              type: 'input',
-              inputType: 'textarea',
-              placeholder: '请输入数据库备注',
-              prop: 'remarks'
-            }
-          ],
-          ruleForm: {
-            database_name: '',
-            database_port: '',
-            database_url: '',
-            id: '',
-            login_psw: '',
-            login_user: '',
-            remarks: ''
-          },
-          rules: {
-            database_name: [
-              { required: true, message: '请输入数据库名称', trigger: 'blur' }
-            ],
-            database_url: [
-              { required: true, message: '请输入数据库地址', trigger: 'blur' }
-            ],
-            database_port: [
-              { required: true, message: '请输入数据库端口', trigger: 'blur' }
-            ],
-            login_user: [
-              { required: true, message: '请输入数据库登录用户名', trigger: 'blur' }
-            ],
-            login_psw: [
-              { required: true, message: '请输入数据库登录密码', trigger: 'blur' }
-            ]
-          }
-        },
-        {
+          id: 'database'
+        }),
+        tableForm({
           title: '新建数据表',
           icon: 'databaseTable',
-          id: 'table',
-          itemList: [
-            {
-              label: '数据库名',
-              type: 'input',
-              placeholder: '请输入数据库名',
-              prop: 'database_name'
-            },
-            {
-              label: '数据库地址',
-              type: 'input',
-              placeholder: '请输入数据库URL或IP地址',
-              prop: 'database_url'
-            },
-            {
-              label: '端口',
-              type: 'input',
-              placeholder: '请输入数据库端口',
-              prop: 'database_port'
-            },
-            {
-              label: '用户名',
-              type: 'input',
-              placeholder: '请输入数据库登录用户名',
-              prop: 'login_user'
-            },
-            {
-              label: '密码',
-              type: 'input',
-              placeholder: '请输入数据库登录密码',
-              prop: 'login_psw'
-            },
-            {
-              label: '备注',
-              type: 'input',
-              inputType: 'textarea',
-              placeholder: '请输入数据库备注',
-              prop: 'remarks'
-            }
-          ],
-          ruleForm: {
-            database_name: '',
-            database_port: '',
-            database_url: '',
-            id: '',
-            login_psw: '',
-            login_user: '',
-            remarks: ''
-          },
-          rules: {
-            database_name: [
-              { required: true, message: '请输入数据库名称', trigger: 'blur' }
-            ],
-            database_url: [
-              { required: true, message: '请输入数据库地址', trigger: 'blur' }
-            ],
-            database_port: [
-              { required: true, message: '请输入数据库端口', trigger: 'blur' }
-            ],
-            login_user: [
-              { required: true, message: '请输入数据库登录用户名', trigger: 'blur' }
-            ],
-            login_psw: [
-              { required: true, message: '请输入数据库登录密码', trigger: 'blur' }
-            ]
-          }
-        },
-        {
+          id: 'table'
+        }),
+        fieldForm({
           title: '新建表字段',
           icon: 'databaseField',
-          id: 'field',
-          itemList: [
-            {
-              label: '数据库名',
-              type: 'input',
-              placeholder: '请输入数据库名',
-              prop: 'database_name'
-            },
-            {
-              label: '数据库地址',
-              type: 'input',
-              placeholder: '请输入数据库URL或IP地址',
-              prop: 'database_url'
-            },
-            {
-              label: '端口',
-              type: 'input',
-              placeholder: '请输入数据库端口',
-              prop: 'database_port'
-            },
-            {
-              label: '用户名',
-              type: 'input',
-              placeholder: '请输入数据库登录用户名',
-              prop: 'login_user'
-            },
-            {
-              label: '密码',
-              type: 'input',
-              placeholder: '请输入数据库登录密码',
-              prop: 'login_psw'
-            },
-            {
-              label: '备注',
-              type: 'input',
-              inputType: 'textarea',
-              placeholder: '请输入数据库备注',
-              prop: 'remarks'
-            }
-          ],
-          ruleForm: {
-            database_name: '',
-            database_port: '',
-            database_url: '',
-            id: '',
-            login_psw: '',
-            login_user: '',
-            remarks: ''
-          },
-          rules: {
-            database_name: [
-              { required: true, message: '请输入数据库名称', trigger: 'blur' }
-            ],
-            database_url: [
-              { required: true, message: '请输入数据库地址', trigger: 'blur' }
-            ],
-            database_port: [
-              { required: true, message: '请输入数据库端口', trigger: 'blur' }
-            ],
-            login_user: [
-              { required: true, message: '请输入数据库登录用户名', trigger: 'blur' }
-            ],
-            login_psw: [
-              { required: true, message: '请输入数据库登录密码', trigger: 'blur' }
-            ]
-          }
-        }
+          id: 'field'
+        })
       ]
     }
   },
@@ -278,6 +84,7 @@ export default {
     save() {
       const formPlan = this.getFormPlan()
       formPlan.submitForm().then(data => {
+        // 调用保存
         console.log(data)
         this.stepNext()
       })

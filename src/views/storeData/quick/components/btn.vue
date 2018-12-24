@@ -1,6 +1,7 @@
 <template>
   <div class="quick-btn">
-    <el-button type="primary" @click="save">下一步</el-button>
+    <el-button v-if="!end" type="primary" @click="save">下一步</el-button>
+    <el-button v-else type="primary" @click="save">完成</el-button>
     <el-button v-if="!start" @click="up">上一步</el-button>
     <el-button @click="reset">重置</el-button>
     <el-button v-if="!end" @click="next">跳过</el-button>

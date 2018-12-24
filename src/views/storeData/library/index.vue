@@ -3,7 +3,7 @@
     <operation-panel :option-list="optionList" :add-name="addName" @addForm="addForm" />
     <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
     <add-form
-      :item-list="formItemList"
+      :item-list="itemList"
       :rules="rules"
       :form-data="formData"
       :form-title="formTitle"
@@ -13,6 +13,8 @@
 </template>
 
 <script>
+
+import { databaseForm as formBaseData } from '@/api/storedata'
 import { getLibrary } from '@/api/storeData'
 import { OperationMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -25,6 +27,7 @@ export default {
   components: { TableSearch, OperationPanel, AddForm, TableList },
   mixins: [OperationMixin, AddFormMixin],
   data() {
+    const { itemList, ruleForm, rules } = formBaseData()
     return {
       pageName: '数据库',
       // table 表格
@@ -58,73 +61,12 @@ export default {
       ],
       // 表单弹窗
       formDialog: false,
-      formItemList: [
-        {
-          label: '数据库名',
-          type: 'input',
-          placeholder: '请输入数据库名',
-          prop: 'database_name'
-        },
-        {
-          label: '数据库地址',
-          type: 'input',
-          placeholder: '请输入数据库URL或IP地址',
-          prop: 'database_url'
-        },
-        {
-          label: '端口',
-          type: 'input',
-          placeholder: '请输入数据库端口',
-          prop: 'database_port'
-        },
-        {
-          label: '用户名',
-          type: 'input',
-          placeholder: '请输入数据库登录用户名',
-          prop: 'login_user'
-        },
-        {
-          label: '密码',
-          type: 'input',
-          placeholder: '请输入数据库登录密码',
-          prop: 'login_psw'
-        },
-        {
-          label: '备注',
-          type: 'input',
-          inputType: 'textarea',
-          placeholder: '请输入数据库备注',
-          prop: 'remarks'
-        }
-      ],
-      formData: {
-        id: ''
-      },
-      rules: {
-        database_name: [
-          { required: true, message: '请输入数据库名称', trigger: 'blur' }
-        ],
-        database_url: [
-          { required: true, message: '请输入数据库地址', trigger: 'blur' }
-        ],
-        database_port: [
-          { required: true, message: '请输入数据库端口', trigger: 'blur' }
-        ],
-        login_user: [
-          { required: true, message: '请输入数据库登录用户名', trigger: 'blur' }
-        ],
-        login_psw: [
-          { required: true, message: '请输入数据库登录密码', trigger: 'blur' }
-        ]
-      }
+      itemList: itemList,
+      formData: ruleForm,
+      rules: rules
     }
   },
   created() {
-    const tmp = {}
-    this.formItemList.forEach(item => {
-      tmp[item.prop] = item.value || ''
-    })
-    Object.assign(this.formData, tmp)
     this.formDataTemp = this._.cloneDeep(this.formData)
     this.getList()
   },

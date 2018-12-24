@@ -9,6 +9,25 @@
           <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
+          <div v-else-if="item.inputType==='select'">
+            <el-row>
+              <el-col :span="20" class="formplan-parent-select">
+                <template v-if="ruleForm[item.prop].length>0">
+                  <el-tag
+                    v-for="tag in ruleForm[item.prop]"
+                    :key="tag.id"
+                    closable
+                    @close="handleClose(tag)">
+                    {{ tag.name }}
+                  </el-tag>
+                </template>
+                <template v-else>{{ item | placeholder }}</template>
+              </el-col>
+              <el-col :span="4" style="text-align: right;">
+                <el-button icon="el-icon-search" @click="parentShow(item,'list')" />
+              </el-col>
+            </el-row>
+          </div>
           <el-input v-else :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item.prop,'menu')" />
           </el-input>
@@ -154,13 +173,29 @@ export default {
     parentChange(data) {
       let tmp = {}
       if (Object.keys(data).length > 0) {
-        const { id, name } = data
+        const id = data.id
+        const name = data[this.parentItem.name]
         tmp = {
           [this.parentItem.prop + '_des']: name,
           [this.parentItem.prop]: id
         }
+        if (this.parentItem.inputType === 'select') {
+          tmp = {
+            id: id,
+            name: name
+          }
+          this.ruleForm[this.parentItem.prop].push(tmp)
+        } else {
+          tmp = {
+            [this.parentItem.prop + '_des']: name,
+            [this.parentItem.prop]: id
+          }
+          Object.assign(this.ruleForm, tmp)
+        }
       }
-      Object.assign(this.ruleForm, tmp)
+    },
+    handleClose(tag) {
+      this.ruleForm[this.parentItem.prop].splice(this.ruleForm[this.parentItem.prop].indexOf(tag), 1)
     },
     // 保存
     submitForm() {
@@ -177,9 +212,9 @@ export default {
     // 重置
     resetForm(data) {
       if (data) {
-        this.ruleForm = data
+        this.ruleForm = this._.cloneDeep(data)
       } else {
-        this.$refs.ruleForm.resetFields()
+        this.ruleForm = this._.cloneDeep(this.formData)
       }
     }
   }
@@ -201,6 +236,13 @@ export default {
     @media screen and (max-width: 397px) {
       margin-top: 10px;
     }
+  }
+}
+
+.formplan-parent-select {
+  padding-right: 10px;
+  .el-tag {
+    margin-right: 5px;
   }
 }
 </style>
