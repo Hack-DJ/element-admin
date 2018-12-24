@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import axios from 'axios'
 
 // const Model = '/sys/menu'
 // const linkUrl = function(name) {
@@ -27,6 +28,19 @@ export function getData(params) {
     method: 'get',
     params
   })
+}
+
+export function getStoreTree() {
+  return axios.all([request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/storedata/library',
+    method: 'get'
+  }), request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/storedata/table',
+    method: 'get'
+  }), request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/storedata/data',
+    method: 'get'
+  })])
 }
 
 export function databaseForm(data = {}) {
@@ -355,4 +369,3 @@ export function fieldForm(data = {}) {
     saveUrl: 'http://save.com'
   }, data)
 }
-

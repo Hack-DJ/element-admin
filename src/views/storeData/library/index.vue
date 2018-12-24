@@ -14,8 +14,7 @@
 
 <script>
 
-import { databaseForm as formBaseData } from '@/api/storedata'
-import { getLibrary } from '@/api/storeData'
+import { databaseForm as formBaseData, getLibrary } from '@/api/storeData'
 import { OperationMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
@@ -61,9 +60,9 @@ export default {
       ],
       // 表单弹窗
       formDialog: false,
-      itemList: itemList,
+      itemList,
       formData: ruleForm,
-      rules: rules
+      rules
     }
   },
   created() {

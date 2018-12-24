@@ -19,7 +19,7 @@
 
 <script>
 
-import { databaseForm, tableForm, fieldForm } from '@/api/storedata'
+import { databaseForm, tableForm, fieldForm } from '@/api/storeData'
 import FormPlan from '@/components/Table/FormPlan'
 import quickBtn from './components/btn'
 

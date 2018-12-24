@@ -14,10 +14,8 @@
   </div>
 </template>
 
-
 <script>
-import { fieldForm as formBaseData } from '@/api/storedata'
-import { getData } from '@/api/storeData'
+import { fieldForm as formBaseData, getData } from '@/api/storeData'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'

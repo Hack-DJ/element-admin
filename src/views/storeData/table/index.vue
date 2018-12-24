@@ -15,8 +15,7 @@
 </template>
 
 <script>
-import { tableForm as formBaseData } from '@/api/storedata'
-import { getTable } from '@/api/storeData'
+import { tableForm as formBaseData, getTable } from '@/api/storeData'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
@@ -90,9 +89,9 @@ export default {
 
       // 表单弹窗
       formDialog: false,
-      itemList: itemList,
+      itemList,
       formData: ruleForm,
-      rules: rules
+      rules
     }
   },
   created() {

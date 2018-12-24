@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible="show" title="请选择图标" @close="dialogHide" append-to-body>
+  <el-dialog :visible="show" title="请选择图标" append-to-body @close="dialogHide">
     <div class="icons-wrapper">
       <div v-for="item of iconsMap" :key="item" class="icon-item" @click="iconClick(item)">
         <svg-icon :icon-class="item" class-name="disabled" />

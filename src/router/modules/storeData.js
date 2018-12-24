@@ -4,9 +4,15 @@ import Layout from '../../views/layout/Layout'
 export default {
   path: '/storeData',
   component: Layout,
-  redirect: '/storeData/storeDataLibrary',
+  redirect: '/storeData/storeDataIndex',
   meta: { title: '存储数据管理', icon: 'storeData' },
   children: [
+    {
+      path: 'storeDataIndex',
+      name: 'storeDataIndex',
+      component: () => import('@/views/storeData/index/index'),
+      meta: { title: '存储管理', icon: 'quick' }
+    },
     {
       path: 'storeDataQuick',
       name: 'storeDataQuick',
