@@ -29,7 +29,7 @@
             </el-row>
           </div>
           <el-input v-else :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
-            <el-button slot="append" icon="el-icon-search" @click="parentShow(item.prop,'menu')" />
+            <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'menu')" />
           </el-input>
         </template>
         <template v-if="item.type==='icon'">
@@ -119,7 +119,7 @@ export default {
   },
   data() {
     return {
-      ruleForm: {},
+      ruleForm: this.formData,
       // icon弹窗
       iconDialog: false,
       // 菜单父级树弹窗
@@ -134,17 +134,6 @@ export default {
       const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace'])
       return tmp
     }
-  },
-  watch: {
-    ruleForm: {
-      handler(val) {
-        this.isSync && this.$emit('update:formData', val)
-      },
-      deep: true
-    }
-  },
-  created() {
-    this.ruleForm = this._.cloneDeep(this.formData)
   },
   methods: {
     // switch按钮
@@ -171,6 +160,7 @@ export default {
       }
     },
     parentChange(data) {
+      console.log(data)
       let tmp = {}
       if (Object.keys(data).length > 0) {
         const id = data.id
@@ -199,23 +189,22 @@ export default {
     },
     // 保存
     submitForm() {
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             resolve(this.ruleForm)
-          } else {
-            reject()
           }
         })
       })
     },
     // 重置
     resetForm(data) {
-      if (data) {
-        this.ruleForm = this._.cloneDeep(data)
-      } else {
-        this.ruleForm = this._.cloneDeep(this.formData)
-      }
+      // if (data) {
+      //   this.ruleForm = this._.cloneDeep(data)
+      // } else {
+      //   this.ruleForm = this._.cloneDeep(this.formData)
+      // }
+      this.$refs.ruleForm.resetFields()
     }
   }
 }

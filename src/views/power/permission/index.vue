@@ -38,7 +38,7 @@ export default {
         {
           label: '类型',
           type: 'radio',
-          prop: 'type',
+          prop: 'isButton',
           optionList: [
             { label: '菜单', value: '1' },
             { label: '按钮', value: '0' }
@@ -48,13 +48,14 @@ export default {
           label: '上级菜单',
           type: 'parent',
           prop: 'parentId',
+          name: 'name',
           placeholder: '空为一级菜单'
         },
         {
           label: '名称',
           type: 'input',
           prop: 'name',
-          placeholder: '请输入菜单名'
+          placeholder: '请输入名称submitForm'
         },
         {
           label: '路径',
@@ -95,9 +96,9 @@ export default {
       ],
       formData: {
         id: '',
-        type: '1',
+        isButton: '1',
         parentId: '',
-        parentName: '',
+        parentId_des: '',
         name: '',
         href: '',
         icon: '',
@@ -203,14 +204,12 @@ export default {
     },
     // 提交表单
     submitForm(data) {
-      console.log(data)
       // // 格式化存储数据
       const parent = {
         'parent.id': data.parentId,
-        'parent.name': data.parentName
+        'parent.name': data.parentId_des
       }
       Object.assign(this.formData, data, parent)
-      console.log(this.formData)
       this.$store.dispatch('SavePermission', this.formData).then(res => {
         this.addDialog = false
       })

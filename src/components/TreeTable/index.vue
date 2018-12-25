@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import treeToArray from './dj-eval'
+import treeToArray from '@/utils/dj-eval'
 
 export default {
   name: 'TreeTable',
