@@ -33,7 +33,6 @@ const tableSearch = {
     },
     // 提交表单
     submitForm(data) {
-      console.log(data)
       // 格式化存储数据
       let isNew = true
       this.list.map(item => {
@@ -55,6 +54,7 @@ const tableSearch = {
     },
     // 删除数据
     confirmDelete(index) {
+      console.log(index)
       this.list.splice(index, 1)
       this.$message({
         type: 'success',

@@ -43,15 +43,9 @@
         <el-table-column label="操作" width="192px">
           <template slot-scope="scope">
             <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
-            <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>
+            <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
-        <!--<el-table-column v-if="set.edit||set.delete" label="操作" width="192px">-->
-        <!--<template slot-scope="scope">-->
-        <!--<el-button v-if="scope.row.edit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>-->
-        <!--<el-button v-if="scope.row.delete" type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
-        <!--</template>-->
-        <!--</el-table-column>-->
       </template>
       <slot />
     </el-table>
@@ -131,10 +125,10 @@ export default {
       this.$emit('edit', { index: index, row: row })
     },
     // 删除数据
-    confirmDelete(index, row) {
+    confirmDelete(id) {
 
       // 判断是否有子菜单,有则禁止删除
-      if (this.formatData.some(item => { return item.parentId === row.id })) {
+      if (this.formatData.some(item => { return item.parentId === id })) {
         return this.$message({
           type: 'info',
           message: '该记录下有子记录,禁止删除'
@@ -146,11 +140,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.formatData.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        this.$emit('delete', id)
       }).catch(() => {
         this.$message({
           type: 'info',

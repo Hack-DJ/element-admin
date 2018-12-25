@@ -1,7 +1,14 @@
 <template>
   <div class="app-container permission-container">
     <operation-panel :option-list="optionList" :option-select.sync="optionSelect" :add-name="addName" @addForm="addForm" />
-    <tree-table :data="permissionList" :list-loading="listLoading" :set="set" :columns="cloumnsList" border class="permission-tree" @edit="editForm" />
+    <tree-table :data="permissionList"
+                :list-loading="listLoading"
+                :set="set"
+                :columns="cloumnsList"
+                border
+                class="permission-tree"
+                @edit="editForm"
+                @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -15,7 +22,7 @@
 </template>
 
 <script>
-// import { getPermission } from '@/api/power'
+// import { deletePermission } from '@/api/power'
 import { AddFormMixin } from '@/mixins'
 import treeTable from '@/components/TreeTable'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -181,21 +188,9 @@ export default {
   methods: {
     // 获取列表
     getList() {
-      // this.listLoading = true
       this.$store.dispatch('GetPermission').then(() => {
         this.listLoading = false
       })
-      // getPermission().then(res => {
-      //   const list = res.data.list
-      //   const data = {
-      //     route: this.$route,
-      //     formData: this.formData,
-      //     rules: this.rules,
-      //     itemList: this.formItemList,
-      //     treeList: list
-      //   }
-      //   this.$store.dispatch('addViewForm', data)
-      // })
     },
     editForm({ index, row }) {
       const key = Object.keys(this.formData)
@@ -212,7 +207,22 @@ export default {
       Object.assign(this.formData, data, parent)
       this.$store.dispatch('SavePermission', this.formData).then(res => {
         this.addDialog = false
+        this.$message({
+          type: 'success',
+          message: '添加成功!'
+        })
       })
+    },
+    // 删除数据
+    confirmDelete(id) {
+      console.log(id)
+      this.$store.dispatch('DeletePermission', { id: id }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      })
+
     }
   }
 }

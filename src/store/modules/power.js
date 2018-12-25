@@ -1,4 +1,4 @@
-import { getPermission, savePermission } from '@/api/power'
+import { getPermission, savePermission, deletePermission } from '@/api/power'
 
 const childrenBtnState = function(item) {
   const tmp = { edit: true, delete: true }
@@ -25,17 +25,31 @@ const user = {
     },
     ADD_PERMISSION: (state, data) => {
       let i = 0
-      if (data.parentId === 1 || data.parentId === '1') {
-        state.permissionList.some((val, index) => {
-          if (val.parentId === data.parentId && val.sort > data.sort) {
+      let parentIndex = 0
+      state.permissionList.some((val, index) => {
+        // 优先找到父节点 +1 定位为父节点第一个子节点
+        if (val.id === data.parentId) {
+          parentIndex = index + 1
+        }
+        // 查找同父节点下子节点并排序
+        if (val.parentId === data.parentId) {
+          // 如果当前节点已经大于添加节点则结束查找 否则暂定次级位给节点
+          if (val.sort >= data.sort) {
             i = index
             return true
+          } else {
+            i = index + 1
           }
-        })
-        console.log(i)
-        state.permissionList.splice(i, 0, data)
-      }
-      // state.permissionList.push(data)
+        }
+      })
+      i = i === 0 ? parentIndex : i
+      state.permissionList.splice(i, 0, data)
+    },
+    DELETE_PERMISSION: (state, data) => {
+      console.log(data)
+      state.permissionList.filter(val => {
+        return val.id !== data.id
+      })
     }
   },
 
@@ -57,7 +71,7 @@ const user = {
       })
     },
     // 保存菜单
-    SavePermission({ commit, state, getters }, data) {
+    SavePermission({ commit }, data) {
       if (data.parentId === '') {
         data['parent.id'] = 1
       }
@@ -67,34 +81,21 @@ const user = {
           if (data.id !== '') {
             // 修改数据
             commit('UPDATE_PERMISSION', response)
-            // getters.permissionIdKey[data.id] = Object.assign(getters.permissionIdKey[data.id], response)
           } else {
-            console.log('新增')
             commit('ADD_PERMISSION', response)
-            /**
-             * 判断当前数据是否顶级菜单
-             * 顶级菜单根据排序查找插入位置
-             */
-            // if (data['parent.id'] === 1) {
-            //   let i = 0
-            //   state.some((val, index) => {
-            //     if (val.sort < response.sort) {
-            //       i = index
-            //       return true
-            //     }
-            //   })
-            //   commit('ADD_PERMISSION', { index: i, roles: response })
-            // }
           }
-          /**
-           * 次级菜单,优先记录父级菜单位置,再找同级菜单
-           * ,根据同级菜单排序查找插入位置,
-           * 如果没有同级菜单则插入父级菜单后
-           */
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
 
-          // 遍历数据插入
-          // state.permissionList.forEach(item => {})
-          // commit('SET_PERMISSION', data)
+    // 删除菜单
+    DeletePermission({ commit }, data) {
+      return new Promise((resolve, reject) => {
+        deletePermission(data).then(res => {
+          commit('DELETE_PERMISSION', data)
           resolve()
         }).catch(error => {
           reject(error)

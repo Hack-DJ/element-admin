@@ -85,7 +85,7 @@ export default {
       const formPlan = this.getFormPlan()
       formPlan.submitForm().then(data => {
         // 调用保存
-        console.log( data)
+        console.log(data)
         this.stepNext()
       })
     }
