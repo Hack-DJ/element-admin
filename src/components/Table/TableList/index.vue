@@ -4,7 +4,7 @@
       <el-table-column v-for="column in columns" :key="column.value" :label="column.text" :width="column.width">
         <template slot-scope="scope">
           <template v-if="column.switch">
-            <el-switch :value="switchShow(scope.row[column.value])" disabled @input="switchInput(scope.row,column.switchKey,$event)" />
+            <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,column.switchKey,$event)" />
           </template>
           <span v-else> {{ replace(scope,column) }}</span>
         </template>
@@ -56,6 +56,7 @@ export default {
     },
     switchInput(row, key, val) {
       row[key] = val ? 1 : 0
+      this.$emit('switchToggle', row)
     },
     replace(scope, column) {
       let str = scope.row[column.value]

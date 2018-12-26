@@ -1,7 +1,16 @@
 <template>
   <div class="app-container">
     <operation-panel add-name="新增用户" @addForm="addForm" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" power-config @config="configRole" @edit="editForm" @delete="confirmDelete" />
+    <table-list
+      :list="list"
+      :columns="columns"
+      :list-loading="listLoading"
+      power-config
+      @config="editConfigRole"
+      @switchToggle="switchToggle"
+      @edit="editForm"
+      @delete="confirmDelete" />
+    <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -14,6 +23,7 @@
       @config="configRole" />
     <el-dialog :visible.sync="configDialog" title="配置角色">
       <el-table
+        v-loading="configLoading"
         ref="multipleTable"
         :data="roleList"
         tooltip-effect="dark"
@@ -27,7 +37,7 @@
           <template slot-scope="scope">{{ scope.row.oldEnname }}</template>
         </el-table-column>
         <el-table-column label="角色类型">
-          <template slot-scope="scope">{{ scope.row.roleType }}</template>
+          <template slot-scope="scope">{{ rotypeFormat(scope.row.roleType) }}</template>
         </el-table-column>
       </el-table>
       <div class="dialog-foot-button-group">
@@ -39,17 +49,20 @@
 </template>
 
 <script>
-import { AddFormMixin } from '@/mixins'
+import { AddFormMixin, PaginationMixin } from '@/mixins'
 import { validatePhone, validateEmpty } from '@/utils/validate'
 import { getUserList, getRoleList } from '@/api/power'
+import { mapGetters } from 'vuex'
 import OperationPanel from '@/components/Table/OperationPanel'
+import Pagination from '@/components/Pagination'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
+import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'User',
-  components: { OperationPanel, AddForm, TableList },
-  mixins: [AddFormMixin],
+  components: { OperationPanel, AddForm, TableList, Pagination },
+  mixins: [AddFormMixin, PaginationMixin],
   data() {
     const valiPhone = (rule, value, callback) => {
       if (!validateEmpty(value)) {
@@ -109,6 +122,12 @@ export default {
           value: null
         },
         {
+          label: '密码',
+          type: 'input',
+          inputType: 'password',
+          prop: 'password'
+        },
+        {
           label: '手机',
           type: 'input',
           prop: 'phone',
@@ -134,7 +153,9 @@ export default {
         loginName: '',
         name: '',
         phone: '',
+        password: '',
         email: '',
+        roleList: [],
         loginFlag: 1
       },
       rules: {
@@ -144,6 +165,7 @@ export default {
         name: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
+        password: [],
         phone: [
           { required: false, trigger: 'blur', validator: valiPhone }
         ],
@@ -156,9 +178,14 @@ export default {
       roleList: [],
       configDialog: false,
       configLoading: true,
-      selectKeys: [],
-      selectKeysTemp: []
+      selectKeysTmp: [],
+      selectKeys: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'roleType'
+    ])
   },
   created() {
     this.formDataTemp = this._.cloneDeep(this.formData)
@@ -167,38 +194,102 @@ export default {
   methods: {
     getList() {
       getUserList().then(res => {
-        this.list = res.data.data.list
+        const data = res.data.data
+        this.list = data.list.map(item => this._.pick(item, Object.keys(this.formData)))
+        this.count = data.count
+        this.pageNo = data.count
+        this.pageSize = data.count
+        this.listLoading = false
+      }).catch(() => {
         this.listLoading = false
       })
     },
-    configRole(row) {
+    addForm() {
+      this.formData = this._.cloneDeep(this.formDataTemp)
+      this.rules.password = [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, message: '密码最小6位数', trigger: 'blur' },
+        { pattern: /^(\w){6,20}$/, message: '只能输入6-20个字母、数字、下划线' }
+      ]
+      this.selectKeys = []
+      this.addDialogShow()
+    },
+    editForm(index) {
+      this.formData = this.list[index]
+      this.rules.password = [
+        { required: false, message: '请输入密码', trigger: 'blur' },
+        { min: 6, message: '密码最小6位数', trigger: 'blur' },
+        { pattern: /^(\w){6,20}$/, message: '只能输入6-20个字母、数字、下划线' }
+      ]
+      this.selectKeys = []
+      this.addDialogShow()
+    },
+    rotypeFormat(key) {
+      return this.roleType[key]
+    },
+    editConfigRole(index) {
+      // 根据row 获取当前选中记录，并获取当前选中记录角色权限
+      this.formData = this.list[index]
+      this.selectKeys = []
+      this.configRole()
+    },
+    configRole() {
       this.configDialog = true
       this.configLoading = true
       getRoleList().then(res => {
         this.configLoading = false
-        this.roleList = res.data.list
-        this.setCheckedKeys(row)
+        this.roleList = res.data.data
+        this.setCheckedKeys()
+      }).catch(() => {
+        this.configLoading = false
       })
     },
     configChange(row) {
-      this.selectKeysTemp = []
+      this.selectKeysTmp = []
       row.map(item => {
-        this.selectKeysTemp.push(item.id)
+        this.selectKeysTmp.push({ id: item.id })
       })
     },
-    configSubmit() {},
-    setCheckedKeys(row) {
-      // 判断新增还是修改
-      if (row || row === 0) {
-        const tmp = [[1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]]
-        this.selectKeys = tmp[row % tmp.length]
+    configSubmit() {
+      // 判断是新增用户还是配置
+      this.selectKeys = this.selectKeysTmp
+      if (this.addDialog) {
+        this.configDialog = false
       } else {
-        this.selectKeys = []
+        // 获取当前选中框值并提交
+        this.submitForm(this.formData)
       }
-
+    },
+    // 提交表单
+    submitForm(data) {
+      // 格式化存储数据
+      if (!this._.isEmpty(this.selectKeys)) data.roleList = this.selectKeys
+      const json = { json: data }
+      requestForm(this.saveUrl, json).then(res => {
+        res = this._.pick(res.data.data, Object.keys(this.formData))
+        let isNew = true
+        this.list.some(item => {
+          if (item.id === res.id) {
+            isNew = false
+            return Object.assign(item, res)
+          }
+        })
+        if (isNew) {
+          this.list.unshift(res)
+        }
+        this.addDialog = false
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
+      })
+    },
+    setCheckedKeys() {
       if (this.selectKeys.length > 0) {
+        const selectKeyId = []
+        this.selectKeys.map(item => selectKeyId.push(item.id))
         this.roleList.forEach(item => {
-          if (this.selectKeys.includes(item.id)) {
+          if (selectKeyId.includes(item.id)) {
             this.$nextTick(() => this.$refs.multipleTable.toggleRowSelection(item))
           }
         })

@@ -1,6 +1,12 @@
 // form 表单公共状态机
 const form = {
   state: {
+    //角色类型
+    roleType: {
+      assignment: '任务分配',
+      'security-role': '管理角色',
+      user: '普通角色'
+    },
     addFormLoading: false,
     pageForm: {}
   },

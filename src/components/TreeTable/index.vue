@@ -33,7 +33,7 @@
               <svg-icon :icon-class="scope.row[column.value]" />
             </template>
             <template v-else-if="column.switch">
-              <el-switch :value="switchShow(scope.row[column.value])" disabled @input="switchInput(scope.row,$event)" />
+              <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,$event)" />
             </template>
             <template v-else>
               {{ scope.row[column.value] }}
@@ -104,6 +104,7 @@ export default {
     },
     switchInput(row, val) {
       row.isShow = val ? 1 : 0
+      this.$emit('switchToggle', row)
     },
     showRow: function(row) {
       const show = (parseInt(row.row.parentId) !== 1 ? (row.row.parent._expanded && row.row.parent._show) : true)

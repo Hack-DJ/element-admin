@@ -7,7 +7,8 @@
       :list-loading="listLoading"
       :columns-replace="columnsReplace"
       power-config
-      @config="configRole"
+      @switchToggle="switchToggle"
+      @config="editConfigRole"
       @edit="editForm"
       @delete="confirmDelete" />
     <add-form
@@ -37,7 +38,7 @@
       />
       <div class="dialog-foot-button-group">
         <el-button @click="configDialog=false">取消</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button type="primary" @click="configSubmit">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -50,6 +51,7 @@ import { getRoleList } from '@/api/power'
 import OperationPanel from '@/components/Table/OperationPanel'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
+import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'Role',
@@ -93,54 +95,9 @@ export default {
           value: 'remarks'
         }
       ],
-      columnsReplace: {
-        roleType: {
-          assignment: '任务分配',
-          'security-role': '管理角色',
-          user: '普通角色'
-        }
-      },
       // 表单弹窗
       saveUrl: '/sys/role/save',
       deleteUrl: '/sys/role/delete',
-      formItemList: [
-        {
-          label: '角色名称',
-          type: 'input',
-          prop: 'name'
-        },
-        {
-          label: '英文名',
-          type: 'input',
-          prop: 'enname'
-        },
-        {
-          label: '是否启用',
-          type: 'switch',
-          prop: 'useable'
-        },
-        {
-          label: '角色类型',
-          type: 'select',
-          prop: 'roleType',
-          optionList: [
-            { label: '任务分配', value: 'assignment' },
-            { label: '管理角色', value: 'security-role' },
-            { label: '普通角色', value: 'user' }
-          ]
-        },
-        {
-          label: '是否系统数据',
-          type: 'switch',
-          prop: 'sysData'
-        },
-        {
-          label: '备注',
-          type: 'input',
-          inputType: 'textarea',
-          prop: 'remarks'
-        }
-      ],
       formData: {
         id: '',
         name: '',
@@ -149,7 +106,7 @@ export default {
         roleType: '',
         sysData: 0,
         remarks: '',
-        menuIds: ''
+        menuIds: []
       },
       rules: {
         title: [
@@ -172,8 +129,57 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'generationTree'
-    ])
+      'generationTree',
+      'roleType'
+    ]),
+    roleTypeOptionList() {
+      const tmp = []
+      Object.keys(this.roleType).map(key => {
+        tmp.push({ label: this.roleType[key], value: key })
+      })
+      return tmp
+    },
+    formItemList() {
+      return [
+        {
+          label: '角色名称',
+          type: 'input',
+          prop: 'name'
+        },
+        {
+          label: '英文名',
+          type: 'input',
+          prop: 'enname'
+        },
+        {
+          label: '是否启用',
+          type: 'switch',
+          prop: 'useable'
+        },
+        {
+          label: '角色类型',
+          type: 'select',
+          prop: 'roleType',
+          optionList: this.roleTypeOptionList
+        },
+        {
+          label: '是否系统数据',
+          type: 'switch',
+          prop: 'sysData'
+        },
+        {
+          label: '备注',
+          type: 'input',
+          inputType: 'textarea',
+          prop: 'remarks'
+        }
+      ]
+    },
+    columnsReplace() {
+      return {
+        roleType: this.roleType
+      }
+    }
   },
   created() {
     this.formDataTemp = this._.cloneDeep(this.formData)
@@ -186,31 +192,83 @@ export default {
         this.listLoading = false
       })
     },
-    configRole(row) {
+    addForm() {
+      this.formData = this._.cloneDeep(this.formDataTemp)
+      this.selectKeys = []
+      this.addDialogShow()
+    },
+    editForm(index) {
+      this.formData = this.list[index]
+      this.selectKeys = []
+      this.addDialogShow()
+    },
+    editConfigRole(index) {
+      // 根据row 获取当前选中记录，并获取当前选中记录角色权限
+      this.formData = this.list[index]
+      this.selectKeys = []
+      this.configRole()
+    },
+    configRole() {
       this.configDialog = true
       // 判断是否已经加载过，加载过则不重复加载
       if (this.configLoading) {
         this.$store.dispatch('GetPermission').then(() => {
           this.configLoading = false
-          this.setCheckedKeys(row)
+          this.setCheckedKeys()
         })
       } else {
-        this.setCheckedKeys(row)
+        this.setCheckedKeys()
       }
     },
-    setCheckedKeys(row) {
-      // 判断新增还是修改
-      if (row) {
-        const tmp = [[27, 56, 30], [28, 2, 59, 29], [62, 63, 2, 79]]
-        this.selectKeys = tmp[row % tmp.length]
+    configSubmit() {
+      // 获取选中节点
+      const selectKeysTmp = []
+      this.$refs.tree.getCheckedNodes().map(item => {
+        selectKeysTmp.push({ id: item.id })
+      })
+      // 判断是新增还是配置
+      this.selectKeys = selectKeysTmp
+      if (this.addDialog) {
+        this.configDialog = false
       } else {
-        this.selectKeys = []
+        // 获取当前选中框值并提交
+        this.submitForm(this.formData)
+      }
+    },
+    // 提交表单
+    submitForm(data) {
+      // 格式化存储数据
+      if (!this._.isEmpty(this.selectKeys)) data.menuIds = this.selectKeys
+      // const json = { json: data }
+      requestForm(this.saveUrl, data).then(res => {
+        res = this._.pick(res.data.data, Object.keys(this.formData))
+        let isNew = true
+        this.list.some(item => {
+          if (item.id === res.id) {
+            isNew = false
+            return Object.assign(item, res)
+          }
+        })
+        if (isNew) {
+          this.list.unshift(res)
+        }
+        this.addDialog = false
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
+      })
+    },
+    setCheckedKeys() {
+      const selectKeyId = []
+      if (this.selectKeys.length > 0) {
+        this.selectKeys.map(item => selectKeyId.push(item.id))
       }
       this.$nextTick(() => {
         for (var i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-          this.$refs.tree.store._getAllNodes()[i].expanded = this.selectKeys.includes(parseInt(this.$refs.tree.store._getAllNodes()[i].data.id))
+          this.$refs.tree.store._getAllNodes()[i].expanded = selectKeyId.includes(parseInt(this.$refs.tree.store._getAllNodes()[i].data.id))
         }
-        this.$refs.tree.setCheckedKeys(this.selectKeys)
+        this.$refs.tree.setCheckedKeys(selectKeyId)
       })
     }
   }

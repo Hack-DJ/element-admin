@@ -42,7 +42,7 @@
           <el-switch :value="switchShow(ruleForm[item.prop])" @input="switchInput(item.prop,$event)" />
         </template>
         <template v-if="item.type==='input'">
-          <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" />
+          <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" :disabled="item.disabled" />
         </template>
         <template v-if="item.type==='select'">
           <el-select v-model="ruleForm[item.prop]" :placeholder="item | placeholder" clearable>
@@ -138,11 +138,9 @@ export default {
   methods: {
     // switch按钮
     switchShow(value) {
-      console.log('1111', value)
       return !!parseInt(value)
     },
     switchInput(prop, val) {
-      console.log(prop, val)
       this.$set(this.ruleForm, prop, val ? 1 : 0)
     },
 

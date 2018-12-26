@@ -8,6 +8,7 @@
       :columns="cloumnsList"
       border
       class="permission-tree"
+      @switchToggle="switchToggle"
       @edit="editForm"
       @delete="confirmDelete" />
     <add-form
@@ -210,7 +211,7 @@ export default {
         this.addDialog = false
         this.$message({
           type: 'success',
-          message: '添加成功!'
+          message: '保存成功!'
         })
       })
     },

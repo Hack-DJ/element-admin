@@ -32,10 +32,16 @@ const addForm = {
     addDialogShow() {
       this.addDialog = true
     },
+    switchToggle(row) {
+      this.submitForm(this._.pick(row, Object.keys(this.formData)))
+    },
     // 提交表单
     submitForm(data) {
       // 格式化存储数据
-      requestForm(this.saveUrl, data).then(res => {
+
+      const json = { json: data }
+
+      requestForm(this.saveUrl, json).then(res => {
         res = this._.pick(res.data.data, Object.keys(this.formData))
         let isNew = true
         this.list.some(item => {

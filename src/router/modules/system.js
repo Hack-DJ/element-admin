@@ -9,6 +9,13 @@ export default {
   meta: { title: '系统管理', icon: 'system' },
   children: [
     {
+      path: 'userInfo',
+      name: 'UserInfo',
+      component: () => import('@/views/power/userInfo/index'),
+      meta: { title: '个人设置' },
+      hidden: true
+    },
+    {
       path: 'permission',
       name: 'Permission',
       component: () => import('@/views/power/permission/index'),

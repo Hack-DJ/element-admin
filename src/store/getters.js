@@ -29,6 +29,7 @@ const getters = {
   userInfo: state => state.user.userInfo,
 
   addFormLoading: state => state.form.addFormLoading,
+  roleType: state => state.form.roleType,
 
   permissionList: state => state.power.permissionList,
   permissionIdKey: (state, getters) => {
