@@ -11,6 +11,7 @@
       @edit="editForm"
       @delete="confirmDelete" />
     <add-form
+      ref="addForm"
       :item-list="formItemList"
       :rules="rules"
       :form-data="formData"
@@ -63,11 +64,11 @@ export default {
       columns: [
         {
           text: '角色名称',
-          value: 'oldName'
+          value: 'name'
         },
         {
           text: '英文名称',
-          value: 'oldEnname'
+          value: 'enname'
         },
         {
           text: '启用',
@@ -84,7 +85,7 @@ export default {
           text: '系统数据',
           value: 'sysData',
           switchKey: 'sysData',
-          width: 60,
+          width: 70,
           switch: true
         },
         {
@@ -100,16 +101,18 @@ export default {
         }
       },
       // 表单弹窗
+      saveUrl: '/sys/role/save',
+      deleteUrl: '/sys/role/delete',
       formItemList: [
         {
           label: '角色名称',
           type: 'input',
-          prop: 'oldName'
+          prop: 'name'
         },
         {
           label: '英文名',
           type: 'input',
-          prop: 'oldEnname'
+          prop: 'enname'
         },
         {
           label: '是否启用',
@@ -139,11 +142,11 @@ export default {
         }
       ],
       formData: {
-        id: null,
-        oldName: null,
-        oldEnname: null,
+        id: '',
+        name: '',
+        enname: '',
         useable: 1,
-        roleType: null,
+        roleType: '',
         sysData: 0,
         remarks: '',
         menuIds: ''
@@ -152,6 +155,9 @@ export default {
         title: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        roleType: [
+          { required: true, message: '请选择角色类型', trigger: 'blur' }
         ]
       },
       // 配置弹窗
@@ -176,7 +182,7 @@ export default {
   methods: {
     getList() {
       getRoleList().then(res => {
-        this.list = res.data.list
+        this.list = res.data.data.map(item => this._.pick(item, Object.keys(this.formData)))
         this.listLoading = false
       })
     },
@@ -210,7 +216,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'src/styles/var';
-</style>

@@ -30,6 +30,11 @@ const service = axios.create({
   timeout: 5000 // 请求超时时间,
 })
 
+const hideAddForm = function() {
+  // 取消addForm 提交按钮loading
+  store.dispatch('hideAddFormLoading')
+}
+
 // 取消重复请求
 const pending = []
 const CancelToken = axios.CancelToken
@@ -79,6 +84,9 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   response => {
+    // 取消addForm 提交按钮loading
+    hideAddForm()
+
     /**
      * code为非20000是抛错 可结合自己业务进行修改
      */
@@ -112,6 +120,8 @@ service.interceptors.response.use(
     }
   },
   error => {
+    // 取消addForm 提交按钮loading
+    hideAddForm()
     console.log('err' + error) // for debug
     Message({
       message: error.message,

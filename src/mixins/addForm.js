@@ -1,6 +1,7 @@
 import { validateEmpty } from '@/utils/validate'
+import { requestForm } from '@/api/addForm'
 
-const tableSearch = {
+const addForm = {
   data() {
     return {
       pageName: '',
@@ -34,33 +35,35 @@ const tableSearch = {
     // 提交表单
     submitForm(data) {
       // 格式化存储数据
-      let isNew = true
-      this.list.map(item => {
-        if (item.id === data.id) {
-          isNew = false
-          return Object.assign(item, data)
+      requestForm(this.saveUrl, data).then(res => {
+        res = this._.pick(res.data.data, Object.keys(this.formData))
+        let isNew = true
+        this.list.some(item => {
+          if (item.id === res.id) {
+            isNew = false
+            return Object.assign(item, res)
+          }
+        })
+        if (isNew) {
+          this.list.unshift(res)
         }
-      })
-      if (isNew) {
-        data.id = this._.uniqueId()
-        this.list.unshift(data)
-      }
-      this.addDialog = false
-
-      this.$message({
-        type: 'success',
-        message: '保存成功!'
+        this.addDialog = false
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
       })
     },
     // 删除数据
     confirmDelete(index) {
-      console.log(index)
-      this.list.splice(index, 1)
-      this.$message({
-        type: 'success',
-        message: '删除成功!'
+      requestForm(this.deleteUrl, this.list[index]).then(() => {
+        this.list.splice(index, 1)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
       })
     }
   }
 }
-export default tableSearch
+export default addForm

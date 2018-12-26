@@ -2,7 +2,7 @@
   <el-dialog v-if="show" :visible="show" :title="formTitle" @close="formDialogHide">
     <form-plan ref="formPlan" :form-data="formData" :rules="rules" :item-list="itemList" :tree-list="treeList" :tree-id-key="treeIdKey">
       <el-form-item slot="formBtn">
-        <el-button type="primary" @click="submitForm">确定</el-button>
+        <el-button :loading="addFormLoading" type="primary" @click="submitForm">确定</el-button>
         <el-button v-if="showConfig" @click="configClick">{{ configName }}</el-button>
         <el-button @click="resetForm">重置</el-button>
       </el-form-item>
@@ -13,6 +13,7 @@
 <script>
 
 import FormPlan from '@/components/Table/FormPlan'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AddForm',
@@ -56,6 +57,16 @@ export default {
       default: () => { return {} }
     }
   },
+  computed: {
+    ...mapGetters([
+      'addFormLoading'
+    ])
+  },
+  watch: {
+    show(val) {
+      !val && this.$store.dispatch('hideAddFormLoading')
+    }
+  },
   methods: {
     // 添加弹窗隐藏
     formDialogHide() {
@@ -72,6 +83,7 @@ export default {
     submitForm() {
       const formPlan = this.getRuleForm()
       formPlan.submitForm().then(data => {
+        this.$store.dispatch('showAddFormLoading')
         this.$emit('save', data)
       })
     },

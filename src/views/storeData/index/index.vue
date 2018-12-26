@@ -1,6 +1,16 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20" style="width: 100%;">
+    <el-row :gutter="10" class="top">
+      <h1 class="title">存储管理</h1>
+      <el-row>
+        <p class="desc">管理存储数据库、表、存储字段</p>
+        <div class="link">
+          <el-button type="text" icon="el-icon-delete">清空选择</el-button>
+          <el-button type="text" icon="el-icon-plus">新增数据库</el-button>
+        </div>
+      </el-row>
+    </el-row>
+    <el-row :gutter="10">
       <el-col :span="4">
         <div class="left-menu">
           <el-input
@@ -17,15 +27,35 @@
             @node-click="treeClick" />
         </div>
       </el-col>
-      <el-col :span="20">
-        <transition v-if="showFormPlan" name="el-zoom-in-top">
-          <el-row :gutter="20" style="width: 100%;">
+      <el-col :span="19" :offset="1">
+        <el-row :gutter="10" style="width: 100%;">
+          <transition v-if="showFormPlan" name="el-zoom-in-top">
             <form-plan ref="formPlan" :form-data="ruleForm" :rules="rules" :item-list="itemList" is-sync>
               <quick-btn slot="formBtn" style="text-align: right;" @add="add" @reset="reset" @save="save" />
             </form-plan>
-          </el-row>
-        </transition>
-        <el-row :gutter="20" style="width: 100%;">2</el-row>
+          </transition>
+          <transition-group v-else name="el-zoom-in-top">
+            <el-card v-for="item in list" v-if="item._level === 1" :key="item.id" class="box-card">
+              <div slot="header" class="clearfix">
+                <span>{{ item.name }}</span>
+                <el-dropdown style="float: right; padding: 3px 0">
+                  <span class="el-dropdown-link">
+                    操作<i class="el-icon-arrow-down el-icon--right" />
+                  </span>
+                  <el-dropdown-menu slot="dropdown" class="card-menu">
+                    <el-dropdown-item class="add">新增</el-dropdown-item>
+                    <el-dropdown-item class="edit">修改</el-dropdown-item>
+                    <el-dropdown-item class="delete">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+              <div v-for="o in 4" :key="o" class="text item">
+                {{ '列表内容 ' + o }}
+              </div>
+            </el-card>
+          </transition-group>
+        </el-row>
+        <!--<el-row :gutter="20" style="width: 100%;" />-->
       </el-col>
     </el-row>
   </div>
@@ -172,7 +202,51 @@ export default {
 <style lang="scss" scoped>
 @import 'src/styles/var';
 
-.tree-search {
-  margin-bottom: $marginBottomMedium;
+.app-container {
+  .el-row {
+    width: 100%;
+  }
+  .top {
+    .title {
+      margin: 0;
+      font-size: $fontSizeLarger;
+      font-weight: 500;
+      color: $fontColor;
+    }
+    .desc {
+      font-size: $fontSizeSmall;
+      line-height: 1.5;
+      color: $describeColor;
+    }
+    .link {
+      margin-bottom: $marginBottomMedium;
+    }
+  }
+  .tree-search {
+    margin-bottom: $marginBottomMedium;
+  }
+  .text {
+    font-size: 14px;
+  }
+  .item {
+    margin-bottom: 18px;
+  }
+  .box-card {
+    display: inline-block;
+    margin: 0 5px 5px;
+    width: 420px;
+    .el-dropdown-link {
+      color: $colorBlue;
+    }
+  }
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
 }
 </style>

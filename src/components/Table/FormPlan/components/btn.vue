@@ -1,8 +1,9 @@
 <template>
   <div class="quick-btn">
     <el-button type="primary" @click="add">新增</el-button>
-    <el-button @click="reset">重置</el-button>
     <el-button type="success" @click="save">提交</el-button>
+    <el-button @click="reset">重置</el-button>
+    <el-button type="danger" >删除</el-button>
   </div>
 </template>
 

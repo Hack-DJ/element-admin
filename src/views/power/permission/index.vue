@@ -1,14 +1,15 @@
 <template>
   <div class="app-container permission-container">
     <operation-panel :option-list="optionList" :option-select.sync="optionSelect" :add-name="addName" @addForm="addForm" />
-    <tree-table :data="permissionList"
-                :list-loading="listLoading"
-                :set="set"
-                :columns="cloumnsList"
-                border
-                class="permission-tree"
-                @edit="editForm"
-                @delete="confirmDelete" />
+    <tree-table
+      :data="permissionList"
+      :list-loading="listLoading"
+      :set="set"
+      :columns="cloumnsList"
+      border
+      class="permission-tree"
+      @edit="editForm"
+      @delete="confirmDelete" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -145,7 +146,7 @@ export default {
         {
           text: '类型',
           width: 55,
-          value: 'type'
+          value: 'isButton'
         }
       ],
       set: {
@@ -215,14 +216,12 @@ export default {
     },
     // 删除数据
     confirmDelete(id) {
-      console.log(id)
       this.$store.dispatch('DeletePermission', { id: id }).then(() => {
         this.$message({
           type: 'success',
           message: '删除成功!'
         })
       })
-
     }
   }
 }

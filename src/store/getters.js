@@ -28,6 +28,8 @@ const getters = {
   token: state => state.user.token,
   userInfo: state => state.user.userInfo,
 
+  addFormLoading: state => state.form.addFormLoading,
+
   permissionList: state => state.power.permissionList,
   permissionIdKey: (state, getters) => {
     return permissionIdKey(getters.permissionList)

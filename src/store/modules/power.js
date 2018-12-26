@@ -2,7 +2,7 @@ import { getPermission, savePermission, deletePermission } from '@/api/power'
 
 const childrenBtnState = function(item) {
   const tmp = { edit: true, delete: true }
-  item.type = parseInt(item.type) === 1 ? '菜单' : '按钮'
+  item.isButton = parseInt(item.isButton) === 1 ? '菜单' : '按钮'
   Object.assign(item, tmp)
   return item
 }
@@ -46,10 +46,8 @@ const user = {
       state.permissionList.splice(i, 0, data)
     },
     DELETE_PERMISSION: (state, data) => {
-      console.log(data)
-      state.permissionList.filter(val => {
-        return val.id !== data.id
-      })
+      console.log('DELETE_PERMISSION', data)
+      state.permissionList = state.permissionList.filter(val => val.id !== data.id)
     }
   },
 
@@ -72,8 +70,9 @@ const user = {
     },
     // 保存菜单
     SavePermission({ commit }, data) {
-      if (data.parentId === '') {
+      if (data.parentId === '' || data.parentId === 1 || data.parentId === '1') {
         data['parent.id'] = 1
+        data['parent.name'] = '功能菜单'
       }
       return new Promise((resolve, reject) => {
         savePermission(data).then(res => {
@@ -90,7 +89,6 @@ const user = {
         })
       })
     },
-
     // 删除菜单
     DeletePermission({ commit }, data) {
       return new Promise((resolve, reject) => {

@@ -34,7 +34,7 @@ export function getRoleList(params) {
 
 export function getUserList(params) {
   return request({
-    url: 'http://code2012.cn/rapServer/app/mock/18/sys/menu/userlist',
+    url: '/sys/user/list',
     method: 'get',
     params
   })

@@ -138,10 +138,12 @@ export default {
   methods: {
     // switch按钮
     switchShow(value) {
+      console.log('1111', value)
       return !!parseInt(value)
     },
     switchInput(prop, val) {
-      this.ruleForm[prop] = val ? 1 : 0
+      console.log(prop, val)
+      this.$set(this.ruleForm, prop, val ? 1 : 0)
     },
 
     // 上级id转上级名

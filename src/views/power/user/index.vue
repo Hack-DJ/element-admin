@@ -69,7 +69,7 @@ export default {
       columns: [
         {
           text: '登录名',
-          value: 'username'
+          value: 'loginName'
         },
         {
           text: '用户名',
@@ -85,17 +85,19 @@ export default {
         },
         {
           text: '是否启用',
-          value: 'state',
+          value: 'loginFlag',
           width: 60,
           switch: true
         }
       ],
       // 表单弹窗
+      saveUrl: '/sys/user/save',
+      deleteUrl: '/sys/user/delete',
       formItemList: [
         {
           label: '登录名',
           type: 'input',
-          prop: 'username',
+          prop: 'loginName',
           placeholder: '请输入登录名',
           value: null
         },
@@ -123,20 +125,20 @@ export default {
         {
           label: '是否启用',
           type: 'switch',
-          prop: 'state',
+          prop: 'loginFlag',
           value: null
         }
       ],
       formData: {
         id: '',
-        username: '',
+        loginName: '',
         name: '',
         phone: '',
         email: '',
-        state: 1
+        loginFlag: 1
       },
       rules: {
-        username: [
+        loginName: [
           { required: true, message: '请输入登录名', trigger: 'blur' }
         ],
         name: [
@@ -165,7 +167,7 @@ export default {
   methods: {
     getList() {
       getUserList().then(res => {
-        this.list = res.data.list
+        this.list = res.data.data.list
         this.listLoading = false
       })
     },
@@ -203,21 +205,6 @@ export default {
       } else {
         this.$refs.multipleTable.clearSelection()
       }
-    },
-    // 提交表单
-    submitForm(data) {
-      // 格式化存储数据
-      let isNew = true
-      this.list.map(item => {
-        if (item.id === data.id) {
-          isNew = false
-          return Object.assign(item, data)
-        }
-      })
-      if (isNew) {
-        this.list.unshift(data)
-      }
-      this.addDialog = false
     }
   }
 }
