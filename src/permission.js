@@ -19,10 +19,10 @@ router.beforeEach((to, from, next) => {
     } else {
       if (Object.keys(store.getters.userInfo).length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetInfo').then(res => { // 拉取user_info
-          // 根据菜单生成可访问路由
           store.dispatch('GetSysDict')
-          store.dispatch('GenerateRoutes', {}
-          ).then(() => {
+          // 根据菜单生成可访问路由
+          store.dispatch('GenerateRoutes', {}).then(() => {
+            console.log(store.getters.addRouters)
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
           })

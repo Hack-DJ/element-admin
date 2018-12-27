@@ -40,10 +40,12 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="192px">
+        <el-table-column label="操作" width="280px" style="text-align: center;">
           <template slot-scope="scope">
-            <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
-            <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.row.id)">删除</el-button>
+            <el-button v-if="addNext" type="text" size="small" icon="el-icon-plus" @click="addPlus(scope.row)">添加菜单</el-button>
+            <el-button v-if="urlOpen && isUrl(scope.row.href)" type="text" size="small" icon="el-icon-share" @click="open(scope.row.href)">打开</el-button>
+            <el-button type="text" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index,scope.row)">修改</el-button>
+            <el-button type="text" style="color: #FF4949;" size="small" icon="el-icon-delete" @click="confirmDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </template>
@@ -62,6 +64,14 @@ export default {
     data: {
       type: [Array, Object],
       required: true
+    },
+    urlOpen: {
+      type: Boolean,
+      default: false
+    },
+    addNext: {
+      type: Boolean,
+      default: false
     },
     columns: {
       type: Array,
@@ -99,6 +109,15 @@ export default {
     }
   },
   methods: {
+    isUrl(url) {
+      return this._.trim(url).length > 0
+    },
+    open(url) {
+      let routeUrl = this.$router.resolve({
+        path: url
+      })
+      window.open(routeUrl.href, '_blank')
+    },
     switchShow(val) {
       return parseInt(val) === 1
     },
@@ -119,6 +138,10 @@ export default {
     // 图标显示
     iconShow(index, record) {
       return (index === 0 && record.children && record.children.length > 0)
+    },
+    addPlus(type) {
+      const { id, name } = type
+      this.$emit('addPlus', { id, name })
     },
     // 修改数据
     confirmEdit(index, row) {

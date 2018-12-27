@@ -46,7 +46,6 @@ const user = {
       state.permissionList.splice(i, 0, data)
     },
     DELETE_PERMISSION: (state, data) => {
-      console.log('DELETE_PERMISSION', data)
       state.permissionList = state.permissionList.filter(val => val.id !== data.id)
     }
   },
@@ -77,12 +76,16 @@ const user = {
       return new Promise((resolve, reject) => {
         savePermission(data).then(res => {
           const response = childrenBtnState(res.data.data)
-          if (data.id !== '') {
-            // 修改数据
-            commit('UPDATE_PERMISSION', response)
-          } else {
-            commit('ADD_PERMISSION', response)
-          }
+          // 先删除历史记录，
+          commit('DELETE_PERMISSION', response)
+          // 再新增记录
+          commit('ADD_PERMISSION', response)
+          // if (data.id !== '') {
+          //   // 修改数据
+          //   commit('UPDATE_PERMISSION', response)
+          // } else {
+          //   commit('ADD_PERMISSION', response)
+          // }
           resolve()
         }).catch(error => {
           reject(error)

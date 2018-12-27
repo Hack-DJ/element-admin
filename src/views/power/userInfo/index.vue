@@ -2,7 +2,7 @@
   <div class="app-container">
     <transition name="el-fade-in-linear" mode="out-in">
       <form-plan ref="formPlan" :form-data.sync="ruleForm" :rules="rules" :item-list="itemList" is-sync>
-        <div style="text-align: center;" slot="formBtn">
+        <div slot="formBtn" style="text-align: center;">
           <el-button :loading="loading" type="primary" @click="save">保存</el-button>
           <el-button @click="reset">重置</el-button>
         </div>

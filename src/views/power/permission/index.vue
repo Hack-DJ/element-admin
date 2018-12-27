@@ -7,7 +7,10 @@
       :set="set"
       :columns="cloumnsList"
       border
+      add-next
+      url-open
       class="permission-tree"
+      @addPlus="addForm"
       @switchToggle="switchToggle"
       @edit="editForm"
       @delete="confirmDelete" />
@@ -107,6 +110,8 @@ export default {
         isButton: '1',
         parentId: '',
         parentId_des: '',
+        'parent.id': '',
+        'parent.name': '',
         name: '',
         href: '',
         icon: '',
@@ -176,7 +181,8 @@ export default {
     ...mapGetters([
       'permissionList',
       'permissionIdKey',
-      'generationTree'
+      'generationTree',
+      'permissionSortMax'
     ]),
     cloumnsList() {
       return this.columns.concat(this.optionSelect)
@@ -192,6 +198,21 @@ export default {
       this.$store.dispatch('GetPermission').then(() => {
         this.listLoading = false
       })
+    },
+    addForm(data = '') {
+      this.formData = this._.cloneDeep(this.formDataTemp)
+      this.formData.sort = this.permissionSortMax
+      if (data !== '') {
+        const { id, name } = data
+        const temp = {
+          parentId: id,
+          parentId_des: name,
+          'parent.id': id,
+          'parent.name': name
+        }
+        Object.assign(this.formData, temp)
+      }
+      this.addDialogShow()
     },
     editForm({ index, row }) {
       const key = Object.keys(this.formData)

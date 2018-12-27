@@ -32,6 +32,13 @@ const getters = {
   roleType: state => state.form.roleType,
 
   permissionList: state => state.power.permissionList,
+  permissionSortMax: (state, getters) => {
+    let max = 0
+    state.power.permissionList.map(item => {
+      max = item.sort > max ? item.sort + 100 : max
+    })
+    return max
+  },
   permissionIdKey: (state, getters) => {
     return permissionIdKey(getters.permissionList)
   },
