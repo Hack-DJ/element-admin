@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <table-search :search="searchList" @searchList="searchChang" />
+    <table-search :search="searchLists" @searchList="searchChang" />
     <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" />
+    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" dict-plus @edit="editForm" @delete="confirmDelete" @addDict="addForm" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -22,6 +22,7 @@ import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
+import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'Dict',
@@ -30,15 +31,8 @@ export default {
   data() {
     return {
       pageName: '字典',
-      // search 查询面板
-      searchList: [
-        [
-          { label: '键值', type: 'input', key: 'value', value: null },
-          { label: '标签', type: 'input', key: 'label', value: null },
-          { label: '类型', type: 'select', key: 'type', value: null, optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }] },
-          { label: '描述', type: 'input', key: 'description', value: null }
-        ]
-      ],
+      saveUrl: '/sys/dict/save',
+      deleteUrl: '/sys/dict/delete',
       // table 表格
       list: [],
       listLoading: true,
@@ -64,16 +58,46 @@ export default {
         {
           text: '排序',
           value: 'sort'
-        },
-        {
-          text: '备注',
-          value: 'remarks'
         }
       ],
 
       // 表单弹窗
       formDialog: false,
-      formItemList: [
+      formData: {
+        id: '',
+        value: '',
+        label: '',
+        type: '',
+        description: '',
+        sort: 500
+      },
+      rules: {
+        value: [
+          { required: true, message: '请输入键值', trigger: 'blur' }
+        ],
+        label: [
+          { required: true, message: '请输入标签', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '请输入类型', trigger: 'blur' }
+        ]
+      },
+      typeList: []
+    }
+  },
+  computed: {
+
+    // search 查询面板
+    searchLists() {
+      return [
+        [
+          { label: '类型', type: 'autocomplete', key: 'type', value: null, optionList: this.typeList }
+        ]
+      ]
+    },
+
+    formItemList() {
+      return [
         {
           label: '键值',
           type: 'input',
@@ -88,8 +112,9 @@ export default {
         },
         {
           label: '类型',
-          type: 'input',
-          placeholder: '请输入类型',
+          type: 'autocomplete',
+          placeholder: '选择类型',
+          optionList: this.typeList,
           prop: 'type'
         },
         {
@@ -103,35 +128,8 @@ export default {
           type: 'input',
           placeholder: '排序由小到大顺序排列',
           prop: 'sort'
-        },
-        {
-          label: '备注',
-          type: 'input',
-          inputType: 'textarea',
-          placeholder: '请输入备注',
-          prop: 'remarks'
         }
-      ],
-      formData: {
-        id: '',
-        value: '',
-        label: '',
-        type: '',
-        remarks: '',
-        description: '',
-        sort: 500
-      },
-      rules: {
-        value: [
-          { required: true, message: '请输入键值', trigger: 'blur' }
-        ],
-        label: [
-          { required: true, message: '请输入标签', trigger: 'blur' }
-        ],
-        type: [
-          { required: true, message: '请输入类型', trigger: 'blur' }
-        ]
-      }
+      ]
     }
   },
   created() {
@@ -139,24 +137,66 @@ export default {
     this.getList()
   },
   methods: {
+    // 提交表单
+    addForm(type = '') {
+      this.formData = Object.assign(this.formDataTemp, { type: type })
+      this.addDialogShow()
+    },
+    submitForm(data) {
+      // 格式化存储数据
+      requestForm(this.saveUrl, data).then(res => {
+        res = this._.pick(res.data.data, Object.keys(this.formData))
+        let isNew = true
+        this.list.some(item => {
+          if (item.id === res.id) {
+            isNew = false
+            return Object.assign(item, res)
+          }
+        })
+        if (isNew) {
+          // 在列表中查找相同类型，然后根据相同类型查找合适位置
+          let index = 0
+          this.list.some((item, i) => {
+            if (item.type === res.type) {
+              // 有相同类型，则找排序位置
+              if (item.sort > res.sort) {
+                index = i
+                return true
+              }
+              index = i + 1
+            } else if (index !== 0) {
+              return true
+            }
+          })
+          this.list.splice(index, 0, res)
+        }
+        this.addDialog = false
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
+      })
+    },
     searchChang(data) {
       this.search = data
       this.getList()
     },
     getList() {
       getDictList(Object.assign(this.listQuery, this.search)).then(res => {
-        this.list = res.data.list
-        this.count = res.data.count
-        this.listQuery.pageNo = res.data.pageNo
-        this.listQuery.pageSize = res.data.pageSize
+        const data = res.data.data
+        this.typeList = res.data.typeList
+
+        this.list = data.list
+        this.count = data.count
+        this.listQuery.pageNo = data.pageNo
+        this.listQuery.pageSize = data.pageSize
         this.listLoading = false
       })
     },
     checkChange(select) {
-      console.log(select)
       this.optionSelect = select
-      console.log(this.optionSelect)
     }
   }
 }
 </script>
+

@@ -24,7 +24,6 @@
 </template>
 
 <script>
-// import { deletePermission } from '@/api/power'
 import { AddFormMixin } from '@/mixins'
 import treeTable from '@/components/TreeTable'
 import OperationPanel from '@/components/Table/OperationPanel'

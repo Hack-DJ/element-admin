@@ -38,10 +38,8 @@ const addForm = {
     // 提交表单
     submitForm(data) {
       // 格式化存储数据
-
-      const json = { json: data }
-
-      requestForm(this.saveUrl, json).then(res => {
+      // const json = { json: data }
+      requestForm(this.saveUrl, data).then(res => {
         res = this._.pick(res.data.data, Object.keys(this.formData))
         let isNew = true
         this.list.some(item => {

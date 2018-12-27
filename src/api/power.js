@@ -42,7 +42,7 @@ export function getUserList(params) {
 
 export function getDictList(params) {
   return request({
-    url: 'http://code2012.cn/rapServer/app/mock/18/sys/dict/list',
+    url: '/sys/dict/list',
     method: 'get',
     params
   })

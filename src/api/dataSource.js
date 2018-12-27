@@ -1,9 +1,12 @@
 import request from '@/utils/request'
 
-// const Model = '/sys/menu'
-// const linkUrl = function(name) {
-//   return `${Model}/${name}`
-// }
+export function getWebsite(params) {
+  return request({
+    url: 'http://code2012.cn/rapServer/app/mock/18/datasource/website',
+    method: 'get',
+    params
+  })
+}
 
 export function getType(params) {
   return new Promise(resolve => {
@@ -121,21 +124,13 @@ export function getType(params) {
   // })
 }
 
-export function getInfo(params) {
-  return request({
-    url: 'http://code2012.cn/rapServer/app/mock/18/datasource/info',
-    method: 'get',
-    params
-  })
-}
-
-export function getStrategy(params) {
-  return request({
-    url: 'http://code2012.cn/rapServer/app/mock/18/datasource/strategy',
-    method: 'get',
-    params
-  })
-}
+// export function getStrategy(params) {
+//   return request({
+//     url: 'http://code2012.cn/rapServer/app/mock/18/datasource/strategy',
+//     method: 'get',
+//     params
+//   })
+// }
 
 export function getList(params) {
   return request({

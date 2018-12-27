@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { getInfo } from '@/api/dataSource'
+import { getWebsite } from '@/api/dataSource'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
@@ -27,7 +27,7 @@ import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DataSourceInfo',
+  name: 'DataSourceWebsite',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
@@ -125,7 +125,7 @@ export default {
       this.getList()
     },
     getList() {
-      getInfo(Object.assign(this.listQuery, this.search)).then(res => {
+      getWebsite(Object.assign(this.listQuery, this.search)).then(res => {
         this.list = res.data.list
         this.list.map(item => {
           item.typeName = this.dataSourceTypeIdKey[item.typeId] ? this.dataSourceTypeIdKey[item.typeId].name : item.typeId

@@ -20,6 +20,7 @@ router.beforeEach((to, from, next) => {
       if (Object.keys(store.getters.userInfo).length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetInfo').then(res => { // 拉取user_info
           // 根据菜单生成可访问路由
+          store.dispatch('GetSysDict')
           store.dispatch('GenerateRoutes', {}
           ).then(() => {
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表

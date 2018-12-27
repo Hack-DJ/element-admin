@@ -7,6 +7,7 @@
             <el-col v-for="col in row" :xs="24" :sm="colSmNum(row)" :key="col.key">
               <el-form-item :label="col.label">
                 <el-input v-if="col.type==='input'" v-model="col.value" />
+                <el-autocomplete v-if="col.type==='autocomplete'" v-model="col.value" :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,col))" placeholder="请输入内容" />
                 <el-select v-if="col.type==='select'" v-model="col.value" clearable placeholder="请选择">
                   <el-option
                     v-for="item in col.optionList"
@@ -18,7 +19,7 @@
                   v-if="col.type === 'datetime'"
                   v-model="col.value"
                   type="datetime"
-                  placeholder="选择日期时间"/>
+                  placeholder="选择日期时间" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -74,6 +75,18 @@ export default {
     }
   },
   methods: {
+    querySearch(queryString, cb, item) {
+      const tmp = []
+      item.optionList.map(item => {
+        if (!queryString) {
+          return tmp.push({ value: item })
+        }
+        if (item.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) {
+          tmp.push({ value: item })
+        }
+      })
+      cb(tmp)
+    },
     colSmNum(row) {
       return parseInt(24 / row.length)
     },
@@ -116,6 +129,10 @@ export default {
     @media screen and (max-width: 900px) {
       margin-bottom: $marginBottomMedium * 2.5;
     }
+  }
+
+  .el-autocomplete {
+    display: block;
   }
 }
 

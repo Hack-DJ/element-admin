@@ -44,6 +44,9 @@
         <template v-if="item.type==='input'">
           <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" :disabled="item.disabled" />
         </template>
+        <template v-if="item.type==='autocomplete'">
+          <el-autocomplete v-model="ruleForm[item.prop]" :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,item))" :placeholder="item | placeholder" :disabled="item.disabled" />
+        </template>
         <template v-if="item.type==='select'">
           <el-select v-model="ruleForm[item.prop]" :placeholder="item | placeholder" clearable>
             <el-option
@@ -136,6 +139,19 @@ export default {
     }
   },
   methods: {
+    querySearch(queryString, cb, item) {
+      const tmp = []
+      item.optionList.map(item => {
+        if (!queryString) {
+          return tmp.push({ value: item })
+        }
+        if (item.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) {
+          tmp.push({ value: item })
+        }
+      })
+      cb(tmp)
+    },
+
     // switch按钮
     switchShow(value) {
       return !!parseInt(value)
@@ -199,11 +215,6 @@ export default {
     },
     // 重置
     resetForm(data) {
-      // if (data) {
-      //   this.ruleForm = this._.cloneDeep(data)
-      // } else {
-      //   this.ruleForm = this._.cloneDeep(this.formData)
-      // }
       this.$refs.ruleForm.resetFields()
     }
   }
@@ -212,6 +223,10 @@ export default {
 
 <style lang="scss" scoped>
 @import 'src/styles/var';
+
+.el-autocomplete {
+  display: block;
+}
 
 .el-select, .el-date-editor {
   width: 100%;

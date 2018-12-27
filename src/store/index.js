@@ -7,6 +7,7 @@ import permission from './modules/permission'
 import power from './modules/power'
 import dataSource from './modules/dataSource'
 import form from './modules/form'
+import basicCinfog from './modules/basicCinfog'
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -19,6 +20,7 @@ const store = new Vuex.Store({
     permission,
     power,
     form,
+    basicCinfog,
     dataSource
   },
   getters

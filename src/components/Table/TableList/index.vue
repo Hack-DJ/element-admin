@@ -12,6 +12,7 @@
       <el-table-column v-if="!isDialog" align="center" label="设置" width="300px">
         <template slot-scope="scope">
           <el-button v-if="powerConfig" type="primary" size="small" icon="el-icon-setting" @click="confirmConfig(scope.$index)">配置</el-button>
+          <el-button v-if="dictPlus" type="primary" size="small" icon="el-icon-plus" @click="addDict(scope.row.type)">追加类型</el-button>
           <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index)">修改</el-button>
           <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index)">删除</el-button>
         </template>
@@ -33,6 +34,10 @@ export default {
       type: Boolean,
       default: false
     },
+    dictPlus:{
+      type: Boolean,
+      default: false
+    },
     list: {
       type: [Array, Object],
       required: true
@@ -51,6 +56,9 @@ export default {
     }
   },
   methods: {
+    addDict(type) {
+      this.$emit('addDict', type)
+    },
     switchShow(val) {
       return parseInt(val) === 1
     },
