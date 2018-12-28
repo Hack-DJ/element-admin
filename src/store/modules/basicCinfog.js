@@ -1,4 +1,5 @@
 import { getSysDict, getConfig } from '@/api/basicConfig'
+
 // Dict 保留有用字段
 function objectPick(data) {
   const format = ['POI', 'webType']

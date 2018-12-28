@@ -86,7 +86,15 @@ export function databaseForm(data = {}) {
         prop: 'remarks'
       }
     ],
-    ruleForm: { 'id': '', 'database_name': '', 'database_url': '', 'database_port': '', 'login_user': '', 'login_psw': '', 'remarks': '' },
+    ruleForm: {
+      'id': '',
+      'database_name': '',
+      'database_url': '',
+      'database_port': '',
+      'login_user': '',
+      'login_psw': '',
+      'remarks': ''
+    },
     rules: {
       database_name: [
         { required: true, message: '请输入数据库名称', trigger: 'blur' }

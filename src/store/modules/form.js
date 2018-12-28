@@ -1,7 +1,7 @@
 // form 表单公共状态机
 const form = {
   state: {
-    //角色类型
+    // 角色类型
     roleType: {
       assignment: '任务分配',
       'security-role': '管理角色',
@@ -25,11 +25,6 @@ const form = {
         [route.name]: obj
       }
       commit('ADD_VIEW_FORM', page)
-      // formData: {},
-      // rules: {},
-      // itemList: {},
-      // treeList: [],
-      // treeIdKey: {}
     },
     showAddFormLoading({ commit }) {
       commit('UPDATE_ADDFORMLOADING', true)

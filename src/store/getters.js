@@ -30,6 +30,7 @@ const getters = {
 
   webTitle: state => state.basicCinfog.webTitle,
   footerList: state => state.basicCinfog.footerList,
+  sysDict: state => state.basicCinfog.sysDict,
 
   addFormLoading: state => state.form.addFormLoading,
   roleType: state => state.form.roleType,
