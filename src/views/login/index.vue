@@ -2,8 +2,7 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
       <h3 class="title">
-        <img src="../../assets/md/logo.png" alt="logo" class="logo">
-        数据收集</h3>
+      <img src="../../assets/md/logo.png" alt="logo" class="logo">{{ webTitle }}</h3>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -42,11 +41,15 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <div class="meta">
+      <p v-for="item in footerList" :key="item" class="meta-item">{{ item }}</p>
+    </div>
   </div>
 </template>
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Login',
@@ -90,6 +93,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'footerList',
+      'webTitle'
+    ]),
     passwordIcon() {
       return this.pwdType === 'password' ? 'eye' : 'eye-open'
     }
@@ -134,9 +141,10 @@ export default {
 @import 'src/styles/var';
 
 .login-container {
-  position: fixed;
-  height: 100%;
+  position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 500px;
   background: $backGroundColor url('../../assets/md-bg.svg') no-repeat center;
   .login-form {
     position: absolute;
@@ -196,6 +204,20 @@ export default {
         user-select: none;
         text-align: right;
       }
+    }
+  }
+  .meta {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    padding: 0 40px;
+    text-align: center;
+    &-item {
+      display: inline-block;
+      margin: 0 10px;
+      font-size: $fontSize;
+      color: $fontColor;
     }
   }
 }

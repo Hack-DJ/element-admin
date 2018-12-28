@@ -96,8 +96,8 @@ export default {
         }
       ],
       // 表单弹窗
-      saveUrl: '/sys/role/save',
-      deleteUrl: '/sys/role/delete',
+      saveUrl: '/ips/a/sys/role/save',
+      deleteUrl: '/ips/a/sys/role/delete',
       formData: {
         id: '',
         name: '',

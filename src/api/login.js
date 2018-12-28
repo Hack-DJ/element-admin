@@ -1,13 +1,8 @@
 import request from '@/utils/request'
 
-const Model = ''
-const linkUrl = function(name) {
-  return `${Model}${name}`
-}
-
 export function login(username, password) {
   return request({
-    url: linkUrl('login'),
+    url: '/ips/a/login',
     method: 'post',
     data: {
       username,
@@ -18,14 +13,14 @@ export function login(username, password) {
 
 export function getInfo(token) {
   return request({
-    url: linkUrl('info'),
+    url: '/ips/a/info',
     method: 'post'
   })
 }
 
 export function logout() {
   return request({
-    url: linkUrl('logout'),
+    url: '/ips/a/logout',
     method: 'post'
   })
 }

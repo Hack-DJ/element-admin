@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getPermission() {
   return request({
-    url: '/sys/menu/list',
+    url: '/ips/a/sys/menu/list',
     method: 'get',
     data: {}
   })
@@ -10,7 +10,7 @@ export function getPermission() {
 
 export function savePermission(form) {
   return request({
-    url: '/sys/menu/save',
+    url: '/ips/a/sys/menu/save',
     method: 'post',
     data: form
   })
@@ -18,7 +18,7 @@ export function savePermission(form) {
 
 export function deletePermission(id) {
   return request({
-    url: '/sys/menu/delete',
+    url: '/ips/a/sys/menu/delete',
     method: 'post',
     data: id
   })
@@ -26,7 +26,7 @@ export function deletePermission(id) {
 
 export function getRoleList(params) {
   return request({
-    url: '/sys/role/list',
+    url: '/ips/a/sys/role/list',
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export function getRoleList(params) {
 
 export function getUserList(params) {
   return request({
-    url: '/sys/user/list',
+    url: '/ips/a/sys/user/list',
     method: 'get',
     params
   })
@@ -42,7 +42,7 @@ export function getUserList(params) {
 
 export function getDictList(params) {
   return request({
-    url: '/sys/dict/list',
+    url: '/ips/a/sys/dict/list',
     method: 'get',
     params
   })

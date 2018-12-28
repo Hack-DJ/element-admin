@@ -10,6 +10,7 @@ NProgress.configure({ showSpinner: false })// NProgress Configuration
 const whiteList = ['/login']// no redirect whitelist
 
 router.beforeEach((to, from, next) => {
+  window.document.title = store.getters.webTitle
   NProgress.start() // start progress bar
   if (getToken()) { // determine if there has token
     /* has token*/
@@ -22,7 +23,6 @@ router.beforeEach((to, from, next) => {
           store.dispatch('GetSysDict')
           // 根据菜单生成可访问路由
           store.dispatch('GenerateRoutes', {}).then(() => {
-            console.log(store.getters.addRouters)
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
           })

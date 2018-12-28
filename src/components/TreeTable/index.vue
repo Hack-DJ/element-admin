@@ -140,8 +140,9 @@ export default {
       return (index === 0 && record.children && record.children.length > 0)
     },
     addPlus(type) {
-      const { id, name } = type
-      this.$emit('addPlus', { id, name })
+      let { id, name, sort } = type
+      sort += this._.isNumber(sort) ? 100 : 0
+      this.$emit('addPlus', { id, name, sort })
     },
     // 修改数据
     confirmEdit(index, row) {

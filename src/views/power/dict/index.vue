@@ -31,8 +31,8 @@ export default {
   data() {
     return {
       pageName: '字典',
-      saveUrl: '/sys/dict/save',
-      deleteUrl: '/sys/dict/delete',
+      saveUrl: '/ips/a/sys/dict/save',
+      deleteUrl: '/ips/a/sys/dict/delete',
       // table 表格
       list: [],
       listLoading: true,
@@ -130,6 +130,14 @@ export default {
           prop: 'sort'
         }
       ]
+    },
+
+    sortMax() {
+      let max = 0
+      this.list.forEach(item => {
+        max = Math.max(item.sort, max) + 100
+      })
+      return max
     }
   },
   created() {
@@ -138,8 +146,12 @@ export default {
   },
   methods: {
     // 提交表单
-    addForm(type = '') {
-      this.formData = Object.assign(this.formDataTemp, { type: type })
+    addForm(data = '') {
+      this.formData = this._.cloneDeep(this.formDataTemp)
+      this.formData.sort = this.sortMax
+      if (data !== '') {
+        Object.assign(this.formData, { type: data.type, sort: data.sort })
+      }
       this.addDialogShow()
     },
     submitForm(data) {

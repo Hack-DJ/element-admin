@@ -26,33 +26,38 @@ const treeList = function(list, idKey = []) {
 }
 
 function creatRoles(tree, parent) {
-
-  tree.map(route => {
-    const { href, component, redirect, icon, name } = route
+  const res = []
+  tree.forEach(route => {
+    const { href, template, icon, name } = route
     const meta = {
       title: name,
       icon: icon
     }
     const tmp = {
-      path: href
+      path: href,
+      meta: meta
     }
+    // 是否外链
     if (!Vue._.startsWith(href, 'http://')) {
       const replace = Vue._.replace(href, '/', '')
+      // 如果有父级则去掉路有前反斜线
       if (parent) {
         tmp.path = replace
       }
+      // 首字母大写
       tmp.name = Vue._.upperFirst(replace)
     }
-    tmp.meta = meta
+
     if (route.children) {
-      // 重定向位置
-      tmp.redirect = redirect
       creatRoles(route.children, route)
     }
+
+    // 根据模版选用组件，如果是第一级则用默认模版
+    tmp.component = template !== 'Layout' ? () => import('@/views/storeData/library/index') : Layout
     Object.assign(route, tmp)
-    route.component = component !== 'Layout' ? () => import('@/views/storeData/library/index') : Layout
+    res.push(Vue._.pick(route, ['id', 'name', 'path', 'component', 'icon', 'children', 'meta']))
   })
-  return tree
+  return res
 }
 
 /**

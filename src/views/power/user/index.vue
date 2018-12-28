@@ -104,8 +104,8 @@ export default {
         }
       ],
       // 表单弹窗
-      saveUrl: '/sys/user/save',
-      deleteUrl: '/sys/user/delete',
+      saveUrl: '/ips/a/ips/a/sys/user/save',
+      deleteUrl: '/ips/a/sys/user/delete',
       formItemList: [
         {
           label: '登录名',

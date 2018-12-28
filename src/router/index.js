@@ -15,6 +15,7 @@ import DataSource from './modules/dataSource'
 import Stored from './modules/storeData'
 import Reptile from './modules/reptile'
 import Select from './modules/select'
+import test from './modules/test'
 
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -74,6 +75,7 @@ export const asyncRouterMap = [
   Stored,
   Reptile,
   Select,
+  test,
   {
     path: '*', redirect: '/404', hidden: true
   }

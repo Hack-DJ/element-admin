@@ -203,8 +203,9 @@ export default {
       this.formData = this._.cloneDeep(this.formDataTemp)
       this.formData.sort = this.permissionSortMax
       if (data !== '') {
-        const { id, name } = data
+        const { id, name, sort } = data
         const temp = {
+          sort: sort,
           parentId: id,
           parentId_des: name,
           'parent.id': id,

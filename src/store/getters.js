@@ -28,6 +28,9 @@ const getters = {
   token: state => state.user.token,
   userInfo: state => state.user.userInfo,
 
+  webTitle: state => state.basicCinfog.webTitle,
+  footerList: state => state.basicCinfog.footerList,
+
   addFormLoading: state => state.form.addFormLoading,
   roleType: state => state.form.roleType,
 
@@ -35,7 +38,7 @@ const getters = {
   permissionSortMax: (state, getters) => {
     let max = 0
     state.power.permissionList.map(item => {
-      max = item.sort > max ? item.sort + 100 : max
+      max = Math.max(item.sort, max) + 100
     })
     return max
   },

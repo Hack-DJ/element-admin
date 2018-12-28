@@ -36,8 +36,8 @@ export default {
     }
     return {
       // 表单弹窗
-      saveUrl: '/sys/user/save',
-      deleteUrl: '/sys/user/delete',
+      saveUrl: '/ips/a/sys/user/save',
+      deleteUrl: '/ips/a/sys/user/delete',
       itemList: [
         {
           label: '登录名',
@@ -126,7 +126,7 @@ export default {
     // 提交表单
     submitForm(data) {
       // 格式化存储数据
-      requestForm('/sys/user/save', data).then(res => {
+      requestForm('/ips/a/sys/user/save', data).then(res => {
         console.log(res)
         this.$store.commit('SET_USERINFO', res)
         this.$message({
