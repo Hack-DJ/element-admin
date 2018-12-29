@@ -1,8 +1,17 @@
 import request from '@/utils/request'
 
+const mode = '/ips/a/ips/website'
+
+export function getPageConfig() {
+  return request({
+    url: mode + '/config',
+    method: 'get'
+  })
+}
+
 export function getWebsite(params) {
   return request({
-    url: 'http://code2012.cn/rapServer/app/mock/18/datasource/website',
+    url: mode + '/list',
     method: 'get',
     params
   })

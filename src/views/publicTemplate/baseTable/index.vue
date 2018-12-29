@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { formatPageData } from '@/utils'
 import { OperationMixin, PaginationMixin } from '@/mixins'
 import { getPageData } from '@/api/template'
 import BaseTableSearch from './components/BaseTableSearch.vue'
@@ -42,7 +43,8 @@ export default {
       // table
       columns: [],
       list: [],
-
+      isAdd: false,
+      isEdit: false,
       // 表单
       formDialog: false,
       formData: {},
@@ -55,9 +57,6 @@ export default {
     }
   },
   computed: {
-    isAdd() {
-      return Object.keys(this.formData).length > 0
-    },
     isSearch() {
       return this.searchList.length > 0
     },
@@ -71,7 +70,13 @@ export default {
       const data = res.data.data
       this.pageName = data.comments
       this.pageData = data.columnList
-      this.formatPageData()
+
+      const { formDate, columns, itemList, searchList } = formatPageData(data.columnList)
+
+      this.formData = formDate
+      this.columns = columns
+      this.itemList = itemList
+      this.searchList = searchList
     }).catch(() => {
       this.loadingPage = false
       this.$message.error('页面加载失败，请稍后再试！')
@@ -84,70 +89,6 @@ export default {
     // 新增功能
     add() {
       this.formDialog = true
-    },
-    formatPageData() {
-      const formDate = {}
-      const columns = []
-      const itemList = []
-      const searchList = []
-      this.pageData.map(item => {
-        const { name, javaField, isList, isInsert, isEdit, showType, isQuery, dictType, dataLength } = item
-
-        // 查询控件
-        if (isQuery === '1') {
-          searchList.push(
-            {
-              label: name,
-              key: javaField,
-              type: showType,
-              dictType: dictType
-            }
-          )
-        }
-        // tablie 展示对象
-        if (isList === '1' || true) {
-          // TODO table列表暂时没有
-          columns.push({
-            text: name,
-            value: javaField
-          })
-        }
-
-        // 添加表单
-        if (isInsert === '1' || isEdit === '1') {
-          itemList.push({
-            label: name,
-            type: showType,
-            placeholder: this.placeholderText(showType, name),
-            dictType: dictType,
-            dataLength: dataLength,
-            prop: javaField,
-            isInser: isInsert === '1',
-            isEdit: isEdit === '1'
-          })
-          // TODO 验证规则暂时没有
-          // 表单存储对象
-          formDate[item.javaField] = item.javaType === 'String' ? '' : null
-          // TODO 存储地址展示没有
-        }
-      })
-
-      this.formData = formDate
-      this.columns = columns
-      this.itemList = itemList
-      this.searchList = searchList
-    },
-    placeholderText(type, name) {
-      let str = ''
-      switch (type) {
-        case 'input':
-          str = '请输入'
-          break
-        case 'select':
-          str = '请选'
-          break
-      }
-      return str + name
     }
   }
 }

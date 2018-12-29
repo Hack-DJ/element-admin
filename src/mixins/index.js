@@ -4,6 +4,7 @@ import PaginationMixin from './pagination'
 import PermissionTreeMixin from './permissionTree'
 import TableSearchMixin from './tableSearch'
 import TagCacheMixin from './tagCache'
+import PageConfigMixin from './pageConfig'
 
 export {
   AddFormMixin,
@@ -11,5 +12,6 @@ export {
   PaginationMixin,
   PermissionTreeMixin,
   TableSearchMixin,
+  PageConfigMixin,
   TagCacheMixin
 }

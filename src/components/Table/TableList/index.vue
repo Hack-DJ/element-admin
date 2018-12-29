@@ -1,6 +1,11 @@
 <template>
   <div class="table-list">
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange">
+    <operation-panel :add-name="addName" :is-delete-all="isDeleteAll" @addForm="addForm" @deleteAll="deleteAll" />
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange" @selection-change="handleSelectionChange">
+      <el-table-column
+        v-if="isSelect"
+        type="selection"
+        width="55" />
       <el-table-column v-for="column in columns" :key="column.value" :label="column.text" :width="column.width">
         <template slot-scope="scope">
           <template v-if="column.switch">
@@ -22,13 +27,28 @@
 </template>
 
 <script>
+import OperationPanel from '@/components/Table/OperationPanel'
+
 export default {
   name: 'TableList',
   props: {
+
+    isDeleteAll: {
+      type: Boolean,
+      default: false
+    },
     /* eslint-disable */
     columnsReplace: {
       type: Object,
       default: () => {return {}}
+    },
+    addName: {
+      type: String,
+      default: ''
+    },
+    isSelect: {
+      type: Boolean,
+      default: false
     },
     powerConfig: {
       type: Boolean,
@@ -55,6 +75,12 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      selectIds: []
+    }
+  },
+  components: { OperationPanel },
   methods: {
     addDict(data) {
       let { type, sort } = data
@@ -75,12 +101,34 @@ export default {
       }
       return str
     },
+    addForm() {
+      this.$emit('addForm')
+    },
     confirmConfig(index) {
       this.$emit('config', index)
     },
     confirmEdit(index) {
       // 弹出修改窗
       this.$emit('edit', index)
+    },
+    deleteAll() {
+      // 判断是否选中数据
+      if (this.selectIds.length > 0) {
+        // 提示是否删除
+        this.$confirm('此操作将永久删除选中记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 调用删除
+          this.$emit('delete', this.selectIds)
+        })
+      } else {
+        this.$message({
+          showClose: true,
+          message: '未勾选记录'
+        })
+      }
     },
     confirmDelete(index) {
       // 提示是否删除
@@ -92,6 +140,10 @@ export default {
         // 调用删除
         this.$emit('delete', index)
       })
+    },
+    handleSelectionChange(list) {
+      this.selectIds = []
+      list.map(item => this.selectIds.push(item.id))
     },
     handleCurrentChange(val) {
       this.$emit('current-change', val)

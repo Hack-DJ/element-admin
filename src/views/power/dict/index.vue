@@ -1,8 +1,7 @@
 <template>
   <div class="app-container">
     <table-search :search="searchLists" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" dict-plus @edit="editForm" @delete="confirmDelete" @addDict="addForm" />
+    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" :add-name="addName" dict-plus @addForm="addForm" @edit="editForm" @delete="confirmDelete" @addDict="addForm" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -17,7 +16,6 @@
 <script>
 import { getDictList } from '@/api/power'
 import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
-import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
@@ -26,7 +24,7 @@ import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'Dict',
-  components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
+  components: { TableSearch, AddForm, TableList, Pagination },
   mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
@@ -48,9 +46,7 @@ export default {
         {
           text: '类型',
           value: 'type'
-        }
-      ],
-      optionList: [
+        },
         {
           text: '描述',
           value: 'description'
@@ -90,9 +86,7 @@ export default {
     // search 查询面板
     searchLists() {
       return [
-        [
-          { label: '类型', type: 'autocomplete', key: 'type', value: null, optionList: this.typeList }
-        ]
+        { label: '类型', type: 'autocomplete', key: 'type', value: null, optionList: this.typeList }
       ]
     },
 

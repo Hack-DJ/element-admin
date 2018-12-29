@@ -26,7 +26,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -130,10 +130,7 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-    decodeURIComponent(search)
-      .replace(/"/g, '\\"')
-      .replace(/&/g, '","')
-      .replace(/=/g, '":"') +
+    decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') +
     '"}'
   )
 }
@@ -146,7 +143,7 @@ export function html2Text(val) {
 
 export function objectMerge(target, source) {
   /* Merges two  objects,
-     giving the last one precedence */
+   giving the last one precedence */
 
   if (typeof target !== 'object') {
     target = {}
@@ -289,4 +286,73 @@ export function uniqueArr(arr) {
 
 export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
+}
+
+export function placeholderText(type, name) {
+  let str = ''
+  switch (type) {
+    case 'input':
+      str = '请输入'
+      break
+    case 'select':
+      str = '请选'
+      break
+  }
+  return str + name
+}
+
+export function formatPageData(page) {
+  const formDate = {}
+  const columns = []
+  const itemList = []
+  const searchList = []
+  let isAdd = false
+  let isEdit = false
+  page.map(item => {
+    const { comments, javaField, isListShow, isAddShow, isAddEdit, isEditShow, isEditEdit, showType, isQuery, dictType, dataLength } = item
+    const name = comments
+    // 查询控件
+    if (isQuery === '1') {
+      searchList.push(
+        {
+          label: name,
+          key: javaField,
+          type: showType,
+          dictType: dictType
+        }
+      )
+    }
+    // tablie 展示对象
+    if (isListShow === '1') {
+      // TODO table列表暂时没有
+      columns.push({
+        text: name,
+        value: javaField
+      })
+    }
+
+    // 添加表单
+    if (isAddShow === '1' || isEditShow === '1') {
+      if (isAddShow === '1') isAdd = true
+      if (isEditShow === '1') isEdit = true
+
+      itemList.push({
+        label: name,
+        type: showType,
+        placeholder: placeholderText(showType, name),
+        dictType: dictType,
+        dataLength: dataLength,
+        prop: javaField,
+        isAddShow: isAddShow === '1',
+        isAddEdit: isAddEdit === '1',
+        isEditShow: isEditShow === '1',
+        isEditEdit: isEditEdit === '1'
+      })
+      // TODO 验证规则暂时没有
+      // 表单存储对象
+      formDate[item.javaField] = item.javaType === 'String' ? '' : null
+      // TODO 存储地址展示没有
+    }
+  })
+  return { formDate, columns, itemList, searchList, isAdd, isEdit }
 }

@@ -4,6 +4,7 @@ import { requestForm } from '@/api/addForm'
 const addForm = {
   data() {
     return {
+      saveJson: false,
       pageName: '',
       addDialog: false,
       formDataTemp: {}
@@ -38,8 +39,11 @@ const addForm = {
     // 提交表单
     submitForm(data) {
       // 格式化存储数据
-      // const json = { json: data }
-      requestForm(this.saveUrl, data).then(res => {
+      let json = data
+      if (this.saveJson) {
+        json = { json: data }
+      }
+      requestForm(this.saveUrl, json).then(res => {
         res = this._.pick(res.data.data, Object.keys(this.formData))
         let isNew = true
         this.list.some(item => {
@@ -60,7 +64,8 @@ const addForm = {
     },
     // 删除数据
     confirmDelete(index) {
-      requestForm(this.deleteUrl, this.list[index]).then(() => {
+      const deleteData = this._.isArray(index) ? { ids: index } : this.list[index]
+      requestForm(this.deleteUrl, deleteData).then(() => {
         this.list.splice(index, 1)
         this.$message({
           type: 'success',

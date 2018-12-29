@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
-    <operation-panel add-name="新增用户" @addForm="addForm" />
     <table-list
       :list="list"
       :columns="columns"
       :list-loading="listLoading"
       power-config
+      add-name="新增用户"
+      @addForm="addForm"
       @config="editConfigRole"
       @switchToggle="switchToggle"
       @edit="editForm"
@@ -53,7 +54,6 @@ import { AddFormMixin, PaginationMixin } from '@/mixins'
 import { validatePhone, validateEmpty } from '@/utils/validate'
 import { getUserList, getRoleList } from '@/api/power'
 import { mapGetters } from 'vuex'
-import OperationPanel from '@/components/Table/OperationPanel'
 import Pagination from '@/components/Pagination'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
@@ -61,7 +61,7 @@ import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'User',
-  components: { OperationPanel, AddForm, TableList, Pagination },
+  components: { AddForm, TableList, Pagination },
   mixins: [AddFormMixin, PaginationMixin],
   data() {
     const valiPhone = (rule, value, callback) => {

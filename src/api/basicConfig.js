@@ -8,10 +8,9 @@ export function getSysDict(params) {
   })
 }
 
-export function getConfig(params) {
+export function getConfig(url = '/ips/config/getConfig') {
   return request({
-    url: '/ips/config/getConfig',
-    method: 'get',
-    params
+    url: url,
+    method: 'get'
   })
 }

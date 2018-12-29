@@ -50,7 +50,7 @@
         <template v-if="item.type==='select'">
           <el-select v-model="ruleForm[item.prop]" :placeholder="item | placeholder" clearable>
             <el-option
-              v-for="option in item.optionList"
+              v-for="option in optionList(item)"
               :key="option.value"
               :label="option.label"
               :value="option.value" />
@@ -76,6 +76,7 @@
 <script>
 
 import { DialogIcon, DialogPermissionTree, DialogParentTree, DialogParentPagination } from '@/components/Dialog'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'FormPlan',
@@ -133,6 +134,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'sysDict'
+    ]),
     parentFormData() {
       const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace'])
       return tmp
@@ -152,6 +156,13 @@ export default {
       cb(tmp)
     },
 
+    optionList(item) {
+      if (item.doctype !== '') {
+        return this.sysDict[item.dictType]
+      } else {
+        return item.optionList
+      }
+    },
     // switch按钮
     switchShow(value) {
       return !!parseInt(value)

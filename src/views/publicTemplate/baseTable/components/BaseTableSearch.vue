@@ -67,7 +67,7 @@ export default {
       const copy = []
       this.search.forEach((value, index) => {
         if (index % 4 === 0) copy[Math.floor(index / 4)] = []
-        copy[Math.floor(index / 5)].push(value)
+        copy[Math.floor(index / 4)].push(value)
       })
       return copy
     },
@@ -90,6 +90,7 @@ export default {
         })
         this.searchForm = form
       },
+      immediate: true,
       deep: true
     }
   },

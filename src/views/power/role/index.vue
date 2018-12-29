@@ -1,12 +1,13 @@
 <template>
   <div class="app-container">
-    <operation-panel add-name="新增角色" @addForm="addForm" />
     <table-list
       :list="list"
       :columns="columns"
       :list-loading="listLoading"
       :columns-replace="columnsReplace"
       power-config
+      add-name="新增角色"
+      @addForm="addForm"
       @switchToggle="switchToggle"
       @config="editConfigRole"
       @edit="editForm"
@@ -48,14 +49,13 @@
 import { AddFormMixin } from '@/mixins'
 import { mapGetters } from 'vuex'
 import { getRoleList } from '@/api/power'
-import OperationPanel from '@/components/Table/OperationPanel'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import { requestForm } from '@/api/addForm'
 
 export default {
   name: 'Role',
-  components: { OperationPanel, AddForm, TableList },
+  components: { AddForm, TableList },
   mixins: [AddFormMixin],
   data() {
     return {

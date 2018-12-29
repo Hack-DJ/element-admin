@@ -1,23 +1,23 @@
 <template>
   <div v-if="searchShow" :class="{'search-fold':searchFold || !searchFoldShow}" class="table-search">
-    <el-form label-width="100px">
+    <el-form ref="search" :model="searchForm" label-width="100px">
       <div :class="{'fold':searchFold || !searchFoldShow}" class="search-item">
-        <template v-for="(row, index) in searchList">
-          <el-row v-if="index===0 || !searchFold" :key="index">
+        <template v-for="(row, index) in searchItem">
+          <el-row v-if="index===0 || !searchFold" :key="index" :gutter="10">
             <el-col v-for="col in row" :xs="24" :sm="colSmNum(row)" :key="col.key">
-              <el-form-item :label="col.label">
-                <el-input v-if="col.type==='input'" v-model="col.value" />
-                <el-autocomplete v-if="col.type==='autocomplete'" v-model="col.value" :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,col))" placeholder="请输入内容" />
-                <el-select v-if="col.type==='select'" v-model="col.value" clearable placeholder="请选择">
+              <el-form-item :label="col.label" :prop="col.key">
+                <el-input v-if="col.type==='input'" v-model="searchForm[col.key]" />
+                <el-autocomplete v-if="col.type==='autocomplete'" v-model="searchForm[col.key]" :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,col))" placeholder="请输入内容" />
+                <el-select v-if="col.type==='select'" v-model="searchForm[col.key]" clearable placeholder="请选择">
                   <el-option
-                    v-for="item in col.optionList"
+                    v-for="item in selectOption(col)"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value" />
                 </el-select>
                 <el-date-picker
                   v-if="col.type === 'datetime'"
-                  v-model="col.value"
+                  v-model="searchForm[col.key]"
                   type="datetime"
                   placeholder="选择日期时间" />
               </el-form-item>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TableSearch',
@@ -49,16 +50,26 @@ export default {
     return {
       // 查询框
       searchFold: false,
-      searchList: [],
-      searchListTemp: []
+      searchForm: {}
     }
   },
   computed: {
+    ...mapGetters([
+      'sysDict'
+    ]),
+    searchItem() {
+      const copy = []
+      this.search.forEach((value, index) => {
+        if (index % 4 === 0) copy[Math.floor(index / 4)] = []
+        copy[Math.floor(index / 4)].push(value)
+      })
+      return copy
+    },
     searchShow() {
-      return this.searchList.length > 0
+      return this.searchItem.length > 0
     },
     searchFoldShow() {
-      return this.searchList.length > 1
+      return this.searchItem.length > 1
     },
     searchText() {
       return this.searchFold ? '展开' : '收起'
@@ -67,14 +78,20 @@ export default {
   watch: {
     search: {
       handler(val) {
-        this.searchList = this._.cloneDeep(val)
-        this.searchListTemp = this._.cloneDeep(val)
+        const form = {}
+        val.forEach(value => {
+          this.$set(form, value.key, '')
+        })
+        this.searchForm = form
       },
       deep: true,
       immediate: true
     }
   },
   methods: {
+    selectOption(item) {
+      return item.dictType ? this.sysDict[item.dictType] : item.optionList
+    },
     querySearch(queryString, cb, item) {
       const tmp = []
       item.optionList.map(item => {
@@ -91,18 +108,10 @@ export default {
       return parseInt(24 / row.length)
     },
     searchClick() {
-      const search = {}
-      this.searchList.map(row => {
-        row.map(item => {
-          if (item.value !== null) {
-            search[item.key] = item.value
-          }
-        })
-      })
-      this.$emit('searchList', search)
+      this.$emit('searchList', this.searchForm)
     },
     resetForm() {
-      this.searchList = this._.cloneDeep(this.searchListTemp)
+      this.$refs.search.resetFields()
     }
   }
 }
