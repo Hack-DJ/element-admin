@@ -10,8 +10,8 @@
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
           <div v-else-if="item.inputType==='select'">
-            <el-row>
-              <el-col :span="20" class="formplan-parent-select">
+            <div class="formplan-parent-select">
+              <div class="parent-select-text">
                 <template v-if="ruleForm[item.prop].length>0">
                   <el-tag
                     v-for="tag in ruleForm[item.prop]"
@@ -22,13 +22,13 @@
                   </el-tag>
                 </template>
                 <template v-else>{{ item | placeholder }}</template>
-              </el-col>
-              <el-col :span="4" style="text-align: right;">
-                <el-button icon="el-icon-search" @click="parentShow(item,'list')" />
-              </el-col>
-            </el-row>
+              </div>
+              <div class="el-input-group__append">
+                <el-button class="parent-select-btn" icon="el-icon-search" @click="parentShow(item,'list')" />
+              </div>
+            </div>
           </div>
-          <el-input v-else :value="treeIdToName(ruleForm[item.prop])" :placeholder="item | placeholder" clearable readonly>
+          <el-input v-else :value="ruleForm[item.prop]" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'menu')" />
           </el-input>
         </template>
@@ -45,7 +45,11 @@
           <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" :disabled="item.disabled" />
         </template>
         <template v-if="item.type==='autocomplete'">
-          <el-autocomplete v-model="ruleForm[item.prop]" :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,item))" :placeholder="item | placeholder" :disabled="item.disabled" />
+          <el-autocomplete
+            v-model="ruleForm[item.prop]"
+            :fetch-suggestions="((queryString,cb)=>querySearch(queryString,cb,item))"
+            :placeholder="item | placeholder"
+            :disabled="item.disabled" />
         </template>
         <template v-if="item.type==='select'">
           <el-select v-model="ruleForm[item.prop]" :placeholder="item | placeholder" clearable>
@@ -115,10 +119,6 @@ export default {
     treeList: {
       type: Array,
       default: () => []
-    },
-    treeIdKey: {
-      type: Object,
-      default: () => { return {} }
     }
   },
   data() {
@@ -169,12 +169,6 @@ export default {
     },
     switchInput(prop, val) {
       this.$set(this.ruleForm, prop, val ? 1 : 0)
-    },
-
-    // 上级id转上级名
-    treeIdToName(val) {
-      const tmp = this.treeIdKey[val]
-      return tmp ? tmp.name : ''
     },
 
     // 选择上级
@@ -254,10 +248,28 @@ export default {
   }
 }
 
+$border: 1px solid #dcdfe6;
 .formplan-parent-select {
-  padding-right: 10px;
-  .el-tag {
-    margin-right: 5px;
+  display: inline-table;
+  width: 100%;
+  border: $border;
+  border-collapse: separate;
+  border-spacing: 0;
+  .parent-select-text {
+    display: table-cell;
+    width: 100%;
+    padding: 0 10px;
+    .el-tag {
+      margin-right: 5px;
+    }
+  }
+  .el-input-group__append {
+    border-left: $border;
+  }
+  .parent-select-btn {
+    display: table-cell;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 }
 </style>

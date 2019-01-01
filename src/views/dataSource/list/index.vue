@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading"  @edit="editForm" @delete="confirmDelete" />
+    <!--<operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />-->
+    <table-list :list="list" :columns="columns" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" @addForm="addForm" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
@@ -18,7 +18,7 @@
 
 <script>
 import { getList } from '@/api/dataSource'
-import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
+import { PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
@@ -29,7 +29,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'DataSourceList',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
-  mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin],
+  mixins: [PaginationMixin, TableSearchMixin, AddFormMixin],
   data() {
     return {
       pageName: '采集信息',

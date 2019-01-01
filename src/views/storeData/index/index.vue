@@ -1,13 +1,13 @@
 <template>
-  <div class="app-container">
+  <div v-loading="pageLoading" class="app-container">
     <el-row :gutter="10" class="top">
       <h1 class="title">存储管理</h1>
       <el-row>
         <p class="desc">管理存储数据库、表、存储字段</p>
-        <div class="link">
-          <el-button type="text" icon="el-icon-delete">清空选择</el-button>
-          <el-button type="text" icon="el-icon-plus">新增数据库</el-button>
-        </div>
+        <!--<div class="link">-->
+        <!--<el-button type="text" icon="el-icon-delete">清空选择</el-button>-->
+        <!--<el-button type="text" icon="el-icon-plus">新增数据库</el-button>-->
+        <!--</div>-->
       </el-row>
     </el-row>
     <el-row :gutter="10">
@@ -19,8 +19,9 @@
             placeholder="输入关键字进行过滤" />
           <el-tree
             ref="tree"
+            :expand-on-click-node="false"
             :props="propsFormat"
-            :data="formatData"
+            :data="treeList"
             :filter-node-method="filterNode"
             highlight-current
             node-key="id"
@@ -29,75 +30,91 @@
       </el-col>
       <el-col :span="19" :offset="1">
         <el-row :gutter="10" style="width: 100%;">
-          <transition v-if="showFormPlan" name="el-zoom-in-top">
-            <form-plan ref="formPlan" :form-data="ruleForm" :rules="rules" :item-list="itemList" is-sync>
-              <quick-btn slot="formBtn" style="text-align: right;" @add="add" @reset="reset" @save="save" />
-            </form-plan>
-          </transition>
-          <transition-group v-else name="el-zoom-in-top">
-            <el-card v-for="item in list" v-if="item._level === 1" :key="item.id" class="box-card">
-              <div slot="header" class="clearfix">
-                <span>{{ item.name }}</span>
-                <el-dropdown style="float: right; padding: 3px 0">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right" />
-                  </span>
-                  <el-dropdown-menu slot="dropdown" class="card-menu">
-                    <el-dropdown-item class="add">新增</el-dropdown-item>
-                    <el-dropdown-item class="edit">修改</el-dropdown-item>
-                    <el-dropdown-item class="delete">删除</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-              <div v-for="o in 4" :key="o" class="text item">
-                {{ '列表内容 ' + o }}
-              </div>
-            </el-card>
-          </transition-group>
+          <template v-if="pageConfig.isDetails&&pageConfig.isList">
+            <el-tabs v-model="tabActive" @tab-click="tab=>tabActive=tab.name">
+              <el-tab-pane label="列表" name="list">
+                <page-list :format-form-data="listConfig" style="padding-top: 5px;" />
+              </el-tab-pane>
+              <el-tab-pane label="详情" name="details">
+                <form-plan :form-data="ruleForm" :rules="rules" :item-list="itemList" />
+              </el-tab-pane>
+            </el-tabs>
+          </template>
+          <template v-else-if="pageConfig.isDetails">
+            <form-plan :form-data="ruleForm" :rules="rules" :item-list="itemList" style="padding-top: 0;" />
+          </template>
+          <template v-else>
+            <page-list :format-form-data="listConfig" style="padding-top: 0;" />
+          </template>
         </el-row>
-        <!--<el-row :gutter="20" style="width: 100%;" />-->
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { databaseForm } from '@/api/storeData'
+import { databaseForm, tableForm, fieldForm } from '@/api/storeData'
 import { scrollTo } from '@/utils/scrollTo'
 import { getStoreTree } from '@/api/storeData'
 import treeToArray from '@/utils/dj-tree-eval'
 import FormPlan from '@/components/Table/FormPlan'
 import quickBtn from '@/components/Table/FormPlan/components/btn'
+import PageList from './components/list'
 
 export default {
   name: 'StoreDataIndex',
   components: {
     FormPlan,
+    PageList,
     quickBtn
   },
   data() {
-    const formData = { database: databaseForm() }
+    const database = databaseForm()
+    const table = tableForm()
+    const field = fieldForm()
+    const formData = { database: databaseForm(), table: tableForm(), field: fieldForm() }
     return {
-      formPlan: null,
+      pageBaseConfig: {
+        0: {
+          isDetails: false,
+          formConfig: {},
+          isList: true,
+          listConfig: database
+        },
+        1: {
+          isDetails: true,
+          formConfig: database,
+          isList: true,
+          listConfig: table
+        },
+        2: {
+          isDetails: true,
+          formConfig: table,
+          isList: true,
+          listConfig: field
+        },
+        3: {
+          isDetails: true,
+          formConfig: field,
+          isList: false,
+          listConfig: {}
+        }
+      },
+      pageLoading: true,
       propsFormat: {
         label: 'name',
         children: 'children'
       },
       filterText: '',
       list: [],
-      expandAll: false,
-      activeItem: null,
+      activeItem: {},
       formData: formData,
-      isNew: false,
-      upSaveList: []
+      tabActive: 'list'
     }
   },
   computed: {
-    // 格式化数据源
-    showFormPlan: function() {
-      return Object.keys(this.ruleForm).length > 0
-    },
-    formatData: function() {
+    // 格式化树节点
+    treeList: function() {
       let tmp
       const list = this.list
       if (!Array.isArray(list)) {
@@ -106,42 +123,37 @@ export default {
         tmp = list
       }
       const func = this.evalFunc || treeToArray
-      const args = this.evalArgs ? Array.concat([tmp, this.expandAll], this.evalArgs) : [tmp, this.expandAll]
+      const args = this.evalArgs ? Array.concat([tmp, false], this.evalArgs) : [tmp, false]
       return func.apply(null, args)
     },
-    activeTypeName: function() {
-      let name = ''
-      if (this.activeItem !== null) {
-        const key = {
-          1: 'database',
-          2: 'table',
-          3: 'field'
+    // 页面渲染条件
+    pageConfig: function() {
+      return this.pageBaseConfig[this.activeItem._level] || {}
+    },
+    // 选中节点List组件参数
+    listConfig: function() {
+      let listConfig = {}
+      if (this.pageBaseConfig[this.activeItem._level] !== undefined) {
+        listConfig = {
+          id: this.activeItem.id,
+          config: this.pageBaseConfig[this.activeItem._level].listConfig
         }
-        name = key[this.activeItem._level]
       }
-      return name
+      return listConfig
     },
+    // 选中节点页面参数
     formatFormData: function() {
-      return this.formData[this.activeTypeName] || {}
+      return this.pageBaseConfig[this.activeItem._level] !== undefined ? this.pageBaseConfig[this.activeItem._level].formConfig : {}
     },
+    // 新增，修改面板控件列表
     itemList: function() {
       return this.formatFormData.itemList || []
     },
+    // 新增修改面板数据对象
     ruleForm: function() {
-      let data = {}
-      if (Object.keys(this.formatFormData).length > 0) {
-        data = this.formatFormData.ruleForm
-        if (!this.isNew) {
-          const tmp = {}
-          Object.keys(data).map(key => {
-            tmp[key] = this.activeItem[key]
-          })
-          Object.assign(data, tmp)
-        }
-      }
-
-      return data
+      return this.formatFormData.ruleForm || {}
     },
+    // 新增修改控件验证
     rules: function() {
       return this.formatFormData.rules || {}
     }
@@ -152,48 +164,37 @@ export default {
     }
   },
   created() {
-    this.getList()
+    this.getTree()
   },
   methods: {
-    getFormPlan() {
-      return this.$refs.formPlan
-    },
-    getList() {
-      if (this.activeItem === null) {
-        // 加载第一层
-        getStoreTree().then(res => {
-          this.list = [...res[0].data.list, ...res[1].data.list, ...res[2].data.list]
-        })
-      }
-    },
+    // 树筛选
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     },
+    // 获取树列表
+    getTree() {
+      // 加载第一层
+      getStoreTree().then(res => {
+        this.pageLoading = false
+        const startTree = {
+          id: '-1',
+          name: '存储管理',
+          parentId: 'allList',
+          parentIds: ''
+        }
+        this.list = [startTree, ...res.data.list]
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(-1)
+          this.activeItem = this.$refs.tree.getCurrentNode()
+        })
+      })
+    },
+    // 选择树节点
     treeClick(item) {
       // 存储选中值
       this.activeItem = item
-      // 取消新增状态
-      this.isNew = false
-      // 清空提交列表
-      this.upSaveList = []
       scrollTo(0, 800, '.app-main')
-    },
-    add() {
-      const formPlan = this.getFormPlan()
-      formPlan.submitForm().then(data => {
-        this.isNew = true
-        // 调用存储数据到提交列表,并不提交
-        this.upSaveList.push(data)
-      })
-    },
-    reset() {
-      const formPlan = this.getFormPlan()
-      formPlan.resetForm()
-    },
-    save() {
-      // 提交缓存数据到服务器
-      this.isNew = false
     }
   }
 }
@@ -205,6 +206,14 @@ export default {
 .app-container {
   .el-row {
     width: 100%;
+    .btn-list {
+      .el-dropdown {
+        /deep/ .el-button span {
+          display: block;
+          height: 13px;
+        }
+      }
+    }
   }
   .top {
     .title {

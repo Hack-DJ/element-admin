@@ -33,29 +33,27 @@ export default {
       pageName: '采集字段',
       // search 查询面板
       searchList: [
-        [
-          {
-            label: '数据库表',
-            type: 'select',
-            key: 'collect_table_id',
-            optionList: [{ label: '数据库表1', value: 1 }, { label: '数据库表2', value: 2 }, { label: '数据库表3', value: 3 }]
-          },
-          {
-            label: '字段代码',
-            type: 'input',
-            key: 'field_code'
-          },
-          {
-            label: '字段名',
-            type: 'input',
-            key: 'field_name'
-          },
-          {
-            label: '字段长度',
-            type: 'input',
-            key: 'field_length'
-          }
-        ]
+        {
+          label: '数据库表',
+          type: 'select',
+          key: 'collect_table_id',
+          optionList: [{ label: '数据库表1', value: 1 }, { label: '数据库表2', value: 2 }, { label: '数据库表3', value: 3 }]
+        },
+        {
+          label: '字段代码',
+          type: 'input',
+          key: 'field_code'
+        },
+        {
+          label: '字段名',
+          type: 'input',
+          key: 'field_name'
+        },
+        {
+          label: '字段长度',
+          type: 'input',
+          key: 'field_length'
+        }
       ],
       // table 表格
       list: [],

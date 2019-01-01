@@ -18,7 +18,7 @@ const generationTree = function(list, idKey = []) {
       row.children = children[index]
     }
   }
-  return children['']
+  return children['allList']
 }
 
 export default function treeToArray(data, expandAll) {
@@ -28,7 +28,7 @@ export default function treeToArray(data, expandAll) {
       Vue.set(record, '_expanded', expandAll)
     }
     const parentIds = record.parentIds.split(',').filter(item => item)
-    const _level = parentIds.length + 1
+    const _level = parentIds.length
     Vue.set(record, '_level', _level)
     // 查找父节点及子节点
     let parent = null

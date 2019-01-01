@@ -1,7 +1,16 @@
 <template>
   <div v-loading="loadingPage" class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <table-list :list="list" :columns="cloumnsList" :list-loading="listLoading" :add-name="addName" is-delete-all is-select @edit="editForm" @delete="confirmDelete" @addForm="addForm" />
+    <table-list
+      :list="list"
+      :columns="columns"
+      :list-loading="listLoading"
+      :add-name="addName"
+      is-delete-all
+      is-select
+      @edit="editForm"
+      @delete="confirmDelete"
+      @addForm="addForm" />
     <pagination :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="itemList"
@@ -15,7 +24,7 @@
 
 <script>
 import { getWebsite } from '@/api/dataSource'
-import { OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin } from '@/mixins'
+import { PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
@@ -26,7 +35,7 @@ import { requestForm } from '@/api/addForm'
 export default {
   name: 'DataSourceWebsite',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
-  mixins: [OperationMixin, PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin],
+  mixins: [PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin],
   data() {
     // 基础地址
     const baseUrl = '/ips/a/ips/website'

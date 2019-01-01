@@ -125,21 +125,7 @@ export function getType(params) {
     }
     resolve(res)
   })
-  //
-  // return request({
-  //   url: 'http://code2012.cn/rapServer/app/mock/18/datasource/type',
-  //   method: 'get',
-  //   params
-  // })
 }
-
-// export function getStrategy(params) {
-//   return request({
-//     url: 'http://code2012.cn/rapServer/app/mock/18/datasource/strategy',
-//     method: 'get',
-//     params
-//   })
-// }
 
 export function getList(params) {
   return request({

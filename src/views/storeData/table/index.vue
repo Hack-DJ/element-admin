@@ -33,33 +33,31 @@ export default {
       pageName: '数据库表',
       // search 查询面板
       searchList: [
-        [
-          {
-            label: '数据库',
-            type: 'select',
-            key: 'database_id',
-            value: null,
-            optionList: [{ label: '数据库1', value: 1 }, { label: '数据库2', value: 2 }, { label: '数据库3', value: 3 }]
-          },
-          {
-            label: '表名',
-            type: 'input',
-            key: 'table_name',
-            value: null
-          },
-          {
-            label: '表类型',
-            type: 'input',
-            key: 'table_type',
-            value: null
-          },
-          {
-            label: '表code',
-            type: 'input',
-            key: 'table_code',
-            value: null
-          }
-        ]
+        {
+          label: '数据库',
+          type: 'select',
+          key: 'database_id',
+          value: null,
+          optionList: [{ label: '数据库1', value: 1 }, { label: '数据库2', value: 2 }, { label: '数据库3', value: 3 }]
+        },
+        {
+          label: '表名',
+          type: 'input',
+          key: 'table_name',
+          value: null
+        },
+        {
+          label: '表类型',
+          type: 'input',
+          key: 'table_type',
+          value: null
+        },
+        {
+          label: '表code',
+          type: 'input',
+          key: 'table_code',
+          value: null
+        }
       ],
       // table 表格
       list: [],

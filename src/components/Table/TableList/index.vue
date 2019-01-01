@@ -1,6 +1,6 @@
 <template>
   <div class="table-list">
-    <operation-panel :add-name="addName" :is-delete-all="isDeleteAll" @addForm="addForm" @deleteAll="deleteAll" />
+    <operation-panel :add-name="addName" :is-delete-all="isSelect" @addForm="addForm" @deleteAll="deleteAll" />
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange" @selection-change="handleSelectionChange">
       <el-table-column
         v-if="isSelect"
@@ -32,11 +32,6 @@ import OperationPanel from '@/components/Table/OperationPanel'
 export default {
   name: 'TableList',
   props: {
-
-    isDeleteAll: {
-      type: Boolean,
-      default: false
-    },
     /* eslint-disable */
     columnsReplace: {
       type: Object,
@@ -44,7 +39,7 @@ export default {
     },
     addName: {
       type: String,
-      default: ''
+      default: '新增'
     },
     isSelect: {
       type: Boolean,
