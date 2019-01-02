@@ -27,7 +27,7 @@ const addForm = {
       this.addDialogShow()
     },
     editForm(index) {
-      this.formData = this.list[index]
+      this.formData = this._.cloneDeep(this.list[index])
       this.addDialogShow()
     },
     addDialogShow() {
@@ -44,7 +44,7 @@ const addForm = {
         json = { json: data }
       }
       requestForm(this.saveUrl, json).then(res => {
-        res = this._.pick(res.data.data, Object.keys(this.formData))
+        res = res.data.data
         let isNew = true
         this.list.some(item => {
           if (item.id === res.id) {

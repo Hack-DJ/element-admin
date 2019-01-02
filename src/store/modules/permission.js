@@ -106,9 +106,11 @@ const permission = {
   actions: {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
+
         const idKey = treeIdKey(menuList)
         const menuTree = treeList(menuList, idKey)
         const generateRoutes = creatRoles(menuTree)
+
         const { roles } = data
         const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
         commit('SET_ROUTERS', { accessedRouters: accessedRouters, generateRoutes: generateRoutes })

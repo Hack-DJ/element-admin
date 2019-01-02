@@ -136,6 +136,7 @@ export default {
       if (this.pageBaseConfig[this.activeItem._level] !== undefined) {
         listConfig = {
           id: this.activeItem.id,
+          parentData: this.activeItem,
           config: this.pageBaseConfig[this.activeItem._level].listConfig
         }
       }

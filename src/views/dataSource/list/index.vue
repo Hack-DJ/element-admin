@@ -1,7 +1,6 @@
 <template>
-  <div class="app-container">
+  <div v-loading="loadingPage" class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <!--<operation-panel :option-list="optionList" :add-name="addName" :option-select.sync="optionSelect" @addForm="addForm" />-->
     <table-list :list="list" :columns="columns" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" @addForm="addForm" />
     <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
@@ -18,7 +17,7 @@
 
 <script>
 import { getList } from '@/api/dataSource'
-import { PaginationMixin, TableSearchMixin, AddFormMixin } from '@/mixins'
+import { PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
@@ -29,110 +28,56 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'DataSourceList',
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
-  mixins: [PaginationMixin, TableSearchMixin, AddFormMixin],
+  mixins: [PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin],
   data() {
     return {
+      loadingPage: true,
       pageName: '采集信息',
       // search 查询面板
-      searchList: [
-        {
-          label: '网站信息',
-          type: 'select',
-          key: 'websiteId',
-          optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }]
-        },
-        {
-          label: '数据格式化',
-          type: 'select',
-          key: 'format',
-          optionList: [{ label: '是', value: '1' }, { label: '否', value: '0' }]
-        },
-        {
-          label: '数据库表',
-          type: 'select',
-          key: 'tableId',
-          optionList: [{ label: 'a表', value: '1' }, { label: 'b表', value: '0' }]
-        }
-      ],
+      searchList: [],
       // table 表格
       list: [],
-      listLoading: true,
-      columns: [
-        {
-          text: '网站主键',
-          value: 'websiteId'
-        },
-        {
-          text: '数据格式化',
-          switch: true,
-          width: 60,
-          value: 'format'
-        },
-        {
-          text: '数据库表',
-          value: 'tableId'
-        },
-        {
-          text: 'ftp地址',
-          value: 'ftp'
-        },
-        {
-          text: 'ftp用户名',
-          value: 'ftpUsername'
-        },
-        {
-          text: 'ftp密码',
-          value: 'ftpPassword'
-        },
-        {
-          text: 'ftp文件地址',
-          value: 'ftpFolder'
-        }
-      ],
+      listLoading: false,
+      columns: [],
       optionList: [],
 
       // 表单弹窗
       formDialog: false,
-      formItemList: [
+      itemList: [
         {
           label: '网站信息',
           type: 'parent',
           inputType: 'list',
           placeholder: '请选择网站类型',
           prop: 'websiteId',
-          listUrl: 'http://code2012.cn/rapServer/app/mock/18/datasource/info',
+          listUrl: '/ips/a/ips/website/list',
           pageName: '选择网站信息',
           parentCloumnsList: [
             {
               text: '网站名',
-              value: 'name'
+              value: 'website_name'
             },
             {
               text: '网站url',
-              value: 'url'
+              value: 'website_url'
             },
             {
               text: '网站类型',
-              value: 'typeId'
+              value: 'website_type',
+              dictType: 'websiteType'
             }
           ],
           parentSearchCriteria: [
-            { label: '网站名', type: 'input', key: 'name', value: null },
-            { label: '网站url', type: 'input', key: 'url', value: null },
-            {
-              label: '类型',
-              type: 'select',
-              key: 'typeId',
-              value: null,
-              optionList: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }]
-            }
+            { label: '网站名', type: 'input', key: 'website_name' },
+            { label: '网站url', type: 'input', key: 'website_url' },
+            { label: '网站类型', type: 'select', key: 'website_type', dictType: 'webType' }
           ]
         },
         {
           label: '数据格式化',
           type: 'switch',
           value: 0,
-          prop: 'format'
+          prop: 'collectTypeId'
         },
         {
           label: '数据库表',
@@ -162,41 +107,14 @@ export default {
           ],
           parentSearchCriteria: [
             [
-              { label: '数据库', type: 'input', key: 'databaseId', value: null },
               { label: '表名', type: 'input', key: 'name', value: null },
               { label: '表类型', type: 'input', key: 'type', value: null },
               { label: '表描述', type: 'input', key: 'descriptions', value: null }
             ]
           ]
-        },
-        {
-          label: 'ftp地址',
-          type: 'input',
-          placeholder: '请输入ftp地址',
-          prop: 'ftp'
-        },
-        {
-          label: 'ftp用户名',
-          type: 'input',
-          placeholder: '请输入ftp用户名',
-          prop: 'ftpUsername'
-        },
-        {
-          label: 'ftp密码',
-          type: 'input',
-          placeholder: '请输入ftp密码',
-          prop: 'ftpPassword'
-        },
-        {
-          label: 'ftp文件地址',
-          type: 'input',
-          placeholder: '请输入ftp文件地址',
-          prop: 'ftpFolder'
         }
       ],
-      formData: {
-        id: ''
-      },
+      formData: {},
       rules: {
         websiteId: [
           { required: true, message: '请选择网站信息', trigger: 'blur' }
@@ -204,7 +122,12 @@ export default {
         databaseId: [
           { required: true, message: '请选择数据库表', trigger: 'blur' }
         ]
-      }
+      },
+
+      // json 请求接口
+      saveJson: true,
+      // 基础地址
+      baseUrl: '/ips/a/ips/collectData'
     }
   },
   computed: {
@@ -212,17 +135,77 @@ export default {
       'dataSourceTypeList',
       'dataSourceTypeIdKey',
       'dataSourceTypeTree'
-    ])
-  },
-  created() {
-    const tmp = {}
-    this.formItemList.forEach(item => {
-      tmp[item.prop] = item.value || ''
-    })
-    Object.assign(this.formData, tmp)
-    this.formDataTemp = this._.cloneDeep(this.formData)
-    this.getList()
-    this.getParentType()
+    ]),
+    formItemList() {
+      this.itemList.map(item => {
+        if (item.prop === 'websiteId') {
+          Object.assign(item, {
+            type: 'parent',
+            inputType: 'list',
+            prop: 'websiteId',
+            listUrl: '/ips/a/ips/website/list',
+            pageName: '选择网站信息',
+            parentCloumnsList: [
+              {
+                text: '网站名',
+                value: 'website_name'
+              },
+              {
+                text: '网站url',
+                value: 'website_url'
+              },
+              {
+                text: '网站类型',
+                value: 'website_type',
+                dictType: 'websiteType'
+              }
+            ],
+            parentSearchCriteria: [
+              { label: '网站名', type: 'input', key: 'website_name' },
+              { label: '网站url', type: 'input', key: 'website_url' },
+              { label: '网站类型', type: 'select', key: 'website_type', dictType: 'webType' }
+            ]
+          })
+        }
+        if (item.prop === 'collectTableId') {
+          Object.assign(item, {
+            type: 'parent',
+            inputType: 'list',
+            prop: 'tableId',
+            listUrl: 'http://code2012.cn/rapServer/app/mock/18/database/table',
+            pageName: '选择网站信息',
+            parentCloumnsList: [
+              {
+                text: '数据库',
+                value: 'databaseId'
+              },
+              {
+                text: '表名',
+                value: 'name'
+              },
+              {
+                text: '表类型',
+                value: 'type'
+              },
+              {
+                text: '表描述',
+                value: 'descriptions'
+              }
+            ],
+            parentSearchCriteria: [
+              [
+                { label: '表名', type: 'input', key: 'name', value: null },
+                { label: '表类型', type: 'input', key: 'type', value: null },
+                { label: '表描述', type: 'input', key: 'descriptions', value: null }
+              ]
+            ]
+          })
+          return item
+        }
+        return item
+      })
+      return this.itemList
+    }
   },
   methods: {
     searchChang(data) {
@@ -231,10 +214,11 @@ export default {
     },
     getList() {
       getList(Object.assign(this.listQuery, this.search)).then(res => {
-        this.list = res.data.list
-        this.count = res.data.count
-        this.listQuery.pageNo = res.data.pageNo
-        this.listQuery.pageSize = res.data.pageSize
+        const data = res.data.data
+        this.list = data.list
+        this.count = data.count
+        this.listQuery.pageNo = data.pageNo
+        this.listQuery.pageSize = data.pageSize
         this.listLoading = false
       })
     },
@@ -244,3 +228,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.app-container {
+  /deep/ .el-form-item__label {
+    width: 150px !important;
+  }
+  /deep/ .el-form-item__content {
+    margin-left: 150px !important;
+  }
+}
+</style>

@@ -4,6 +4,6 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BASE_API: '"http://10.154.55.3:8000/ips/a"',
+  BASE_API: '"http://teacher.frp.heikuai.net:5555"',
   index_name: '"首页"'
 })

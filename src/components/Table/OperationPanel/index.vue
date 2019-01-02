@@ -1,6 +1,6 @@
 <template>
   <div class="plan">
-    <el-button type="primary" size="mini" icon="el-icon-plus" class="filter-item" @click="addForm">{{ addName }}</el-button>
+    <el-button v-if="isAdd" type="primary" size="mini" icon="el-icon-plus" class="filter-item" @click="addForm">{{ addName }}</el-button>
     <el-button v-if="isDeleteAll" type="danger" size="mini" icon="el-icon-delete" class="filter-item" @click="deleteAll">批量删除</el-button>
     <div v-if="showTableCloumns" class="table-cloumns filter-item" style="margin-left: 10px;">
       <el-checkbox-group v-model="optionSelect" @change="checkChange">
@@ -15,6 +15,10 @@
 export default {
   name: 'OperationPanel',
   props: {
+    isAdd: {
+      type: Boolean,
+      default: true
+    },
     isDeleteAll: {
       type: Boolean,
       default: false

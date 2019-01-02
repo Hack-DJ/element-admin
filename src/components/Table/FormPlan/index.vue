@@ -9,6 +9,7 @@
           <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
+          <el-input v-else-if="item.inputType==='default'" :value="ruleForm[item.name]" :placeholder="item | placeholder" clearable disabled />
           <div v-else-if="item.inputType==='select'">
             <div class="formplan-parent-select">
               <div class="parent-select-text">

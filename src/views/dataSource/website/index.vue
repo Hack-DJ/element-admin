@@ -37,8 +37,6 @@ export default {
   components: { TableSearch, OperationPanel, AddForm, TableList, Pagination },
   mixins: [PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin],
   data() {
-    // 基础地址
-    const baseUrl = '/ips/a/ips/website'
     return {
       loadingPage: true,
       pageName: '网站信息',
@@ -69,14 +67,11 @@ export default {
           { required: true, message: '请输入网站Token', trigger: 'blur' }
         ]
       },
-      // 配置页地址
-      pageConfigUrl: baseUrl + '/config',
       // json 请求接口
       saveJson: true,
-      // 页面保存地址
-      saveUrl: baseUrl + '/save',
-      // 页面删除地址
-      deleteUrl: baseUrl + '/delete'
+
+      // 基础地址
+      baseUrl: '/ips/a/ips/website'
     }
   },
   computed: {
@@ -108,13 +103,11 @@ export default {
     },
     // 删除数据
     confirmDelete(index) {
-      const deleteData = this._.isArray(index) ? { ids: index } : { ids: [this.list[index].id] }
-      requestForm(this.deleteUrl, deleteData).then(() => {
-        if (this._.isArray(index)) {
-          this.list.filter(item => !index.includes(item.id))
-        } else {
-          this.list.splice(index, 1)
-        }
+      if (!this._.isArray(index)) {
+        index = [this.list[index].id]
+      }
+      requestForm(this.deleteUrl, { json: index }).then(() => {
+        this.list = this.list.filter(item => !index.includes(item.id))
         this.$message({
           type: 'success',
           message: '删除成功!'

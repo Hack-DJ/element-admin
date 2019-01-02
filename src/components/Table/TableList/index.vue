@@ -1,6 +1,6 @@
 <template>
   <div class="table-list">
-    <operation-panel :add-name="addName" :is-delete-all="isSelect" @addForm="addForm" @deleteAll="deleteAll" />
+    <operation-panel :add-name="addName" :is-delete-all="isSelect" :is-add="isOperationAdd" @addForm="addForm" @deleteAll="deleteAll" />
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange" @selection-change="handleSelectionChange">
       <el-table-column
         v-if="isSelect"
@@ -23,6 +23,9 @@
         </template>
       </el-table-column>
     </el-table>
+    <div v-if="isFootAdd" class="table-list-add">
+      <a href="javascript:void(0)" class="list-add-btn">新增</a>
+    </div>
   </div>
 </template>
 
@@ -37,11 +40,23 @@ export default {
       type: Object,
       default: () => {return {}}
     },
+    isAdd: {
+      type: Boolean,
+      default: true
+    },
     addName: {
       type: String,
       default: '新增'
     },
+    isOperationAdd: {
+      type: Boolean,
+      default: true
+    },
     isSelect: {
+      type: Boolean,
+      default: false
+    },
+    isFootAdd: {
       type: Boolean,
       default: false
     },
@@ -146,7 +161,9 @@ export default {
   }
 }
 </script>
-<style rel="stylesheet/css">
+<style lang="scss">
+
+@import "src/styles/var";
 
 .edit-input {
   padding-right: 100px;
@@ -157,4 +174,32 @@ export default {
   right: 15px;
   top: 10px;
 }
+
+.table-list-add {
+  padding: 10px;
+  border: 1px solid $borderColor;
+  border-top: 0;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+
+.list-add-btn {
+  display: block;
+  height: 32px;
+  width: 100%;
+  text-align: center;
+  line-height: 32px;
+  border: 1px dashed #d9d9d9;
+  transition: box-shadow 300ms linear;
+  &:hover {
+    color: $colorLink;
+    border-color: $colorLink;
+  }
+  &:active {
+    color: #004f9e;
+    border-color: $colorLink;
+    box-shadow: 1px 1px 10px 0px $colorLink;
+  }
+}
+
 </style>

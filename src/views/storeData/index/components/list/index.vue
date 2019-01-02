@@ -5,6 +5,7 @@
       :list="list"
       :columns="columns"
       :list-loading="loading"
+      is-foot-add
       is-select
       @edit="editForm"
       @delete="confirmDelete"
@@ -84,10 +85,7 @@ export default {
       handler(val) {
         if (val.config) {
           this.loading = true
-          this.parentId.parentId = val.id !== -1 ? val.id : null
-          this.formData = val.config.ruleForm ? val.config.ruleForm : {}
-          this.formDataTemp = val.config.ruleForm ? val.config.ruleForm : {}
-          this.pageName = val.config.formTitle ? val.config.formTitle : ''
+          this.dataFormat(val)
           this.getList()
         }
       },
@@ -96,6 +94,27 @@ export default {
     }
   },
   methods: {
+    dataFormat(data) {
+      this.parentId.parentId = data.id !== -1 ? data.id : null
+      // 遍历数据，查找默认数据
+
+      data.config.itemList.map(item => {
+        console.log(data.parentData)
+        console.log(item.type === 'parent')
+        console.log(item.inputType === 'default')
+        console.log(data.parentData && item.type === 'parent' && item.inputType === 'default')
+        if (data.parentData && item.type === 'parent' && item.inputType === 'default') {
+          console.log(1)
+          data.config.ruleForm[item.prop] = data.parentData[data.config.ruleForm[item.key]]
+          data.config.ruleForm[item.prop + '_des'] = data.parentData[data.config.ruleForm[item.name]]
+        }
+      })
+      console.log(data)
+
+      this.formData = data.config.ruleForm ? data.config.ruleForm : {}
+      this.formDataTemp = data.config.ruleForm ? data.config.ruleForm : {}
+      this.pageName = data.config.formTitle ? data.config.formTitle : ''
+    },
     searchChang(data) {
       this.search = data
       this.getList()
