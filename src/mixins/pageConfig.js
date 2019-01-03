@@ -1,5 +1,5 @@
 import { formatPageData } from '@/utils'
-import { getConfig } from '@/api/basicConfig'
+import { getConfig } from '@/api/base'
 
 const pageConfig = {
   computed: {
@@ -11,6 +11,10 @@ const pageConfig = {
     },
     deleteUrl: function() {
       return this.baseUrl + '/delete'
+    },
+    listUrl: function() {
+      console.log(123)
+      return this.baseUrl + '/list'
     }
   },
   created() {
@@ -23,7 +27,6 @@ const pageConfig = {
         const data = res.data.data
         this.pageName = data.comments
         const { formDate, columns, itemList, searchList } = formatPageData(data.columnList)
-        console.log(JSON.stringify(formDate))
         this.formDataTemp = Object.assign(formDate, {})
         this.formData = Object.assign(formDate, {})
         this.columns = columns

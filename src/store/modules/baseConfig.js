@@ -1,4 +1,4 @@
-import { getSysDict, getConfig } from '@/api/basicConfig'
+import { getSysDict, getConfig } from '@/api/base'
 
 // Dict 保留有用字段
 function objectPick(data) {
@@ -11,7 +11,7 @@ function objectPick(data) {
 }
 
 // form 表单公共状态机
-const basicCinfog = {
+const baseConfig = {
   state: {
     sysDict: {},
     footerList: [],
@@ -55,4 +55,4 @@ const basicCinfog = {
   }
 }
 
-export default basicCinfog
+export default baseConfig

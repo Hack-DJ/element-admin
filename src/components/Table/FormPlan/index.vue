@@ -194,6 +194,7 @@ export default {
       }
     },
     parentChange(data) {
+      console.log(data)
       let tmp = {}
       if (Object.keys(data).length > 0) {
         const id = data.id

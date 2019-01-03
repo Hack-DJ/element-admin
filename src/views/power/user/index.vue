@@ -57,7 +57,7 @@ import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
-import { requestForm } from '@/api/addForm'
+import { requestForm } from '@/api/base'
 
 export default {
   name: 'User',

@@ -5,6 +5,7 @@
       :list="list"
       :columns="columns"
       :list-loading="loading"
+      :is-operation-add="false"
       is-foot-add
       is-select
       @edit="editForm"
@@ -22,8 +23,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
-import { requestForm } from '@/api/addForm'
+import { requestForm, getList } from '@/api/base'
 import { PaginationMixin, AddFormMixin } from '@/mixins'
 import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'

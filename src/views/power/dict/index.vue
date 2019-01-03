@@ -20,7 +20,7 @@ import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
-import { requestForm } from '@/api/addForm'
+import { requestForm } from '@/api/base'
 
 export default {
   name: 'Dict',

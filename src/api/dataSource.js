@@ -9,14 +9,6 @@ export function getPageConfig() {
   })
 }
 
-export function getWebsite(params) {
-  return request({
-    url: mode + '/website/list',
-    method: 'get',
-    params
-  })
-}
-
 export function getType(params) {
   return new Promise(resolve => {
     const res = {

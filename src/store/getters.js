@@ -28,15 +28,15 @@ const getters = {
   token: state => state.user.token,
   userInfo: state => state.user.userInfo,
 
-  webTitle: state => state.basicCinfog.webTitle,
-  footerList: state => state.basicCinfog.footerList,
-  sysDict: state => state.basicCinfog.sysDict,
+  webTitle: state => state.baseConfig.webTitle,
+  footerList: state => state.baseConfig.footerList,
+  sysDict: state => state.baseConfig.sysDict,
 
   addFormLoading: state => state.form.addFormLoading,
   roleType: state => state.form.roleType,
 
   permissionList: state => state.power.permissionList,
-  permissionSortMax: (state, getters) => {
+  permissionSortMax: state => {
     let max = 0
     state.power.permissionList.map(item => {
       max = Math.max(item.sort, max) + 100
@@ -48,14 +48,6 @@ const getters = {
   },
   generationTree: (state, getters) => {
     return generationTree(getters.permissionList, getters.permissionIdKey)
-  },
-
-  dataSourceTypeList: state => state.dataSource.typeList,
-  dataSourceTypeIdKey: (state, getters) => {
-    return permissionIdKey(getters.dataSourceTypeList)
-  },
-  dataSourceTypeTree: (state, getters) => {
-    return generationTree(getters.dataSourceTypeList, getters.dataSourceTypeIdKey)
   },
 
   roles: state => state.user.roles,

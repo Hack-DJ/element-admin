@@ -1,5 +1,5 @@
 import { validateEmpty } from '@/utils/validate'
-import { requestForm } from '@/api/addForm'
+import { requestForm } from '@/api/base'
 
 const addForm = {
   data() {

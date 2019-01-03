@@ -16,7 +16,7 @@
 import FormPlan from '@/components/Table/FormPlan'
 import { validatePhone, validateEmpty } from '@/utils/validate'
 import { mapGetters } from 'vuex'
-import { requestForm } from '@/api/addForm'
+import { requestForm } from '@/api/base'
 
 export default {
   name: 'StoreDataQuick',

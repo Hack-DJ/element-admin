@@ -1,7 +1,7 @@
 <template>
   <el-dialog :visible="show" :title="pageName" append-to-body @close="dialogClose">
     <table-search :search="searchList" @searchList="searchChang" />
-    <table-list :is-dialog="true" :list="list" :columns="columns" :list-loading="listLoading" @current-change="handleCurrentChange" />
+    <table-list :is-operation-add="false" :is-dialog="true" :list="list" :columns="columns" :list-loading="listLoading" @current-change="handleCurrentChange" />
     <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <div class="dialog-foot-button-group">
       <el-button type="primary" @click="parentMenuConfirm">确定</el-button>
@@ -35,7 +35,7 @@ export default {
     return {
       parentTempData: {},
       // table 表格
-      searchList:[],
+      searchList: [],
       columns: [],
       list: [],
       pageName: '',
@@ -45,10 +45,8 @@ export default {
   },
   computed: {
     baseUrl() {
+      console.log(this.configData.baseUrl)
       return this.configData.baseUrl ? this.configData.baseUrl : ''
-    },
-    listUrl() {
-      return this.configData.baseUrl ? this.configData.baseUrl + this.configData.listUrl : this.configData.listUrl
     }
   },
   methods: {

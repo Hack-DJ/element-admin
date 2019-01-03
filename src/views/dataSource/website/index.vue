@@ -30,7 +30,7 @@ import TableSearch from '@/components/Table/TableSearch'
 import AddForm from '@/components/Table/AddForm'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
-import { requestForm } from '@/api/addForm'
+import { requestForm, getList } from '@/api/base'
 
 export default {
   name: 'DataSourceWebsite',
@@ -89,7 +89,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      getWebsite(Object.assign(this.listQuery, this.search)).then(res => {
+      getList(this.listUrl, Object.assign(this.listQuery, this.search)).then(res => {
         const data = res.data.data
         this.list = data.list
         this.count = data.count

@@ -106,7 +106,6 @@ const permission = {
   actions: {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
-
         const idKey = treeIdKey(menuList)
         const menuTree = treeList(menuList, idKey)
         const generateRoutes = creatRoles(menuTree)
