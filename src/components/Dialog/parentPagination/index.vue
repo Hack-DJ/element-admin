@@ -1,7 +1,7 @@
 <template>
   <el-dialog :visible="show" :title="pageName" append-to-body @close="dialogClose">
-    <table-search :search="searchCriteria" @searchList="searchChang" />
-    <table-list :is-dialog="true" :list="list" :columns="cloumnsList" :list-loading="listLoading" :columns-replace="columnsReplace" @current-change="handleCurrentChange" />
+    <table-search :search="searchList" @searchList="searchChang" />
+    <table-list :is-dialog="true" :list="list" :columns="columns" :list-loading="listLoading" @current-change="handleCurrentChange" />
     <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <div class="dialog-foot-button-group">
       <el-button type="primary" @click="parentMenuConfirm">确定</el-button>
@@ -12,7 +12,7 @@
 
 <script>
 import request from '@/utils/request'
-import { PaginationMixin, TableSearchMixin } from '@/mixins'
+import { PaginationMixin, TableSearchMixin, PageConfigMixin } from '@/mixins'
 import TableSearch from '@/components/Table/TableSearch'
 import TableList from '@/components/Table/TableList'
 import Pagination from '@/components/Pagination'
@@ -20,9 +20,9 @@ import Pagination from '@/components/Pagination'
 export default {
   name: 'DialogPagination',
   components: { TableSearch, TableList, Pagination },
-  mixins: [PaginationMixin, TableSearchMixin],
+  mixins: [PaginationMixin, TableSearchMixin, PageConfigMixin],
   props: {
-    formData: {
+    configData: {
       type: Object,
       default: () => {}
     },
@@ -35,30 +35,21 @@ export default {
     return {
       parentTempData: {},
       // table 表格
+      searchList:[],
+      columns: [],
       list: [],
+      pageName: '',
       listLoading: true,
       search: {}
     }
   },
   computed: {
-    pageName() {
-      return this.formData.pageName || '请选择'
+    baseUrl() {
+      return this.configData.baseUrl ? this.configData.baseUrl : ''
     },
     listUrl() {
-      return this.formData.listUrl || ''
-    },
-    searchCriteria() {
-      return this.formData.parentSearchCriteria || []
-    },
-    cloumnsList() {
-      return this.formData.parentCloumnsList || []
-    },
-    columnsReplace() {
-      return this.formData.parentReplace || {}
+      return this.configData.baseUrl ? this.configData.baseUrl + this.configData.listUrl : this.configData.listUrl
     }
-  },
-  created() {
-    this.getList()
   },
   methods: {
     getList() {
@@ -68,15 +59,17 @@ export default {
         method: 'get',
         params
       }).then(res => {
-        this.list = res.data.list
-        this.count = res.data.count
-        this.listQuery.pageNo = res.data.pageNo
-        this.listQuery.pageSize = res.data.pageSize
+        const data = res.data.data
+        this.list = data.list
+        this.count = data.count
+        this.listQuery.pageNo = data.pageNo
+        this.listQuery.pageSize = data.pageSize
         this.listLoading = false
       })
     },
     searchChang(data) {
       this.search = data
+      this.getList()
     },
     handleCurrentChange(val) {
       this.parentTempData = val

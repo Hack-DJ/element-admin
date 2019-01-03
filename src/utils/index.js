@@ -309,7 +309,7 @@ export function formatPageData(page) {
   let isAdd = false
   let isEdit = false
   page.map(item => {
-    const { comments, javaField, isListShow, isAddShow, isAddEdit, isEditShow, isEditEdit, showType, isQuery, dictType, dataLength } = item
+    const { comments, javaField, isListShow, isAddShow, isAddEdit, isEditShow, isEditEdit, showType, isQuery, dictType, dataLength, simpleJavaField } = item
     const name = comments
     // 查询控件
     if (isQuery === '1') {
@@ -327,16 +327,16 @@ export function formatPageData(page) {
       // TODO table列表暂时没有
       columns.push({
         text: name,
-        value: javaField
+        value: javaField,
+        dictType: dictType
       })
     }
 
-    // 添加表单
+    // 添加、修改表单
     if (isAddShow === '1' || isEditShow === '1') {
       if (isAddShow === '1') isAdd = true
       if (isEditShow === '1') isEdit = true
-
-      itemList.push({
+      const controlItem = {
         label: name,
         type: showType,
         placeholder: placeholderText(showType, name),
@@ -347,10 +347,23 @@ export function formatPageData(page) {
         isAddEdit: isAddEdit === '1',
         isEditShow: isEditShow === '1',
         isEditEdit: isEditEdit === '1'
-      })
+      }
+
+      if (showType === 'winselect') {
+        controlItem.prop = simpleJavaField
+      }
+
+      itemList.push(controlItem)
       // TODO 验证规则暂时没有
       // 表单存储对象
-      formDate[item.javaField] = item.javaType === 'String' ? '' : null
+      if (showType === 'winselect') {
+        formDate[simpleJavaField] = {
+          id: null,
+          name: ''
+        }
+      } else {
+        formDate[item.javaField] = item.javaType === 'String' ? '' : null
+      }
       // TODO 存储地址展示没有
     }
   })

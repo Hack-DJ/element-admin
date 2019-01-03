@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative;">
     <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
-      <el-form-item v-for="item in itemList" :label="item.label" :prop="item.prop" :key="item.prop">
+      <el-form-item v-for="item in itemList" v-if="controlShow(item)" :label="item.label" :prop="item.prop" :key="item.prop">
         <template v-if="item.type==='radio'">
           <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
         </template>
@@ -69,12 +69,17 @@
             value-format="yyyy-MM-dd HH:mm:ss"
             type="datetime" />
         </template>
+        <template v-if="item.type==='winselect'">
+          <el-input :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
+            <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
+          </el-input>
+        </template>
       </el-form-item>
       <slot name="formBtn" />
     </el-form>
     <dialog-icon :show.sync="iconDialog" :icon.sync="ruleForm.icon" />
     <dialog-parent-tree v-if="parentTreeDialog" :tree-list="treeList" :show.sync="parentTreeDialog" @change="parentChange" />
-    <dialog-parent-pagination v-if="parentListDialog" :show.sync="parentListDialog" :form-data="parentFormData" @change="parentChange" />
+    <dialog-parent-pagination v-if="parentListDialog" :show.sync="parentListDialog" :config-data="parentFormData" @change="parentChange" />
   </div>
 </template>
 
@@ -139,11 +144,20 @@ export default {
       'sysDict'
     ]),
     parentFormData() {
-      const tmp = this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace'])
-      return tmp
+      return this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace', 'baseUrl'])
     }
   },
   methods: {
+    controlShow(item) {
+      let state = true
+      if (item.control) {
+        const control = item.control
+        if (control.key === 'isFormat' && control.table === 'collectData') {
+          state = this.ruleForm.isFormat === '0'
+        }
+      }
+      return state
+    },
     querySearch(queryString, cb, item) {
       const tmp = []
       item.optionList.map(item => {
@@ -156,7 +170,6 @@ export default {
       })
       cb(tmp)
     },
-
     optionList(item) {
       if (item.doctype !== '') {
         return this.sysDict[item.dictType]
@@ -171,7 +184,6 @@ export default {
     switchInput(prop, val) {
       this.$set(this.ruleForm, prop, val ? 1 : 0)
     },
-
     // 选择上级
     parentShow(item, type) {
       this.parentItem = item
@@ -182,7 +194,6 @@ export default {
       }
     },
     parentChange(data) {
-      console.log(data)
       let tmp = {}
       if (Object.keys(data).length > 0) {
         const id = data.id
@@ -191,7 +202,13 @@ export default {
           [this.parentItem.prop + '_des']: name,
           [this.parentItem.prop]: id
         }
-        if (this.parentItem.inputType === 'select') {
+        if (this.parentItem.type === 'winselect') {
+          tmp = {
+            id: id,
+            name: name
+          }
+          this.ruleForm[this.parentItem.prop] = tmp
+        } else if (this.parentItem.inputType === 'select') {
           tmp = {
             id: id,
             name: name

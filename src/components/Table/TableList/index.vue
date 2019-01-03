@@ -31,6 +31,7 @@
 
 <script>
 import OperationPanel from '@/components/Table/OperationPanel'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TableList',
@@ -90,6 +91,9 @@ export default {
       selectIds: []
     }
   },
+  computed: {
+    ...mapGetters(['sysDict'])
+  },
   components: { OperationPanel },
   methods: {
     addDict(data) {
@@ -106,8 +110,8 @@ export default {
     },
     replace(scope, column) {
       let str = scope.row[column.value]
-      if (this.columnsReplace[column.value]) {
-        str = this.columnsReplace[column.value][scope.row[column.value]]
+      if (column.dictType) {
+        str = this.sysDict[column.dictType][scope.row[column.value]].label
       }
       return str
     },

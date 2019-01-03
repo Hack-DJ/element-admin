@@ -14,20 +14,26 @@ const pageConfig = {
     }
   },
   created() {
-    // 拉取页面配置
-    getConfig(this.pageConfigUrl).then(res => {
-      const data = res.data.data
-      this.pageName = data.comments
-      const { formDate, columns, itemList, searchList } = formatPageData(data.columnList)
-      this.formDataTemp = Object.assign(formDate, {})
-      this.formData = formDate
-      this.columns = columns
-      this.itemList = itemList
-      this.searchList = searchList
-      this.loadingPage = false
-      // 读取列表
-      this.getList()
-    })
+    this.getPageConfig()
+  },
+  methods: {
+    getPageConfig() {
+      // 拉取页面配置
+      getConfig(this.pageConfigUrl).then(res => {
+        const data = res.data.data
+        this.pageName = data.comments
+        const { formDate, columns, itemList, searchList } = formatPageData(data.columnList)
+        console.log(JSON.stringify(formDate))
+        this.formDataTemp = Object.assign(formDate, {})
+        this.formData = Object.assign(formDate, {})
+        this.columns = columns
+        this.itemList = itemList
+        this.searchList = searchList
+        this.loadingPage = false
+        // 读取列表
+        this.getList()
+      })
+    }
   }
 }
 export default pageConfig
