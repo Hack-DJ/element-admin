@@ -6,10 +6,10 @@
           <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
         </template>
         <template v-if="item.type==='parent'">
-          <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
+          <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :maxlength="item.left" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
-          <el-input v-else-if="item.inputType==='default'" :value="ruleForm[item.name]" :placeholder="item | placeholder" clearable disabled />
+          <el-input v-else-if="item.inputType==='default'" :value="ruleForm[item.name]" :maxlength="item.left" :placeholder="item | placeholder" clearable disabled />
           <div v-else-if="item.inputType==='select'">
             <div class="formplan-parent-select">
               <div class="parent-select-text">
@@ -29,12 +29,12 @@
               </div>
             </div>
           </div>
-          <el-input v-else :value="ruleForm[item.prop]" :placeholder="item | placeholder" clearable readonly>
+          <el-input v-else :value="ruleForm[item.prop]" :maxlength="item.left" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'menu')" />
           </el-input>
         </template>
         <template v-if="item.type==='icon'">
-          <el-input v-model="ruleForm[item.prop]" clearable readonly>
+          <el-input v-model="ruleForm[item.prop]" :maxlength="item.left" clearable readonly>
             <svg-icon slot="prepend" :icon-class="ruleForm[item.prop]" />
             <el-button slot="append" icon="el-icon-search" @click="iconDialog=true" />
           </el-input>
@@ -43,7 +43,7 @@
           <el-switch :value="switchShow(ruleForm[item.prop])" @input="switchInput(item.prop,$event)" />
         </template>
         <template v-if="item.type==='input'">
-          <el-input v-model="ruleForm[item.prop]" :type="item | inputType" :placeholder="item | placeholder" :disabled="item.disabled" />
+          <el-input v-model="ruleForm[item.prop]" :maxlength="item.left" :type="item | inputType" :placeholder="item | placeholder" :disabled="item.disabled" />
         </template>
         <template v-if="item.type==='autocomplete'">
           <el-autocomplete
@@ -70,7 +70,7 @@
             type="datetime" />
         </template>
         <template v-if="item.type==='winselect'">
-          <el-input :value="ruleForm[item.prop+'_des']" :placeholder="item | placeholder" clearable readonly>
+          <el-input :value="ruleForm[item.prop][item.tableShowNameField]" :maxlength="item.left" :placeholder="item | placeholder" clearable readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
         </template>
@@ -194,7 +194,6 @@ export default {
       }
     },
     parentChange(data) {
-      console.log(data)
       let tmp = {}
       if (Object.keys(data).length > 0) {
         const id = data.id
@@ -206,7 +205,7 @@ export default {
         if (this.parentItem.type === 'winselect') {
           tmp = {
             id: id,
-            name: name
+            [this.parentItem.tableShowNameField]: name
           }
           this.ruleForm[this.parentItem.prop] = tmp
         } else if (this.parentItem.inputType === 'select') {

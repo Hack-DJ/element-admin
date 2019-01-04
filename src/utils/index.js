@@ -309,7 +309,7 @@ export function formatPageData(page) {
   let isAdd = false
   let isEdit = false
   page.map(item => {
-    const { comments, javaField, isListShow, isAddShow, isAddEdit, isEditShow, isEditEdit, showType, isQuery, dictType, dataLength, simpleJavaField } = item
+    const { comments, javaField, isListShow, isAddShow, isAddEdit, isEditShow, isEditEdit, showType, isQuery, dictType, dataLength, simpleJavaField, tableShowNameField } = item
     const name = comments
     // 查询控件
     if (isQuery === '1') {
@@ -322,14 +322,23 @@ export function formatPageData(page) {
         }
       )
     }
+
     // tablie 展示对象
     if (isListShow === '1') {
-      // TODO table列表暂时没有
-      columns.push({
+      const cmt = {
+        type: '',
+        key: '',
         text: name,
         value: javaField,
         dictType: dictType
-      })
+      }
+      if (showType === 'winselect') {
+        cmt.type = 'winselect'
+        cmt.key = simpleJavaField
+        cmt.value = tableShowNameField
+      }
+      // TODO table列表暂时没有
+      columns.push(cmt)
     }
 
     // 添加、修改表单
@@ -343,6 +352,7 @@ export function formatPageData(page) {
         dictType: dictType,
         dataLength: dataLength,
         prop: javaField,
+        tableShowNameField: '',
         isAddShow: isAddShow === '1',
         isAddEdit: isAddEdit === '1',
         isEditShow: isEditShow === '1',
@@ -351,6 +361,7 @@ export function formatPageData(page) {
 
       if (showType === 'winselect') {
         controlItem.prop = simpleJavaField
+        controlItem.tableShowNameField = tableShowNameField
       }
 
       itemList.push(controlItem)
@@ -359,7 +370,7 @@ export function formatPageData(page) {
       if (showType === 'winselect') {
         formDate[simpleJavaField] = {
           id: null,
-          name: ''
+          [tableShowNameField]: ''
         }
       } else {
         formDate[item.javaField] = item.javaType === 'String' ? '' : null

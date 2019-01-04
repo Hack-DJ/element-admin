@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import { getWebsite } from '@/api/dataSource'
 import { PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
 import TableSearch from '@/components/Table/TableSearch'

@@ -4,10 +4,10 @@
       <h1 class="title">存储管理</h1>
       <el-row>
         <p class="desc">管理存储数据库、表、存储字段</p>
-        <!--<div class="link">-->
-        <!--<el-button type="text" icon="el-icon-delete">清空选择</el-button>-->
-        <!--<el-button type="text" icon="el-icon-plus">新增数据库</el-button>-->
-        <!--</div>-->
+        <div class="link">
+          <el-button type="text" icon="el-icon-delete">清空选择</el-button>
+          <el-button type="text" icon="el-icon-plus">新增数据库</el-button>
+        </div>
       </el-row>
     </el-row>
     <el-row :gutter="10">
@@ -17,12 +17,15 @@
             v-model="filterText"
             class="tree-search"
             placeholder="输入关键字进行过滤" />
+
+          <!--:data="treeList"-->
           <el-tree
             ref="tree"
             :expand-on-click-node="false"
             :props="propsFormat"
-            :data="treeList"
+            :load="loadTree"
             :filter-node-method="filterNode"
+            lazy
             highlight-current
             node-key="id"
             @node-click="treeClick" />
@@ -54,6 +57,7 @@
 
 <script>
 import { databaseForm, tableForm, fieldForm } from '@/api/storeData'
+import { getList } from '@/api/base'
 import { scrollTo } from '@/utils/scrollTo'
 import { getStoreTree } from '@/api/storeData'
 import treeToArray from '@/utils/dj-tree-eval'
@@ -75,16 +79,18 @@ export default {
     const formData = { database: databaseForm(), table: tableForm(), field: fieldForm() }
     return {
       pageBaseConfig: {
-        0: {
-          isDetails: false,
-          formConfig: {},
-          isList: true,
-          listConfig: database
-        },
+        // 0: {
+        //   isDetails: false,
+        //   formConfig: {},
+        //   isList: true,
+        //   treeUrl: '/ips/a/ips/database/list',
+        //   listConfig: database
+        // },
         1: {
           isDetails: true,
           formConfig: database,
           isList: true,
+          treeUrl: '/ips/a/ips/database/list',
           listConfig: table
         },
         2: {
@@ -128,12 +134,12 @@ export default {
     },
     // 页面渲染条件
     pageConfig: function() {
-      return this.pageBaseConfig[this.activeItem._level] || {}
+      return this.activeItem ? this.pageBaseConfig[this.activeItem._level] || {} : {}
     },
     // 选中节点List组件参数
     listConfig: function() {
       let listConfig = {}
-      if (this.pageBaseConfig[this.activeItem._level] !== undefined) {
+      if (this.activeItem && this.pageBaseConfig[this.activeItem._level] !== undefined) {
         listConfig = {
           id: this.activeItem.id,
           parentData: this.activeItem,
@@ -144,7 +150,7 @@ export default {
     },
     // 选中节点页面参数
     formatFormData: function() {
-      return this.pageBaseConfig[this.activeItem._level] !== undefined ? this.pageBaseConfig[this.activeItem._level].formConfig : {}
+      return this.activeItem ? this.pageBaseConfig[this.activeItem._level] !== undefined ? this.pageBaseConfig[this.activeItem._level].formConfig : {} : {}
     },
     // 新增，修改面板控件列表
     itemList: function() {
@@ -168,6 +174,25 @@ export default {
     this.getTree()
   },
   methods: {
+    // 加载树节点
+    loadTree(node, resolve) {
+      const pageConfig = this.pageBaseConfig[node.level]
+      if (node.level === 0) {
+        return resolve([
+          {
+            id: '-1',
+            name: '数据库管理',
+            pageConfig: pageConfig
+          }
+        ])
+      } else {
+        // 读取树列表
+        getList(pageConfig.treeUrl).then(res => {
+          const list = res.data.data.list
+          resolve(list)
+        })
+      }
+    },
     // 树筛选
     filterNode(value, data) {
       if (!value) return true

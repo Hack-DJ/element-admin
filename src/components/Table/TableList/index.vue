@@ -110,8 +110,11 @@ export default {
     },
     replace(scope, column) {
       let str = scope.row[column.value]
+      if (column.type === 'winselect') {
+        str = scope.row[column.key][column.value]
+      }
       if (column.dictType) {
-        str = this.sysDict[column.dictType][scope.row[column.value]].label
+        str = this.sysDict[column.dictType][str].label
       }
       return str
     },

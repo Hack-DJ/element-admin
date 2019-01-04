@@ -64,9 +64,20 @@ const addForm = {
     },
     // 删除数据
     confirmDelete(index) {
-      const deleteData = this._.isArray(index) ? { ids: index } : this.list[index]
-      requestForm(this.deleteUrl, deleteData).then(() => {
-        this.list.splice(index, 1)
+      let json = index
+      if (this.saveJson) {
+        if (!this._.isArray(index)) {
+          json = { json: [this.list[index].id] }
+        } else {
+          json = { json: index }
+        }
+      }
+      requestForm(this.deleteUrl, json).then(() => {
+        if (this._.isArray(index)) {
+          this.list = this.list.filter(item => !index.includes(item.id))
+        } else {
+          this.list.splice(index, 1)
+        }
         this.$message({
           type: 'success',
           message: '删除成功!'

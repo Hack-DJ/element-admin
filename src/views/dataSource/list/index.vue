@@ -1,8 +1,8 @@
 <template>
   <div v-loading="loadingPage" class="app-container">
     <table-search :search="searchList" @searchList="searchChang" />
-    <table-list :list="list" :columns="columns" :list-loading="listLoading" @edit="editForm" @delete="confirmDelete" @addForm="addForm" />
-    <pagination v-show="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
+    <table-list :list="list" :columns="columns" :list-loading="listLoading" is-select @edit="editForm" @delete="confirmDelete" @addForm="addForm" />
+    <pagination :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
     <add-form
       :item-list="formItemList"
       :rules="rules"
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { validateObjectId } from '@/utils/validate'
 import { getList } from '@/api/dataSource'
 import { PaginationMixin, TableSearchMixin, AddFormMixin, PageConfigMixin } from '@/mixins'
 import OperationPanel from '@/components/Table/OperationPanel'
@@ -44,10 +45,10 @@ export default {
       formData: {},
       rules: {
         websiteId: [
-          { required: true, message: '请选择网站信息', trigger: 'blur' }
+          { required: true, message: '请选择网站信息', trigger: 'blur', validator: validateObjectId }
         ],
-        databaseId: [
-          { required: true, message: '请选择数据库表', trigger: 'blur' }
+        collectTableId: [
+          { required: true, message: '请选择数据库表', trigger: 'blur', validator: validateObjectId }
         ]
       },
 
@@ -69,7 +70,7 @@ export default {
         if (item.prop === 'collectTableId') {
           Object.assign(item, {
             baseUrl: '/ips/a/ips/collectTable',
-            name: 'tableCode'
+            name: 'tableName'
           })
         }
         if (['ftpUrl', 'ftpUser', 'ftpPsw', 'ftpPort', 'ftpDir'].includes(item.prop)) {

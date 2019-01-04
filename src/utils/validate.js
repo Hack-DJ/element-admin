@@ -36,6 +36,7 @@ export function validatePhone(val) {
   return /^[0-9]{11}$/.test(val)
 }
 
+/** 数据是否为空 **/
 export function validateEmpty(data) {
   if (!data) return false
   if (typeof data === 'string') {
@@ -46,5 +47,14 @@ export function validateEmpty(data) {
     return data > 0
   } else {
     return !!data
+  }
+}
+
+/** 验证对象数据是否有id **/
+export function validateObjectId(rule, value, callback) {
+  if (!validateEmpty(value.id)) {
+    callback(new Error('error'))
+  } else {
+    callback()
   }
 }
