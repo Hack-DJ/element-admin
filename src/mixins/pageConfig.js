@@ -13,7 +13,6 @@ const pageConfig = {
       return this.baseUrl + '/delete'
     },
     listUrl: function() {
-      console.log(123)
       return this.baseUrl + '/list'
     }
   },

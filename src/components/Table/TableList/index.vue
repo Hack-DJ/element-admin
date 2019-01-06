@@ -1,7 +1,15 @@
 <template>
   <div class="table-list">
     <operation-panel :add-name="addName" :is-delete-all="isSelect" :is-add="isOperationAdd" @addForm="addForm" @deleteAll="deleteAll" />
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" @current-change="handleCurrentChange" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      @current-change="handleCurrentChange"
+      @selection-change="handleSelectionChange">
       <el-table-column
         v-if="isSelect"
         type="selection"
@@ -11,25 +19,44 @@
           <template v-if="column.switch">
             <el-switch :value="switchShow(scope.row[column.value])" @input="switchInput(scope.row,column.switchKey,$event)" />
           </template>
+          <template v-else-if="column.isInput">
+            <span v-if="column.type==='winselect'">{{ replace(scope,column) }}</span>
+            <el-select
+              v-else-if="column.value==='slaveCollectTableId'"
+              v-model="scope.row[column.value]"
+              :loading="loading"
+              :disabled="inputDisabled(column)"
+              filterable
+              clearable>
+              <el-option
+                v-for="item in optionList[column.value]"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value" />
+            </el-select>
+            <el-input v-else v-model="scope.row[column.value]" :disabled="inputDisabled(column)" />
+          </template>
           <span v-else> {{ replace(scope,column) }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!isDialog" align="center" label="设置" width="300px">
+      <el-table-column v-if="!isDialog" :width="setColumnWidth" align="center" label="设置">
         <template slot-scope="scope">
           <el-button v-if="powerConfig" type="primary" size="small" icon="el-icon-setting" @click="confirmConfig(scope.$index)">配置</el-button>
           <el-button v-if="dictPlus" type="primary" size="small" icon="el-icon-plus" @click="addDict(scope.row)">追加</el-button>
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index)">修改</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index)">删除</el-button>
+          <el-button v-if="isEdit" type="primary" size="small" icon="el-icon-edit" @click="confirmEdit(scope.$index)">修改</el-button>
+          <el-button v-if="isDelete" type="danger" size="small" icon="el-icon-delete" @click="confirmDelete(scope.$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div v-if="isFootAdd" class="table-list-add">
-      <a href="javascript:void(0)" class="list-add-btn">新增</a>
+      <a href="javascript:void(0)" class="list-add-btn" @click="addForm">新增</a>
     </div>
   </div>
 </template>
 
 <script>
+
+import { getList } from '@/api/base'
 import OperationPanel from '@/components/Table/OperationPanel'
 import { mapGetters } from 'vuex'
 
@@ -42,6 +69,14 @@ export default {
       default: () => {return {}}
     },
     isAdd: {
+      type: Boolean,
+      default: true
+    },
+    isEdit: {
+      type: Boolean,
+      default: true
+    },
+    isDelete: {
       type: Boolean,
       default: true
     },
@@ -88,14 +123,61 @@ export default {
   },
   data() {
     return {
-      selectIds: []
+      selectIds: [],
+      optionList: {},
+      loading: false
     }
   },
   computed: {
-    ...mapGetters(['sysDict'])
+    ...mapGetters(['sysDict']),
+    setColumnWidth() {
+      let i = 1
+      if (this.powerConfig) i++
+      if (this.dictPlus) i++
+      if (this.isEdit) i++
+      if (this.isDelete) i++
+      return `${75 * i}px`
+    }
+  },
+  watch: {
+    columns: {
+      handler(val) {
+        // 发生改变，读取select选项
+        this.loadingOption()
+      },
+      deep: true,
+      immediate: true
+    }
   },
   components: { OperationPanel },
   methods: {
+    loadingOption() {
+      // 判断是否已经加载过
+
+      this.columns.map(column => {
+        if (column.value === 'slaveCollectTableId') {
+          this.loading = true
+          getList(column.selectUrl, column.selectParam).then(res => {
+            this.loading = false
+            const data = res.data.data
+            this.optionList[column.value] = []
+            data.map(item => {
+              this.optionList[column.value].push({ value: item.id, label: item.label })
+            })
+          }).catch(() => {
+
+            this.loading = false
+          })
+        }
+      })
+    },
+    inputDisabled(item) {
+      if (item.id) {
+        return !item.isEdit
+      } else {
+        return !item.isAdd
+      }
+    },
     addDict(data) {
       let { type, sort } = data
       sort += this._.isNumber(sort) ? 100 : 0
@@ -114,7 +196,14 @@ export default {
         str = scope.row[column.key][column.value]
       }
       if (column.dictType) {
-        str = this.sysDict[column.dictType][str].label
+
+        this.sysDict[column.dictType].some(item => {
+          if (item.value === str) {
+            str = item.label
+            return true
+          }
+        })
+
       }
       return str
     },

@@ -326,14 +326,13 @@ export function formatPageData(page) {
     // tablie 展示对象
     if (isListShow === '1') {
       const cmt = {
-        type: '',
+        type: showType,
         key: '',
         text: name,
         value: javaField,
         dictType: dictType
       }
       if (showType === 'winselect') {
-        cmt.type = 'winselect'
         cmt.key = simpleJavaField
         cmt.value = tableShowNameField
       }

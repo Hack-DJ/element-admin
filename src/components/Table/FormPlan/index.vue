@@ -6,10 +6,22 @@
           <el-radio v-for="option in item.optionList" v-model="ruleForm[item.prop]" :label="option.value" :key="option.value">{{ option.label }}</el-radio>
         </template>
         <template v-if="item.type==='parent'">
-          <el-input v-if="item.inputType==='list'" :value="ruleForm[item.prop+'_des']" :maxlength="item.left" :placeholder="item | placeholder" clearable readonly>
+          <el-input
+            v-if="item.inputType==='list'"
+            :value="ruleForm[item.prop+'_des']"
+            :maxlength="item.left"
+            :placeholder="item | placeholder"
+            clearable
+            readonly>
             <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
-          <el-input v-else-if="item.inputType==='default'" :value="ruleForm[item.name]" :maxlength="item.left" :placeholder="item | placeholder" clearable disabled />
+          <el-input
+            v-else-if="item.inputType==='default'"
+            :value="ruleForm[item.name]"
+            :maxlength="item.left"
+            :placeholder="item | placeholder"
+            clearable
+            disabled />
           <div v-else-if="item.inputType==='select'">
             <div class="formplan-parent-select">
               <div class="parent-select-text">
@@ -71,7 +83,7 @@
         </template>
         <template v-if="item.type==='winselect'">
           <el-input :value="ruleForm[item.prop][item.tableShowNameField]" :maxlength="item.left" :placeholder="item | placeholder" clearable readonly>
-            <el-button slot="append" icon="el-icon-search" @click="parentShow(item,'list')" />
+            <el-button slot="append" :disabled="item.disabled" icon="el-icon-search" @click="parentShow(item,'list')" />
           </el-input>
         </template>
       </el-form-item>
@@ -130,6 +142,7 @@ export default {
   data() {
     return {
       ruleForm: this.formData,
+      // ruleForm: this.formData,
       // icon弹窗
       iconDialog: false,
       // 菜单父级树弹窗
@@ -145,6 +158,15 @@ export default {
     ]),
     parentFormData() {
       return this._.pick(this.parentItem, ['listUrl', 'parentCloumnsList', 'parentSearchCriteria', 'pageName', 'parentReplace', 'baseUrl'])
+    }
+  },
+  watch: {
+    formData: {
+      handler(val) {
+        this.ruleForm = Object.assign(val, {})
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -186,6 +208,7 @@ export default {
     },
     // 选择上级
     parentShow(item, type) {
+      if (item.display) return false
       this.parentItem = item
       if (type === 'list') {
         this.parentListDialog = true
@@ -228,17 +251,23 @@ export default {
     },
     // 保存
     submitForm() {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             resolve(this.ruleForm)
+          } else {
+            reject()
           }
         })
       })
     },
     // 重置
     resetForm(data) {
-      this.$refs.ruleForm.resetFields()
+      if (data) {
+        this.ruleForm = Object.assign(data, {})
+      } else {
+        this.$refs.ruleForm.resetFields()
+      }
     }
   }
 }

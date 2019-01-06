@@ -1,15 +1,33 @@
 <template>
   <div class="quick-btn">
-    <el-button size="small" type="primary" @click="add">新增</el-button>
-    <el-button size="small" type="success" @click="save">提交</el-button>
-    <el-button size="small" @click="reset">重置</el-button>
-    <el-button size="small" type="danger">删除</el-button>
+    <el-button v-if="isSave" size="small" type="primary" @click="save">保存</el-button>
+    <el-button v-if="isReset" size="small" @click="reset">重置</el-button>
+    <el-button v-if="isAdd" size="small" @click="add">新增</el-button>
+    <el-button v-if="isDelete" size="small" type="danger">删除</el-button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'QuickBtn',
+  props: {
+    isSave: {
+      type: Boolean,
+      default: true
+    },
+    isReset: {
+      type: Boolean,
+      default: true
+    },
+    isAdd: {
+      type: Boolean,
+      default: false
+    },
+    isDelete: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     add() {
       this.$emit('add')

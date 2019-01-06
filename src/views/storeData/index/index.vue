@@ -1,168 +1,127 @@
 <template>
-  <div v-loading="pageLoading" class="app-container">
+  <div class="app-container">
     <el-row :gutter="10" class="top">
       <h1 class="title">存储管理</h1>
       <el-row>
         <p class="desc">管理存储数据库、表、存储字段</p>
         <div class="link">
-          <el-button type="text" icon="el-icon-delete">清空选择</el-button>
-          <el-button type="text" icon="el-icon-plus">新增数据库</el-button>
+          <el-button type="text" icon="el-icon-plus" @click="addDatabase">新增数据库</el-button>
+          <el-button type="text" icon="el-icon-upload" @click="save">保存</el-button>
         </div>
       </el-row>
     </el-row>
     <el-row :gutter="10">
-      <el-col :span="4">
+      <el-col :lg="5" :sm="6" :xs="24" class="tree-list">
         <div class="left-menu">
           <el-input
             v-model="filterText"
             class="tree-search"
             placeholder="输入关键字进行过滤" />
-
-          <!--:data="treeList"-->
           <el-tree
             ref="tree"
+            :props="treeProps"
             :expand-on-click-node="false"
-            :props="propsFormat"
             :load="loadTree"
             :filter-node-method="filterNode"
             lazy
             highlight-current
             node-key="id"
-            @node-click="treeClick" />
+            @node-click="treeClick">
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+              <span class="custom-tree-title">{{ node.label }}</span>
+              <span class="custom-tree-btn">
+                <el-button
+                  v-if="node.level===1"
+                  type="text"
+                  size="mini"
+                  class="el-icon-plus"
+                  @click.stop="() => append(node,data)" />
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="el-icon-minus"
+                  @click.stop="() => remove(node, data)" />
+              </span>
+            </span>
+          </el-tree>
         </div>
       </el-col>
-      <el-col :span="19" :offset="1">
-        <el-row :gutter="10" style="width: 100%;">
-          <template v-if="pageConfig.isDetails&&pageConfig.isList">
+      <el-col :lg="19" :sm="18" :xs="24" style="padding-left: 15px;padding-top: 0;">
+        <template v-if="activeItem.baseUrl">
+          <page-details v-if="level===1" ref="details" :active-item="activeItem" :parent-data="parentDetailsData" />
+          <template v-if="level===2">
             <el-tabs v-model="tabActive" @tab-click="tab=>tabActive=tab.name">
-              <el-tab-pane label="列表" name="list">
-                <page-list :format-form-data="listConfig" style="padding-top: 5px;" />
+              <el-tab-pane label="字段" name="list">
+                <page-list ref="tabList" :active-item="activeItem" :parent-data="parentListData" style="padding-top: 5px;" @listError="listError" />
               </el-tab-pane>
               <el-tab-pane label="详情" name="details">
-                <form-plan :form-data="ruleForm" :rules="rules" :item-list="itemList" />
+                <page-details ref="tabDetails" :active-item="activeItem" :parent-data="parentDetailsData" @detailError="detailError" />
               </el-tab-pane>
             </el-tabs>
           </template>
-          <template v-else-if="pageConfig.isDetails">
-            <form-plan :form-data="ruleForm" :rules="rules" :item-list="itemList" style="padding-top: 0;" />
-          </template>
-          <template v-else>
-            <page-list :format-form-data="listConfig" style="padding-top: 0;" />
-          </template>
-        </el-row>
+        </template>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { databaseForm, tableForm, fieldForm } from '@/api/storeData'
-import { getList } from '@/api/base'
+import { getList, requestForm } from '@/api/base'
 import { scrollTo } from '@/utils/scrollTo'
-import { getStoreTree } from '@/api/storeData'
-import treeToArray from '@/utils/dj-tree-eval'
-import FormPlan from '@/components/Table/FormPlan'
-import quickBtn from '@/components/Table/FormPlan/components/btn'
 import PageList from './components/list'
+import PageDetails from './components/Details'
+import QuickBtn from '@/components/Table/FormPlan/components/btn'
 
 export default {
   name: 'StoreDataIndex',
   components: {
-    FormPlan,
-    PageList,
-    quickBtn
+    PageDetails,
+    QuickBtn,
+    PageList
   },
   data() {
-    const database = databaseForm()
-    const table = tableForm()
-    const field = fieldForm()
-    const formData = { database: databaseForm(), table: tableForm(), field: fieldForm() }
     return {
+      topResolve: null,
+      level: 0,
+      treeProps: {
+        isLeaf: 'leaf'
+      },
       pageBaseConfig: {
-        // 0: {
-        //   isDetails: false,
-        //   formConfig: {},
-        //   isList: true,
-        //   treeUrl: '/ips/a/ips/database/list',
-        //   listConfig: database
-        // },
+        0: {
+          // 数据库节点
+          treeUrl: '/ips/a/ips/database/listAll'
+        },
         1: {
-          isDetails: true,
-          formConfig: database,
-          isList: true,
-          treeUrl: '/ips/a/ips/database/list',
-          listConfig: table
+          // 数据表节点
+          treeUrl: '/ips/a/ips/database/getTableById',
+          // 数据库基础URL
+          baseUrl: '/ips/a/ips/database',
+          // 数据库数据验证
+          rules: {
+            databaseName: [{ required: true, message: '请输入数据库名', trigger: 'blur' }]
+          }
         },
         2: {
-          isDetails: true,
-          formConfig: table,
-          isList: true,
-          listConfig: field
-        },
-        3: {
-          isDetails: true,
-          formConfig: field,
-          isList: false,
-          listConfig: {}
+          // 数据表基础URL
+          baseUrl: '/ips/a/ips/collectTable',
+          // 数据表数据验证
+          rules: {
+            tableCode: [{ required: true, message: '请输入表名', trigger: 'blur' }]
+          },
+          // 数据表字段基础URL
+          listBase: '/ips/a/ips/collectField',
+          listRules: {
+            databaseId: [{ required: true, message: '数据库不能为空', trigger: 'blur' }],
+            tableCode: [{ required: true, message: '请输入表名', trigger: 'blur' }]
+          }
         }
-      },
-      pageLoading: true,
-      propsFormat: {
-        label: 'name',
-        children: 'children'
       },
       filterText: '',
-      list: [],
+      parentDetailsData: {},
+      parentListData: {},
+      activeNode: null,
       activeItem: {},
-      formData: formData,
       tabActive: 'list'
-    }
-  },
-  computed: {
-    // 格式化树节点
-    treeList: function() {
-      let tmp
-      const list = this.list
-      if (!Array.isArray(list)) {
-        tmp = [list]
-      } else {
-        tmp = list
-      }
-      const func = this.evalFunc || treeToArray
-      const args = this.evalArgs ? Array.concat([tmp, false], this.evalArgs) : [tmp, false]
-      return func.apply(null, args)
-    },
-    // 页面渲染条件
-    pageConfig: function() {
-      return this.activeItem ? this.pageBaseConfig[this.activeItem._level] || {} : {}
-    },
-    // 选中节点List组件参数
-    listConfig: function() {
-      let listConfig = {}
-      if (this.activeItem && this.pageBaseConfig[this.activeItem._level] !== undefined) {
-        listConfig = {
-          id: this.activeItem.id,
-          parentData: this.activeItem,
-          config: this.pageBaseConfig[this.activeItem._level].listConfig
-        }
-      }
-      return listConfig
-    },
-    // 选中节点页面参数
-    formatFormData: function() {
-      return this.activeItem ? this.pageBaseConfig[this.activeItem._level] !== undefined ? this.pageBaseConfig[this.activeItem._level].formConfig : {} : {}
-    },
-    // 新增，修改面板控件列表
-    itemList: function() {
-      return this.formatFormData.itemList || []
-    },
-    // 新增修改面板数据对象
-    ruleForm: function() {
-      return this.formatFormData.ruleForm || {}
-    },
-    // 新增修改控件验证
-    rules: function() {
-      return this.formatFormData.rules || {}
     }
   },
   watch: {
@@ -170,57 +129,166 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  created() {
-    this.getTree()
-  },
   methods: {
     // 加载树节点
     loadTree(node, resolve) {
+      if (this.topResolve === null) this.topResolve = resolve
       const pageConfig = this.pageBaseConfig[node.level]
-      if (node.level === 0) {
-        return resolve([
-          {
-            id: '-1',
-            name: '数据库管理',
-            pageConfig: pageConfig
-          }
-        ])
-      } else {
-        // 读取树列表
-        getList(pageConfig.treeUrl).then(res => {
-          const list = res.data.data.list
-          resolve(list)
-        })
+      // 读取树列表
+      let params = {}
+      if (node.level === 1) {
+        params = { id: node.data.id }
       }
+      getList(pageConfig.treeUrl, params).then(res => {
+        const data = res.data.data
+        if (node.level === 1) {
+          data.map(item => {
+            item.leaf = true
+          })
+        }
+        resolve(data)
+      })
     },
     // 树筛选
     filterNode(value, data) {
       if (!value) return true
-      return data.name.indexOf(value) !== -1
+      return data.label.indexOf(value) !== -1
     },
-    // 获取树列表
-    getTree() {
-      // 加载第一层
-      getStoreTree().then(res => {
-        this.pageLoading = false
-        const startTree = {
-          id: '-1',
-          name: '存储管理',
-          parentId: 'allList',
-          parentIds: ''
-        }
-        this.list = [startTree, ...res.data.list]
-        this.$nextTick(() => {
-          this.$refs.tree.setCurrentKey(-1)
-          this.activeItem = this.$refs.tree.getCurrentNode()
+    // 选择树节点
+    treeClick(item, node) {
+      this.activeNode = node
+      // 清空父级选项
+      this.parentDetailsData = {}
+      const level = node.level
+      this.level = level
+      // 基础URL 验证规则
+      const { baseUrl, rules } = this.pageBaseConfig[level]
+      // 存储选中值
+      this.activeItem = Object.assign(item, { baseUrl, rules })
+
+      if (this.level === 2) {
+        console.log(node)
+        this.parentDetailsData = node.parent.data
+        this.activeItem.databaseId = node.parent.data.id
+        this.fieldParent(item)
+      }
+      scrollTo(0, 800, '.app-main')
+    },
+    // 新增数据库
+    addDatabase() {
+      this.activeNode = null
+      this.addNode(1)
+    },
+    // 新增数据表
+    append(node, data) {
+      this.activeNode = node
+      // 选中当前点击节点
+      this.$refs.tree.setCurrentKey(data.id)
+      this.addNode(node.level + 1, data)
+    },
+    // 新增节点
+    addNode(level = 1, parentData = {}) {
+      this.parentDetailsData = parentData
+      this.level = level
+      const { baseUrl, rules } = this.pageBaseConfig[level]
+      this.activeItem = {
+        id: null,
+        baseUrl,
+        rules,
+        getTime: new Date().getTime()
+      }
+      if (level === 2) {
+        this.activeItem.databaseId = parentData.id
+        this.fieldParent()
+      }
+    },
+    // 字段列表父表节点
+    fieldParent(parent = {}, level = 2) {
+      this.parentListData = parent
+      const { listBase, listRules } = this.pageBaseConfig[level]
+      Object.assign(this.activeItem, { listBase, listRules })
+    },
+    // 更新节点
+    updateNode(data) {
+      const node = this.$refs.tree.getNode(data.id)
+      if (node === null) {
+        // 新增
+        this.$refs.tree.append(data, this.activeNode)
+      } else {
+        // 修改
+        node.data.label = data.label
+      }
+    },
+    // 删除节点
+    remove(node, item) {
+      // this.$refs.tree.setCurrentKey(item.id)
+      // 提示是否删除
+      this.$confirm('此操作将永久删除选中记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { baseUrl } = this.pageBaseConfig[node.level]
+        requestForm(baseUrl + '/delete', { json: [item.id] }).then(res => {
+          if (item.id === this.activeItem.id) this.activeItem = {}
+          // 删除成功
+          this.$refs.tree.remove(node)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
         })
       })
     },
-    // 选择树节点
-    treeClick(item) {
-      // 存储选中值
-      this.activeItem = item
-      scrollTo(0, 800, '.app-main')
+    save() {
+      if (this.level === 1) {
+        // 保存数据库
+        this.formUpServer('details').then(res => {
+          res.label = res.databaseName
+          if (this.activeNode === null) {
+            // 追加新数据库
+            this.topResolve([res])
+          } else {
+            // 修改对应Key的节点
+            this.updateNode(res)
+          }
+          this.$message({
+            type: 'success',
+            message: '保存成功!'
+          })
+        })
+      }
+      if (this.level === 2) {
+        // 优先保存表，再根据表信息保存字段
+        this.formUpServer('tabDetails').then(res => {
+          // 修改表信息
+          res.label = res.tableName
+          res.leaf = true
+          this.updateNode(res)
+          // 拿到表存储数据，保存节点
+          this.formUpServer('tabList', res).then(state => {
+            this.$message({
+              type: 'success',
+              message: '保存成功!'
+            })
+          })
+        })
+      }
+    },
+    formUpServer(refsName, parentData) {
+      return new Promise(resolve => {
+        this.$refs[refsName].save(parentData).then(res => {
+          resolve(res)
+        }).catch(() => {
+          this.$message.error('保存失败，请稍后再试！')
+        })
+      })
+    },
+    detailError() {
+      this.tabActive = 'details'
+    },
+    listError() {
+      this.tabActive = 'list'
     }
   }
 }
@@ -283,5 +351,20 @@ export default {
     clear: both
   }
 
+  .custom-tree-node {
+    width: 100%;
+  }
+  .custom-tree-title {
+    display: inline-block;
+    padding: 7px 0;
+  }
+  .custom-tree-btn {
+    float: right;
+  }
+  @media only screen and (max-width: 768px) {
+    .tree-list {
+      margin-bottom: 60px;
+    }
+  }
 }
 </style>

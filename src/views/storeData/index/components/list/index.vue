@@ -1,171 +1,181 @@
 <template>
-  <div class="app-container">
-    <table-search :search="searchList" @searchList="searchChang" />
+  <div class="app-container" style="padding-top: 0;">
     <table-list
-      :list="list"
+      :list="listShow"
       :columns="columns"
-      :list-loading="loading"
+      :list-loading="loadingPage"
       :is-operation-add="false"
+      :is-edit="false"
       is-foot-add
-      is-select
-      @edit="editForm"
-      @delete="confirmDelete"
-      @addForm="addForm" />
-    <pagination v-if="count>0" :total="count" :page.sync="listQuery.pageNo" :limit.sync="listQuery.pageSize" @pagination="getList" />
-    <add-form
-      :item-list="itemList"
-      :rules="rules"
-      :form-data="formData"
-      :show.sync="addDialog"
-      :form-title="formTitle"
-      @save="submitForm" />
+      @delete="deleteConfig"
+      @addForm="add" />
   </div>
 </template>
 
 <script>
-import { requestForm, getList } from '@/api/base'
-import { PaginationMixin, AddFormMixin } from '@/mixins'
-import TableSearch from '@/components/Table/TableSearch'
-import AddForm from '@/components/Table/AddForm'
-import Pagination from '@/components/Pagination'
+import { formatPageData } from '@/utils'
+import { getConfig, getList } from '@/api/base'
 import TableList from '@/components/Table/TableList'
 
 export default {
   name: 'PageList',
   components: {
-    TableSearch,
-    TableList,
-    AddForm,
-    Pagination
+    TableList
   },
-  mixins: [
-    PaginationMixin, AddFormMixin
-  ],
   props: {
-    formatFormData: {
+    parentData: {
+      type: Object,
+      default: () => {}
+    },
+    activeItem: {
       type: Object,
       default: () => {}
     }
   },
   data() {
     return {
-      loading: true,
-      search: {},
-      parentId: {
-        parentId: null
-      },
-      formData: {},
-      list: []
+      loadingPage: true,
+      columns: [],
+      list: [],
+      saveCache: [],
+      databaseOptionList: [],
+      formData: {}
     }
   },
   computed: {
-    // table展示字段
-    columns: function() {
-      return this.formatFormData.config ? this.formatFormData.config.columns : []
+    listShow: function() {
+      return [...this.list, ...this.saveCache]
     },
-    // 搜索字段
-    searchList: function() {
-      return this.formatFormData.config ? this.formatFormData.config.searchList : []
+    pageConfigUrl: function() {
+      return this.baseUrl + '/config'
     },
-    // 获取列表URL
+    baseUrl() {
+      return this.activeItem.listBase
+    },
+    saveUrl: function() {
+      return this.baseUrl + '/save'
+    },
+    deleteUrl: function() {
+      return this.baseUrl + '/delete'
+    },
     listUrl: function() {
-      return this.formatFormData.config ? this.formatFormData.config.listUrl : ''
+      return this.baseUrl + '/list'
     },
-    // 获取列表URL
-    rules: function() {
-      return this.formatFormData.config ? this.formatFormData.config.rules : {}
-    },
-    // 新增控件
-    itemList: function() {
-      return this.formatFormData.config ? this.formatFormData.config.itemList : []
+    activeItemId() {
+      return this.activeItem.id
     }
   },
   watch: {
-    formatFormData: {
-      handler(val) {
-        if (val.config) {
-          this.loading = true
-          this.dataFormat(val)
-          this.getList()
-        }
+    activeItem: {
+      handler: function() {
+        this.columns = []
+        this.list = []
+        this.saveCache = []
+        this.databaseOptionList = []
+        this.formData = {}
+        this.getPageConfig()
       },
       immediate: true,
       deep: true
     }
   },
   methods: {
-    dataFormat(data) {
-      this.parentId.parentId = data.id !== -1 ? data.id : null
-      // 遍历数据，查找默认数据
-
-      data.config.itemList.map(item => {
-        console.log(data.parentData)
-        console.log(item.type === 'parent')
-        console.log(item.inputType === 'default')
-        console.log(data.parentData && item.type === 'parent' && item.inputType === 'default')
-        if (data.parentData && item.type === 'parent' && item.inputType === 'default') {
-          console.log(1)
-          data.config.ruleForm[item.prop] = data.parentData[data.config.ruleForm[item.key]]
-          data.config.ruleForm[item.prop + '_des'] = data.parentData[data.config.ruleForm[item.name]]
-        }
-      })
-      console.log(data)
-
-      this.formData = data.config.ruleForm ? data.config.ruleForm : {}
-      this.formDataTemp = data.config.ruleForm ? data.config.ruleForm : {}
-      this.pageName = data.config.formTitle ? data.config.formTitle : ''
-    },
-    searchChang(data) {
-      this.search = data
-      this.getList()
-    },
-    getList() {
-      // 获取列表
-      getList(this.listUrl, Object.assign(this.listQuery, this.search, this.parentId)).then(res => {
-        const data = res.data
-        this.list = data.list
-        this.count = data.count
-        this.listQuery.pageNo = data.pageNo
-        this.listQuery.pageSize = data.pageSize
-        this.loading = false
-      })
-    },
-    // 提交表单
-    submitForm(data) {
-      // 格式化存储数据
-      let json = data
-      if (this.saveJson) {
-        json = { json: data }
-      }
-      requestForm(this.saveUrl, json).then(res => {
-        res = res.data.data
-        let isNew = true
-        this.list.some(item => {
-          if (item.id === res.id) {
-            isNew = false
-            return Object.assign(item, res)
+    getPageConfig() {
+      // 拉取页面配置
+      this.loadingPage = true
+      getConfig(this.pageConfigUrl).then(res => {
+        const data = res.data.data
+        this.pageName = data.comments
+        const { formDate, columns, itemList } = formatPageData(data.columnList)
+        columns.map((item, index) => {
+          const { isAddEdit, isEditEdit } = itemList[index]
+          item.isInput = true
+          item.isAdd = isAddEdit
+          item.isEdit = isEditEdit
+          if (item.value === 'slaveCollectTableId') {
+            // 远程搜索url
+            item.selectUrl = '/ips/a/ips/database/getDBTableById'
+            // 远程搜索查询条件
+            item.selectParam = { id: this.activeItem.databaseId }
           }
         })
-        if (isNew) {
-          this.list.unshift(res)
+        if (this.parentData.id) {
+          formDate.collectTableId.id = this.parentData.id
+          formDate.collectTableId.tableName = this.parentData.label
         }
-        this.addDialog = false
-        this.$message({
-          type: 'success',
-          message: '保存成功!'
-        })
+        this.formData = this._.cloneDeep(formDate)
+        this.columns = columns
+        this.loadingPage = false
+
+        // 判断是否读取字段列表 如果有父级则读取
+        if (this.activeItemId) {
+          this.getList()
+        }
       })
     },
-    // 删除数据
-    confirmDelete(index) {
-      const deleteData = this._.isArray(index) ? { ids: index } : this.list[index]
-      requestForm(this.deleteUrl, deleteData).then(() => {
-        this.list.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+    // 获取表详情
+    getList() {
+      // 获取列表
+      getList(this.listUrl, { id: this.activeItemId }).then(res => {
+        const data = res.data.data
+        this.list = data.list
       })
+    },
+    // 设置父选项
+    setParentData() {
+      if (this.parentData) {
+        this.formData.databaseId = {
+          id: this.parentData.id,
+          databaseName: this.parentData.label
+        }
+        this.formDataTemp.databaseId = this._.cloneDeep(this.formData.databaseId)
+      }
+    },
+    add() {
+      const data = this._.cloneDeep(this.formData)
+      data.edit = true
+      this.saveCache.push(data)
+    },
+    // 保存
+    save(parent) {
+      return new Promise((resolve, reject) => {
+        console.log(parent)
+        // 验证每行数据是否正确
+        resolve()
+        // this.$store.dispatch('showAddFormLoading')
+        // requestForm(this.saveUrl, { json: data }).then(res => {
+        //   resolve(res.data.data)
+        // }).catch(() => {
+        //   reject()
+        // })
+      })
+    },
+    deleteConfig(index) {
+      console.log(index)
+      const data = this.listShow[index]
+      if (data.id) {
+        // 请求服务器删除
+
+        // 再删除前端数据
+
+        // 无id直接前端删除
+        this.list.some((item, i) => {
+          if (Object.is(item, data)) {
+            this.listShow.splice(index, 1)
+            this.list.splice(i, 1)
+            return true
+          }
+        })
+      } else {
+        // 无id直接前端删除
+        this.saveCache.some((item, i) => {
+          if (Object.is(item, data)) {
+            this.listShow.splice(index, 1)
+            this.saveCache.splice(i, 1)
+            return true
+          }
+        })
+      }
     }
   }
 }
